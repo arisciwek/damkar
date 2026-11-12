@@ -9,6 +9,16 @@ import BlockHead from './BlockHead.astro';
 import Icon from '../ui/Icon.astro';
 import MateriList from './MateriList.astro';
 
+interface Props {
+  title?: string;
+  lede?: string;
+}
+
+const {
+  title = 'Detail Program & Materi',
+  lede = 'Materi yang relevan dengan pekerjaan. Pilih kelas untuk melihat materinya.',
+} = Astro.props;
+
 const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
@@ -16,11 +26,7 @@ const slugOf = (key: string) => key.toLowerCase();
 ---
 
 <section class="block" id="detail" aria-labelledby="detail-title">
-  <BlockHead
-    id="detail-title"
-    title="Detail Program & Materi"
-    lede="Materi yang relevan dengan pekerjaan. Pilih kelas untuk melihat materinya."
-  />
+  <BlockHead id="detail-title" title={title} lede={lede} />
   <div class="tablist" role="tablist" aria-label="Pilih kelas">
     {
       kelas.map((entry, index) => (

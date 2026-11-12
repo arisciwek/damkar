@@ -1,5 +1,25 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — Migrasi 63 route turunan jadwal ke template Markdown blocks
+
+- Commit `c344c0f`: tambah `src/content/pages/jadwal-detail.md` sebagai template bersama
+  untuk hero, breadcrumb, facts, CTA, media, `content-container`, `schedule-list`,
+  dan `contact-band`.
+- Commit `246a29a`: route catch-all `src/pages/jadwal/[...path].astro` sekarang
+  mengambil template tersebut dan mengisi nilai per kelas/bulan dari collection `kelas`
+  serta helper jadwal yang sudah ada. Pola `getStaticPaths`, 63 URL, filter gelombang,
+  metadata SEO, JSON-LD, dan sumber data tidak diubah.
+- Tidak ada file Markdown per URL yang menduplikasi data. Satu template mengendalikan
+  struktur, sedangkan nilai dinamis tetap berasal dari sumber data kanonis.
+- **Kebijakan tanggal**: semua halaman jadwal bersifat operasional; tidak memiliki
+  `pubDate`/`updatedDate` dan tidak menambahkan `datePublished`/`dateModified`
+  pada WebPage JSON-LD. Sitemap `lastmod` diperlakukan terpisah sebagai metadata teknis.
+- Pemeriksaan frontmatter `jadwal-detail.md`: tepat dua delimiter `---`, penutup benar,
+  tanpa field tanggal editorial dan tanpa body Markdown.
+- **Belum diverifikasi runtime**: jalankan `npm run check` + `npm run build`; pastikan
+  63 URL tetap terbentuk dan lakukan diff DOM untuk minimal route kelas, bulan, dan
+  kombinasi kelas/bulan. Uji scheduler, navigasi breadcrumb, CTA, dan responsive layout.
+
 ## 13 Nov 2026 — Migrasi indeks jadwal `/jadwal/` ke Markdown blocks
 
 - Commit `b8ba560`: tambah `src/content/pages/jadwal.md`; konfigurasi hero,

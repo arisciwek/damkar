@@ -2,6 +2,15 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — Lead & lede jadwal kelas: tambah role (commit `560a505`)
+
+- Permintaan user: paragraf "3 gelombang Kelas D pada November 2026…" juga menyebut role.
+- Diubah di2 tempat terlihat: **hero lead** dan **block lede** (`blockLede`) —
+  `3 gelombang Kelas D (Petugas Pemadam) pada November 2026. …` (role dalam kurung).
+- **Meta description sengaja tidak diubah** (bukan teks terlihat; agar tetap ringkas).
+- Berlaku untuk 46 halaman kelas+bulan; `/jadwal/kelas-x/` (lead-nya memakai `desc`) dan
+  `/jadwal/` + `/jadwal/bulan/` tidak berubah.
+
 ## 12 Nov 2026 — H1 jadwal kelas: tambah keterangan role (commit `8f02322`)
 
 - Permintaan user: H1 halaman jadwal kelas diberi keterangan "kelas ini apa".

@@ -6,6 +6,7 @@ import Nearest from '../components/content/Nearest.astro';
 import ProgramGrid from '../components/content/ProgramGrid.astro';
 import ReasonsBlock from '../components/content/ReasonsBlock.astro';
 import ContactBandBlock from './ContactBandBlock.astro';
+import HeroBlock from './HeroBlock.astro';
 import ScheduleListBlock from './ScheduleListBlock.astro';
 import type { BlockType } from './types';
 
@@ -16,6 +17,7 @@ import type { BlockType } from './types';
  * Registry ini hanya menjadi adapter untuk renderer; tidak mengubah pemakaian lama.
  */
 export const blockRegistry = {
+  hero: HeroBlock,
   reasons: ReasonsBlock,
   benefits: BenefitsBlock,
   faq: FaqBlock,

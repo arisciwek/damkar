@@ -8,6 +8,10 @@ interface Props {
 
 const { blocks } = Astro.props;
 
+function assertNever(value: never): never {
+  throw new Error(`Block type tidak didukung: ${JSON.stringify(value)}`);
+}
+
 function propsFor(block: BlockConfig): Record<string, unknown> {
   switch (block.type) {
     case 'hero':
@@ -63,6 +67,8 @@ function propsFor(block: BlockConfig): Record<string, unknown> {
       };
     case 'contact-band':
       return { id: block.id, heading: block.heading, kicker: block.kicker };
+    default:
+      return assertNever(block);
   }
 }
 ---

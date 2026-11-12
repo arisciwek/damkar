@@ -1,5 +1,27 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — Migrasi 4 halaman detail layanan ke Markdown blocks
+
+- Kontrak collection `pages` diperluas untuk menyimpan referensi jenjang (`kelas: D|C|B|A`)
+  serta penanda block `class-detail` dan `other-programs`; isi program tetap bersumber
+  dari collection `kelas`, bukan disalin ke Markdown.
+- Dibuat empat dokumen frontmatter: `damkar-kelas-d.md`, `damkar-kelas-c.md`,
+  `damkar-kelas-b.md`, dan `damkar-kelas-a.md`. Dokumen menentukan susunan
+  blocks, metadata, hero, CTA, serta sidebar; tidak memiliki body Markdown.
+- Route `src/pages/layanan/[slug].astro` kini mengambil dokumen sesuai ID kelas,
+  memvalidasi `kelas` terhadap collection, menyusun nilai dinamis (materi, jadwal,
+  pendidikan, foto, jenjang terkait), lalu merender `PageBlockRenderer`.
+- Urutan DOM dipertahankan: hero → layout container/sidebar/content → contact band.
+  JSON-LD Organization, WebSite, WebPage, BreadcrumbList, Course, dan FAQPage tetap
+  dibangun pada route.
+- **Belum diverifikasi runtime dari sesi GitHub**: wajib jalankan `npm run check` dan
+  `npm run build`; periksa juga empat URL detail, materi show-more, scrollspy,
+  nearest schedule, jadwal per kelas, tautan CTA, dan diff DOM terhadap baseline.
+  Jangan menganggap migrasi lolos sebelum hasil lokal dicatat.
+- Commit implementasi bertahap: `f60a5e0` (schema), `c27a4bf`–`ef433a5`
+  (empat dokumen awal), `61f6ff9` (schema block), `921c876` (route renderer),
+  disusul koreksi posisi contact-band, metadata SEO, dan validasi referensi kelas.
+  
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
 ## 13 Nov 2026 — Pull migrasi listing /layanan/: build gagal → fix YAML (`layanan.md`)

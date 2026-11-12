@@ -63,6 +63,22 @@
   
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Pull migrasi 63 route jadwal ke template blocks: build lolos tanpa fix
+
+- Pull **7 commit** (`5f2c6e5..2f57d4b`): template `jadwal-detail.md` (blocks), refactor
+  `[...path].astro` render dari blocks + penerusan props scheduler (`cf44ee3`), kebijakan
+  tanggal editorial & jadwal (`8311ba6`), docs.
+- `npm run check` + `npm run build` **lolos pertama kali** — tanpa kegagalan, tanpa fix.
+- **Verifikasi** (baseline = worktree pre-pull `5f2c6e5` di
+  `/tmp/opencode/prepull-5f2c6e5`, dibangun khusus karena referensi statis tidak memuat
+  halaman detail jadwal):
+  - **63/63 route `/jadwal/` byte-identik** dengan baseline pre-pull (`cmp` per file);
+  - daftar seluruh route `dist/` **sama persis** (tak ada route hilang/tambah);
+  - beranda, listing, 4 detail, 404 **byte-identik** vs baseline; indeks `/jadwal/` tetap
+    2777/2777 vs referensi (selisih kategori terdokumentasi);
+  - sitemap 69 URL, `<loc>` **sama persis** dengan baseline.
+- Route `/kontak/` belum ada di kedua build (belum dimigrasi — sesuai rencana).
+
 ## 13 Nov 2026 — Pull migrasi indeks jadwal ke blocks: build lolos tanpa fix
 
 - Pull **3 commit** (`d7d71d2..eb1bdf4`): `src/content/pages/jadwal.md` (blok konfigurasi

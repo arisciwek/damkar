@@ -214,7 +214,9 @@ function gcalUrl(batch: Batch, name: string, mode: string): string {
                     <h4 class="batch-title">
                       {showClass ? (
                         <>
-                          <a href={`/layanan/${info.id}/`}>{info.data.name}</a>{' '}
+                          <a href={`/layanan/${info.id}/`}>
+                            {info.data.name} {info.data.role}
+                          </a>{' '}
                           <span>Gelombang {batch.batch}</span>
                         </>
                       ) : (

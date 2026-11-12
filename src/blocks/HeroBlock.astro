@@ -1,0 +1,105 @@
+---
+import Breadcrumb from '../components/content/Breadcrumb.astro';
+import Hero from '../components/content/Hero.astro';
+import HeroSlider from '../components/content/HeroSlider.astro';
+import Nearest from '../components/content/Nearest.astro';
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Fact {
+  value: string;
+  label: string;
+}
+
+interface Action {
+  label: string;
+  href: string;
+  className: string;
+  target?: string;
+  rel?: string;
+}
+
+interface Photo {
+  src: string;
+  w: number;
+  h: number;
+  alt: string;
+}
+
+interface Props {
+  eyebrow: string;
+  heading: string;
+  highlight?: string;
+  lead: string;
+  breadcrumb?: Crumb[];
+  nearest?: {
+    kelas?: 'D' | 'C' | 'B' | 'A';
+    limit?: number;
+  };
+  facts: Fact[];
+  actions: Action[];
+  media: { type: 'slider' } | { type: 'photo'; photo: Photo; letter?: string };
+}
+
+const {
+  eyebrow,
+  heading,
+  highlight,
+  lead,
+  breadcrumb,
+  nearest,
+  facts,
+  actions,
+  media,
+} = Astro.props;
+---
+
+<Hero eyebrow={eyebrow} heading={heading} highlight={highlight} lead={lead}>
+  {breadcrumb && <Breadcrumb slot="crumbs" items={breadcrumb} />}
+  {nearest && <Nearest slot="near" kelas={nearest.kelas} limit={nearest.limit} />}
+  <ul class="hero-facts" slot="facts">
+    {
+      facts.map((fact) => (
+        <li>
+          <b>{fact.value}</b>
+          {fact.label}
+        </li>
+      ))
+    }
+  </ul>
+  <div class="actions" slot="actions">
+    {
+      actions.map((action) => (
+        <a
+          class={action.className}
+          href={action.href}
+          target={action.target}
+          rel={action.rel}
+        >
+          {action.label}
+        </a>
+      ))
+    }
+  </div>
+  {
+    media.type === 'slider' ? (
+      <HeroSlider slot="media" />
+    ) : (
+      <figure class="hero-photo" slot="media">
+        <img
+          class="bw"
+          src={media.photo.src}
+          width={media.photo.w}
+          height={media.photo.h}
+          alt={media.photo.alt}
+          fetchpriority="high"
+          decoding="async"
+        />
+        {media.letter && <span class="hero-letter" aria-hidden="true">{media.letter}</span>}
+      </figure>
+    )
+  }
+</Hero>

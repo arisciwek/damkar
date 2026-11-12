@@ -20,7 +20,7 @@ function propsFor(block: BlockConfig): Record<string, unknown> {
     case 'benefits':
       return { title: block.title, lede: block.lede, items: block.items };
     case 'faq':
-      return { title: block.title, lede: block.lede };
+      return { title: block.title, lede: block.lede, items: block.items };
     case 'nearest-schedule':
       return { kelas: block.kelas, limit: block.limit };
     case 'schedule-list':

@@ -32,6 +32,12 @@ export interface GalleryItem extends BlockImage {
   cap: string;
 }
 
+export interface SidebarLink {
+  id: string;
+  label: string;
+  icon: import('../utils/icons').IconName;
+}
+
 export interface HeroCrumb {
   label: string;
   href?: string;
@@ -91,6 +97,7 @@ export type BlockConfig =
       bulan?: string;
       chips?: boolean;
     }
-  | { type: 'contact-band'; id?: string; heading?: string; kicker?: string };
+  | { type: 'contact-band'; id?: string; heading?: string; kicker?: string }
+  | { type: 'section-sidebar'; ctaMsg: string; links: SidebarLink[] };
 
 export type BlockType = BlockConfig['type'];

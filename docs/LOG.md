@@ -84,6 +84,26 @@
   
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Pull tanggal editorial jadwal → JSON-LD: build lolos tanpa fix
+
+- Pull **9 commit** (`d82fcbd..2a1c884`): field `pubDate`/`updatedDate` di schema `pages`
+  (`b953682`), tanggal editorial di `jadwal.md` (indeks) & `jadwal-detail.md` (template
+  63 route), disambungkan ke `webpageNode()` → `datePublished`/`dateModified` WebPage
+  JSON-LD (`affb27b`, `976e159`); **kebijakan tanggal di-revisi** (`dca9212`): jadwal kini
+  BOLEH punya tanggal editorial — indeks memakai tanggalnya sendiri, 63 route turunan
+  template berbagi satu tanggal (bukan waktu perubahan data gelombang per URL).
+- `npm run check` + `npm run build` **lolos pertama kali** — tanpa kegagalan, tanpa fix.
+- **Verifikasi** vs baseline pre-pull `5f2c6e5` (worktree `/tmp/opencode/prepull-5f2c6e5`):
+  - 63/63 route `/jadwal/`: **hanya JSON-LD berubah** — strip `<script ld+json>` →
+    byte-identik; tidak ada perubahan lain di route mana pun;
+  - beranda, listing, 4 detail, 404 **byte-identik**; daftar route & sitemap 69 URL sama;
+  - indeks `/jadwal/` vs referensi tetap 2777/2777 (selisih kategori terdokumentasi);
+  - JSON-LD: `datePublished`/`dateModified` ISO UTC **tanpa milidetik**, tanpa
+    `T00:00:00Z`; indeks `08:00/08:15`, 62 route template `08:01/08:16` (berbagi tanggal
+    sesuai kebijakan); semua 63 route punya tanggal; halaman non-jadwal **tidak** punya.
+- **Belum**: lastmod sitemap masih seragam commit-HEAD (`2026-11-12T19:36:42Z`) — Tahap 1
+  poin 3 (peta URL → lastmod per sumber) menyusul; Tahap 1 kini status 🟡.
+
 ## 13 Nov 2026 — Pull migrasi 63 route jadwal ke template blocks: build lolos tanpa fix
 
 - Pull **7 commit** (`5f2c6e5..2f57d4b`): template `jadwal-detail.md` (blocks), refactor

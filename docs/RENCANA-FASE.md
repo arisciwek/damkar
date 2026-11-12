@@ -83,20 +83,23 @@ di `/www/wwwroot/damkar`.
   jangan mengisi semua dokumen dengan `T00:00:00Z`.
 - `updatedDate` hanya diisi ketika konten benar-benar mengalami pembaruan editorial
   setelah publikasi. Jika belum pernah diperbarui, field dihilangkan.
-- Semua route `/jadwal/` (indeks, kelas, bulan, dan kombinasi kelas/bulan) adalah halaman
-  operasional yang dirender dari data jadwal. **Tidak memiliki `pubDate`/`updatedDate`**
-  dan tidak menghasilkan `datePublished`/`dateModified` pada WebPage JSON-LD.
+- Route `/jadwal/` kini mengikuti keputusan editorial terbaru: halaman indeks memakai tanggal
+  pada `src/content/pages/jadwal.md`, sedangkan seluruh route kelas/bulan/kombinasi memakai
+  tanggal pada template `src/content/pages/jadwal-detail.md`. Keduanya meneruskan
+  `pubDate`/`updatedDate` ke `datePublished`/`dateModified` WebPage JSON-LD. Karena route
+  dinamis memakai satu template, semua URL turunan template memiliki tanggal editorial yang sama;
+  jangan menganggapnya sebagai waktu perubahan data gelombang per URL.
 - Sitemap `lastmod` adalah metadata teknis yang terpisah. Untuk route jadwal, nilainya
   dihitung dari commit terakhir file data jadwal yang berkontribusi pada route tersebut;
   bukan dengan membuat tanggal publikasi/pembaruan editorial palsu.
 
-### Tahap 1 — Tanggal editorial + lastmod per-URL ⬜ (tidak mengubah HTML)
+### Tahap 1 — Tanggal editorial + lastmod per-URL 🟡 (tanggal halaman jadwal diterapkan)
 
 1. `pubDate`/`updatedDate` pada collection `kelas` hanya untuk 4 halaman detail layanan
    jika keputusan editorialnya memang dipertahankan; nilai UTC tanpa milisecond dan
    unik sampai detik, dikonfirmasi sebelum rilis.
-2. Sambungkan tanggal editorial yang tersedia ke `webpageNode()` + `BaseLayout` →
-   `datePublished`/`dateModified` JSON-LD hanya pada halaman yang memang memiliki tanggal.
+2. Tanggal editorial halaman jadwal sudah dihubungkan ke `webpageNode()` →
+   `datePublished`/`dateModified` JSON-LD. Sambungan untuk halaman editorial lain masih menunggu.
 3. Ganti `serialize` di `astro.config.mjs`: peta **URL → lastmod** dibangun saat build,
    bukan commit HEAD seragam:
    - halaman editorial ← tanggal modifikasi editorial yang valid;

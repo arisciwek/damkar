@@ -80,4 +80,4 @@ blocks:
         chips: false
       - type: faq
       - type: other-programs
-      - type: contact-band
+  - type: contact-band

@@ -73,25 +73,44 @@ di `/www/wwwroot/damkar`.
   di luar divergensi role. **Sisa**: diff layanan & jadwal, DOM diff per-block, uji interaksi,
   checklist parity per block → detail di `RENCANA-BLOCK-PARITY.md` (bagian Status).
 
-### Tahap 1 — Tanggal + lastmod per-URL ⬜ (tidak mengubah HTML)
+### Kebijakan tanggal editorial dan lastmod teknis (keputusan 13 Nov 2026)
 
-1. `pubDate`/`updatedDate` **wajib** di schema collection `kelas`; isi frontmatter 4 md
-   (nilai draf dari git, user koreksi nilainya).
-2. Sambungkan ke `webpageNode()` + `BaseLayout` → `datePublished`/`dateModified` JSON-LD
-   4 halaman detail layanan.
+- `pubDate` dan `updatedDate` adalah metadata editorial, bukan tanggal pembuatan file.
+  Gunakan hanya pada konten editorial yang memang memiliki riwayat publikasi.
+- Format wajib: ISO 8601 UTC tanpa milisecond, misalnya
+  `2026-11-13T08:15:23Z`. Jika beberapa dokumen diterbitkan pada hari yang sama,
+  `pubDate` harus memiliki menit/detik yang berbeda dan mencerminkan urutan publikasi;
+  jangan mengisi semua dokumen dengan `T00:00:00Z`.
+- `updatedDate` hanya diisi ketika konten benar-benar mengalami pembaruan editorial
+  setelah publikasi. Jika belum pernah diperbarui, field dihilangkan.
+- Semua route `/jadwal/` (indeks, kelas, bulan, dan kombinasi kelas/bulan) adalah halaman
+  operasional yang dirender dari data jadwal. **Tidak memiliki `pubDate`/`updatedDate`**
+  dan tidak menghasilkan `datePublished`/`dateModified` pada WebPage JSON-LD.
+- Sitemap `lastmod` adalah metadata teknis yang terpisah. Untuk route jadwal, nilainya
+  dihitung dari commit terakhir file data jadwal yang berkontribusi pada route tersebut;
+  bukan dengan membuat tanggal publikasi/pembaruan editorial palsu.
+
+### Tahap 1 — Tanggal editorial + lastmod per-URL ⬜ (tidak mengubah HTML)
+
+1. `pubDate`/`updatedDate` pada collection `kelas` hanya untuk 4 halaman detail layanan
+   jika keputusan editorialnya memang dipertahankan; nilai UTC tanpa milisecond dan
+   unik sampai detik, dikonfirmasi sebelum rilis.
+2. Sambungkan tanggal editorial yang tersedia ke `webpageNode()` + `BaseLayout` →
+   `datePublished`/`dateModified` JSON-LD hanya pada halaman yang memang memiliki tanggal.
 3. Ganti `serialize` di `astro.config.mjs`: peta **URL → lastmod** dibangun saat build,
    bukan commit HEAD seragam:
-   - detail layanan ← frontmatter kelas;
-   - beranda & `/layanan/` listing ← **interim**: waktu commit file sumbernya (masih `.astro`;
-     frontmatter baru ada setelah Tahap 3);
-   - 63 URL jadwal ← **interim**: commit `jadwal.ts` (diganti final di Tahap 4).
-4. **Gerbang**: XML tervalidasi, lastmod **bervariasi** antar URL, **nol perubahan HTML**
-   (`diff` nol).
+   - halaman editorial ← tanggal modifikasi editorial yang valid;
+   - beranda & `/layanan/` listing ← waktu commit file sumber selama metadata editorial belum tersedia;
+   - route jadwal ← commit terakhir file data jadwal yang berkontribusi pada route, tanpa
+     menambah `pubDate`/`updatedDate` ke halaman jadwal.
+4. **Gerbang**: XML tervalidasi, nilai lastmod merefleksikan sumber tiap URL, dan
+   **nol perubahan HTML** (`diff` nol).
 
-### Tahap 2 — Fondasi md+blocks ⬜ (belum migrasi halaman apa pun)
+### Tahap 2 — Fondasi md+blocks ⬜ (sebagian sudah diterapkan)
 
-1. Collection `pages`: `pubDate`/`updatedDate` wajib, `slug`, `draft`, `canonical`,
-   `noindex`, `blocks[]`.
+1. Collection `pages`: `slug`, `draft`, `blocks[]`; `pubDate`/`updatedDate` bersifat
+   opsional dan hanya digunakan oleh halaman editorial. Field `canonical`/`noindex`
+   ditambahkan saat kebutuhan SEO dan implementasinya disepakati.
 2. Gunakan kembali `src/blocks/BlockRenderer.astro`, `PageBlockRenderer.astro`, registry,
    dan adapter yang dibangun pada Tahap 0. Tambahkan hanya kontrak/schema yang memang
    diperlukan collection `pages`; jangan membuat renderer atau block duplikat.
@@ -119,8 +138,9 @@ Tiap langkah: build + verifikasi + commit.
   `src/config/jadwal.ts` diretire. Field `role` ikut frontmatter.
 - `Scheduler`, `Nearest`, dan `getStaticPaths` baca collection; **63 URL & logika path tidak
   berubah**.
-- lastmod 63 URL ← frontmatter: halaman bulan/kelas = `max(updatedDate)` gelombang di dalamnya
-  (pola confinedspace untuk `/jadwal/`).
+- lastmod 63 URL ← commit terakhir file data jadwal yang berkontribusi pada route;
+  halaman bulan/kelas memakai waktu terbaru dari file gelombang yang ditampilkan. Ini
+  metadata sitemap teknis, bukan `pubDate`/`updatedDate` dan bukan tanggal JSON-LD.
 - **Gerbang**: `/tmp/opencode/diff-jadwal.py` diulang (IDENTIK) + uji toggle "jadwal lewat" CDP.
 - Boleh ditukar urutan dengan Tahap 5 (artikel) — keduanya independen.
 

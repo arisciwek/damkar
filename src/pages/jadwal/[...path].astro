@@ -66,9 +66,12 @@ export async function getStaticPaths() {
 const { kelas, bulan } = Astro.props;
 
 const entries = await getCollection('kelas', (entry) => !entry.data.draft);
-const byKey = new Map(entries.map((entry) => [entry.data.key as KelasKey, entry]));
+// Simpan `entry.data`, bukan entry collection. Properti kelas (name, role, desc, dll.)
+// berada di dalam data; mengaksesnya langsung dari entry menghasilkan `undefined`.
+const byKey = new Map(entries.map((entry) => [entry.data.key as KelasKey, entry.data]));
 const cls = kelas ? byKey.get(kelas) : undefined;
 if (kelas && !cls) throw new Error(`Kelas ${kelas} tidak ada di collection`);
+const kelasLabel = kelas ? `Kelas ${kelas}` : '';
 
 const list = batchesIn(kelas, bulan);
 const nActive = list.filter((batch) => batch.status !== 'done').length;
@@ -79,11 +82,11 @@ const kelasCount = new Set(list.map((batch) => batch.class)).size;
 let title: string;
 let description: string;
 if (kelas && bulan) {
-  title = `Jadwal ${cls!.name} ${monthText} — ${list.length} Gelombang`;
-  description = `Jadwal ${list.length} gelombang ${cls!.name} pada ${monthText}. Pilih tanggal yang cocok, lalu daftar langsung via WhatsApp.`;
+  title = `Jadwal ${kelasLabel} ${monthText} — ${list.length} Gelombang`;
+  description = `Jadwal ${list.length} gelombang ${kelasLabel} pada ${monthText}. Pilih tanggal yang cocok, lalu daftar langsung via WhatsApp.`;
 } else if (kelas) {
-  title = `Jadwal ${cls!.name} ${site.year} — ${list.length} Gelombang Public Training`;
-  description = `${nActive} dari ${list.length} gelombang Public Training ${cls!.name} sepanjang ${site.year} masih aktif atau akan datang. Lihat jadwal per bulan dan daftar via WhatsApp.`;
+  title = `Jadwal ${kelasLabel} ${site.year} — ${list.length} Gelombang Public Training`;
+  description = `${nActive} dari ${list.length} gelombang Public Training ${kelasLabel} sepanjang ${site.year} masih aktif atau akan datang. Lihat jadwal per bulan dan daftar via WhatsApp.`;
 } else if (bulan) {
   title = `Jadwal Pelatihan Damkar ${monthText} — ${list.length} Gelombang`;
   description = `${list.length} gelombang Pelatihan Damkar pada ${monthText} untuk semua jenjang (D, C, B, A). Pilih gelombang dan daftar via WhatsApp.`;
@@ -97,11 +100,11 @@ const ctaMsg =
   'Halo tim Betracom, saya ingin mendaftar Pelatihan Damkar. Mohon info jadwal, biaya, dan persyaratannya.';
 
 // ---- Hero -----------------------------------------------------------------
-const heading = kelas ? `Jadwal ${cls!.name}` : 'Jadwal Pelatihan Damkar';
+const heading = kelas ? `Jadwal ${kelasLabel}` : 'Jadwal Pelatihan Damkar';
 const highlight = bulan ? `${monthText}.` : `${site.year}.`;
 const lead = kelas
   ? bulan
-    ? `${list.length} gelombang ${cls!.name} pada ${monthText}. Pilih tanggal yang cocok, lalu daftar via WhatsApp.`
+    ? `${list.length} gelombang ${kelasLabel} pada ${monthText}. Pilih tanggal yang cocok, lalu daftar via WhatsApp.`
     : `${cls!.desc} Program ${cls!.mode} dengan sertifikasi Kemnaker RI bersama PT Betracom Gemilang Nusa.`
   : bulan
     ? `Semua gelombang Pelatihan Damkar pada ${monthText} — dari Kelas D hingga Kelas A — dalam satu halaman.`
@@ -116,7 +119,7 @@ const crumbs: { label: string; href?: string }[] = [
 ];
 if (kelas) {
   crumbs.push({
-    label: cls!.name,
+    label: kelasLabel,
     href: bulan ? `/jadwal/kelas-${kelas.toLowerCase()}/` : undefined,
   });
 }
@@ -141,7 +144,7 @@ if (kelas && !bulan) {
   jsonLd.push(
     scheduleItemList(
       url,
-      `Bulan jadwal ${cls!.name} ${site.year}`,
+      `Bulan jadwal ${kelasLabel} ${site.year}`,
       monthsIn(kelas).map((key) => ({
         url: new URL(`/jadwal/kelas-${kelas.toLowerCase()}/${key}/`, Astro.site).toString(),
         name: monthLabel(key),
@@ -171,7 +174,7 @@ const blockTitle = kelas
   : `Gelombang ${monthText}`;
 const blockLede = kelas
   ? bulan
-    ? `${list.length} gelombang ${cls!.name} pada ${monthText}.`
+    ? `${list.length} gelombang ${kelasLabel} pada ${monthText}.`
     : `${list.length} gelombang Public Training sepanjang ${site.year}, ${nActive} di antaranya masih aktif atau akan datang.`
   : `${list.length} gelombang Public Training pada ${monthText} — semua jenjang dan kelas.`;
 ---

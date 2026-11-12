@@ -2,8 +2,8 @@
 type: page
 slug: damkar-kelas-c
 kelas: C
-title: Pelatihan Petugas Pemadam Kebakaran Kemnaker RI | Jadwal 2026
-description: Pelatihan Petugas Pemadam Kebakaran (Petugas Pemadam Kebakaran) sertifikasi Kemnaker RI. Informasi metode, materi, persyaratan, dan jadwal pelatihan tahun 2026.
+title: Pelatihan Damkar Kelas C Kemnaker RI | Jadwal 2026
+description: "Pelatihan Damkar Kelas C (Petugas Madya) sertifikasi Kemnaker RI. Informasi metode, materi, persyaratan, dan jadwal pelatihan tahun 2026."
 draft: false
 blocks:
   - type: hero

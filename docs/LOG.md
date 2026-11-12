@@ -1,5 +1,33 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — Perbaikan build artikel dan aturan description vs paragraf pembuka
+
+- Commit `23dad97`: pulihkan backtick penutup template literal pada
+  `src/blocks/ArticleBlockRenderer.astro`. Sebelumnya apostrof menggantikan
+  backtick sehingga ekspresi `class:list` terbaca belum selesai dan kompilasi
+  Astro gagal. Setelah koreksi, `npm run check` + `npm run build` lolos
+  (72 halaman); 70 HTML lama byte-identik; sitemap 71 URL valid.
+- Commit `81ab69b`: rapikan artikel pertama. `description` diisi ringkasan
+  definisi singkat; kalimat pengantar lama dipindahkan menjadi paragraf kedua
+  pada badan artikel. `updatedDate` diperbarui ke `2026-11-12T23:36:36Z`.
+  Check + build lolos (72 halaman); hanya 2 HTML berubah (detail dan indeks
+  karena kartu menggunakan description), 70 lainnya byte-identik; sitemap
+  71 URL valid dan tidak ada lastmod masa depan.
+- **Aturan editorial baru**: `description` = meta description ringkas/kartu;
+  paragraf pertama lengkap = `blocks[]` section pertama. Keduanya terkait,
+  tetapi tidak perlu identik. Jangan menambahkan field `intro` metadata yang
+  menduplikasi paragraf pertama. Google dapat memilih snippet sendiri dari isi
+  halaman berdasarkan kueri; meta description tidak menjamin snippet SERP.
+- **Pencegahan regresi** ditambahkan ke `AGENTS.md`: YAML string perlu di-quote
+  bila rawan parsing; setiap artikel harus punya tepat dua delimiter frontmatter
+  dan tanpa body Markdown; periksa sintaks Astro (backtick/kurung/array);
+  jalankan check + build; periksa efek description pada detail, listing, OG,
+  JSON-LD, dan sitemap.
+- Artikel pertama saat ini masih memakai paragraf pertama yang sama maknanya
+  dengan description. Ini menjadi kandidat revisi editorial terpisah; tidak
+  mengubah konten tanpa persetujuan/pekerjaan artikel berikutnya.
+
+
 ## 13 Nov 2026 — Artikel pertama Damkar D
 
 - Mengambil artikel `petugas-peran-kebakaran-damkar-d.md` dari branch

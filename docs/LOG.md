@@ -2,6 +2,26 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Pull pilot migrasi beranda: build gagal → fix id collection (`slug`)
+
+- Pull **14 commit** (`1a856f5..879d9c5`): schema halaman blocks (`2caa1a0`), **beranda
+  dimigrasi ke frontmatter Markdown** (`e5abef3` dst.), fakta hero dinamis `batch-count`
+  (`e88ca84`), validasi sumber fakta (`507a149`), +4 commit docs.
+- `npm run check` lolos, tapi `npm run build` **gagal**: `Konten halaman beranda
+  (src/content/pages/home.md) tidak ditemukan` + warn `Entry pages → home was not found`.
+- **Akar masalah**: loader glob Astro (`generateIdDefault`) — *jika frontmatter punya
+  `slug`, id collection = nilai `slug` itu, bukan nama file*. `home.md` berisi `slug: /`
+  → id = `"/"`, sedangkan `index.astro` memanggil `getEntry('pages', 'home')`.
+  Koleksi `pages` ada di store, id-inya yang beda.
+- **Fix (1 baris)**: `src/content/pages/home.md` `slug: /` → `slug: home` — meniru
+  konsultan-slf & confinedspace (`slug: "home"`). Tidak ada kode yang membaca
+  `page.data.slug` untuk URL (slug murni menentukan id).
+- **Verifikasi setelah fix**: check + build lolos (70 halaman); diff beranda vs referensi
+  **3892 = 3892 token**, selisih hanya divergensi terdokumentasi (role nr-class/batch-title
+  + selisih tanggal "Mulai N hari") — **migrasi Markdown→blocks nol perubahan output**;
+  fakta dinamis `57` tampil benar. Diff `/jadwal/` & 4 detail tidak berubah dari sesi
+  sebelumnya.
+
 ## 13 Nov 2026 — Pertahankan fakta jumlah gelombang tetap dinamis pada hero Markdown
 
 - Commit `f6a75ff`: kontrak `HeroFact` mendukung sumber nilai dinamis `batch-count`.

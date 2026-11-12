@@ -1,6 +1,6 @@
 ---
 type: page
-slug: /
+slug: home
 title: Pelatihan Damkar Kelas D, C, B, A Kemnaker RI | Jadwal 2026
 description: Pelatihan Damkar Kelas D, C, B & A bersertifikat Kemnaker RI. Teori dan praktik lapangan, jadwal 2026 setiap bulan. Bandingkan kelas dan daftar via WhatsApp.
 draft: false

@@ -46,7 +46,7 @@ const contentBlock = z.discriminatedUnion('type', [
     lead: z.string(),
     breadcrumb: z.array(z.object({ label: z.string(), href: z.string().optional() })).optional(),
     nearest: z.object({ kelas: z.enum(['D', 'C', 'B', 'A']).optional(), limit: z.number().int().positive().optional() }).optional(),
-    facts: z.array(z.object({ value: z.string(), label: z.string() })),
+    facts: z.array(z.object({ value: z.string(), label: z.string(), dynamic: z.enum(['batch-count']).optional() })),
     actions: z.array(z.object({
       label: z.string(), href: z.string(), className: z.string(),
       target: z.string().optional(), rel: z.string().optional(),

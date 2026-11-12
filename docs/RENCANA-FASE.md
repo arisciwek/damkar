@@ -135,17 +135,25 @@ Tiap langkah: build + verifikasi + commit.
   listing & beranda punya `updatedDate` → **ganti lastmod interim Tahap 1** (beranda final:
   `max(updatedDate artikel yang tampil, updatedDate home.md)` — lihat #14, berlaku setelah Tahap 5).
 
-### Tahap 4 — Jadwal → collection `schedule` md ⬜ ("mahal sepadan dengan hasil" — #14)
+### Tahap 4 — Jadwal → collection `schedule` md ✅ (dikerjakan 13 Nov 2026)
 
-- 57 gelombang → file md di `src/content/schedule/` (pola confinedspace); helper status
-  (`statusOf/upcoming/active/nextLabel/...`) pindah ke `src/utils/schedule.ts`;
-  `src/config/jadwal.ts` diretire. Field `role` ikut frontmatter.
-- `Scheduler`, `Nearest`, dan `getStaticPaths` baca collection; **63 URL & logika path tidak
-  berubah**.
-- lastmod 63 URL ← commit terakhir file data jadwal yang berkontribusi pada route;
-  halaman bulan/kelas memakai waktu terbaru dari file gelombang yang ditampilkan. Ini
-  metadata sitemap teknis, bukan `pubDate`/`updatedDate` dan bukan tanggal JSON-LD.
-- **Gerbang**: `/tmp/opencode/diff-jadwal.py` diulang (IDENTIK) + uji toggle "jadwal lewat" CDP.
+- 57 gelombang → file md di `src/content/schedule/` (pola confinedspace, nama
+  `YYYY-MM-DD-kelas-batch.md`); helper status (`statusOf/upcoming/active/nextLabel/...`)
+  pindah ke `src/utils/schedule.ts` (seluruh fungsi data async — sumbernya collection);
+  `src/config/jadwal.ts` **diretire**. Field `role` ternyata tidak ada pada data gelombang
+  (hanya class/batch/start/end/label) — tidak diterapkan.
+- `Scheduler`, `Nearest`, `ProgramGrid`, `HeroBlock`, `getStaticPaths`, indeks, dan
+  `layanan/[slug]` baca collection; pemakaian fungsi di template di-precompute di
+  frontmatter. **63 URL & logika path tidak berubah**.
+- lastmod 63 URL ← commit terakhir file gelombang penyumbang route (bulan/kelas/irisan);
+  indeks `/jadwal/` tetap `updatedDate` editorial. Ini metadata sitemap teknis, bukan
+  `pubDate`/`updatedDate` dan bukan tanggal JSON-LD. Catatan: 62 route turunan kini berbagi
+  satu lastmod karena seluruh 57 file lahir dalam commit migrasi yang sama — akan unik
+  otomatis saat tiap file diubah terpisah.
+- **Gerbang terpenuhi**: diff indeks `/jadwal/` vs referensi 2777/2777 (pola lama);
+  **70 HTML byte-identik** vs baseline pre-Tahap 4; sitemap valid XML, 69 URL.
+  (Uji toggle "jadwal lewat" CDP — script klien tidak disentuh, output byte-identik;
+  sisa uji browser dimasukkan ke gerbang Tahap 0.)
 - Boleh ditukar urutan dengan Tahap 5 (artikel) — keduanya independen.
 
 ### Tahap 5 — Fase 5: artikel + kontak ⬜ (≡ Fase 5)

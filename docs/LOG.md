@@ -84,6 +84,33 @@
   
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Tahap 4 selesai: 57 gelombang → collection `schedule` (3 commit)
+
+- **Commit `eeecc5a` (Unit A)**: 57 file md di `src/content/schedule/` (nama
+  `YYYY-MM-DD-kelas-batch.md`, frontmatter-only, semua nilai di-quoted — hindari jadi
+  Date/number di YAML; round-trip terverifikasi identik dengan RAW lama, D=23 C=11 B=11
+  A=12), collection `schedule` di `content.config.ts`, `src/utils/schedule.ts` (API +
+  logika status/pengurutan **identik** dengan `jadwal.ts`, seluruh fungsi data async).
+- **Commit `4950c57` (Unit B)**: 8 konsumen beralih (`jadwal/index`, `[...path]`,
+  `Scheduler`, `Nearest`, `ProgramGrid`, `HeroBlock`, `layanan/[slug]`, `fixtures`);
+  pemakaian fungsi di template di-precompute di frontmatter (`chipItems` kini membawa
+  `total`+`count`, `monthItems` via `Promise.all`, `nextLabels[]`, `batchCount`);
+  `fixtures.ts` pakai top-level await; `serviceDetailBlockFixture` async;
+  **`src/config/jadwal.ts` dihapus**.
+- **Unit C (commit docs ini menyusul)**: `astro.config.mjs` — indeks 57 file gelombang +
+  resolver `scheduleRouteFiles()` (bulan ← `start.slice(0,7)`, kelas, irisan) untuk lastmod
+  63 route ← commit file penyumbang; cache git per kombinasi file.
+- **Gerbang lulus semua**: check+build lolos (70 halaman); **70 HTML byte-identik** vs
+  baseline pre-Tahap 4 (`/tmp/opencode/html-before-tahap4.md5`); diff vs referensi persis
+  pola lama (beranda 3892/3892, listing IDENTIK 610, 4 detail 1802/32 1316/26 1351/30
+  1399/32, jadwal 2777/2777); sitemap valid XML, 69 URL, 63 route; lastmod terverifikasi
+  terhadap git (contoh `/jadwal/kelas-d/` = commit 23 file penyumbang ✓).
+- **Temuan**: 62 route turunan kini berbagi lastmod `2026-11-12T20:06:58Z` karena seluruh
+  57 file lahir di commit migrasi yang sama (`eeecc5a`) — jujur; otomatis unik saat tiap
+  file diubah terpisah. Field `role` (rencana Tahap 4) ternyata tidak ada pada data
+  gelombang — tidak diterapkan. Uji toggle CDP tidak dijalankan (script klien tak disentuh,
+  output byte-identik) — masuk sisa gerbang Tahap 0.
+
 ## 13 Nov 2026 — Sitemap lastmod per-URL (Tahap 1 poin 3+4) — gerbang lulus
 
 - Ganti `serialize` di `astro.config.mjs` (commit HEAD seragam → peta **URL → lastmod**

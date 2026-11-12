@@ -1,5 +1,23 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — Geser tanggal editorial halaman jadwal ke waktu lampau
+
+- **Keputusan user**: `pubDate`/`updatedDate` halaman jadwal digeser ke waktu lampau
+  (sebelumnya `2026-11-13T08:00–08:16Z` = masih ~17 jam masa depan saat build).
+- Nilai baru = **waktu commit nyata saat tanggal editorial di-set** (paling jujur):
+  - `jadwal.md`: `pubDate: 2026-11-12T19:35:48Z` (commit `40f3472`),
+    `updatedDate: 2026-11-12T19:36:39Z` (commit `3a4489a`);
+  - `jadwal-detail.md`: `pubDate: 2026-11-12T19:35:51Z` (commit `15c9e41`),
+    `updatedDate: 2026-11-12T19:36:42Z` (commit `2a1c884`).
+- Dampak: **63 HTML jadwal** (indeks + 62 route turunan) berubah — diverifikasi
+  **murni substitusi 4 string tanggal** (normalisasi → byte-identik dengan versi lama),
+  hanya di JSON-LD `datePublished`/`dateModified`; 7 HTML lain nol perubahan; sisa
+  tanggal lama nol kemunculan.
+- **Gerbang**: lastmod `/jadwal/` kini `2026-11-12T19:36:39Z` (lampau); **0 lastmod
+  masa depan** di seluruh 69 URL; 63 route turunan tak berubah (46 unik); diff vs
+  referensi **persis pola lama** (3892/126, 610 IDENTIK, 1802/32, 1316/26, 1351/30,
+  1399/32, 2777/122 — panjang string tanggal sama, 20 karakter); XML valid.
+
 ## 13 Nov 2026 — Lastmod 63 route ← tanggal editorial per-file gelombang
 
 - **Permintaan**: 62 route turunan jadwal harus punya `lastmod` unik (sebelumnya

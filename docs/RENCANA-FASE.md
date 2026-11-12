@@ -153,8 +153,9 @@ Tiap langkah: build + verifikasi + commit.
   indeks `/jadwal/` tetap `updatedDate` `jadwal.md`. Hasil: **46 nilai unik dari
   62 route turunan** — 46 route kelas+bulan semuanya unik; 16 route induk (4 kelas +
   12 bulan) menumpuk pada nilai anaknya (max superset = max subset — akurat secara
-  semantik). Catatan: `updatedDate` indeks `/jadwal/` (`2026-11-13T08:15:00Z`) masih
-  masa depan hingga 13 Nov 08:15Z — build setelah waktu itu otomatis menjadi masa lalu.
+  semantik). Tanggal editorial `jadwal.md`/`jadwal-detail.md` digeser ke waktu lampau
+  (waktu commit nyata saat tanggal di-set, keputusan user) → **0 lastmod/JSON-LD
+  masa depan**; 63 HTML jadwal berubah murni pada 4 string tanggal JSON-LD.
 - **Gerbang terpenuhi**: diff indeks `/jadwal/` vs referensi 2777/2777 (pola lama);
   **70 HTML byte-identik** vs baseline pre-Tahap 4; sitemap valid XML, 69 URL.
   (Uji toggle "jadwal lewat" CDP — script klien tidak disentuh, output byte-identik;

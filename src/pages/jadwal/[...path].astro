@@ -100,7 +100,8 @@ const ctaMsg =
   'Halo tim Betracom, saya ingin mendaftar Pelatihan Damkar. Mohon info jadwal, biaya, dan persyaratannya.';
 
 // ---- Hero -----------------------------------------------------------------
-const heading = kelas ? `Jadwal ${kelasLabel}` : 'Jadwal Pelatihan Damkar';
+// H1 kelas dapat keterangan jenjang role, mis. "Jadwal Kelas D — Petugas Pemadam".
+const heading = kelas ? `Jadwal ${kelasLabel} — ${cls!.role}` : 'Jadwal Pelatihan Damkar';
 const highlight = bulan ? `${monthText}.` : `${site.year}.`;
 const lead = kelas
   ? bulan

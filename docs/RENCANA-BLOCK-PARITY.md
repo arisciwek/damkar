@@ -98,3 +98,29 @@ Untuk setiap kelompok block:
 Selesainya Tahap 0 hanya berarti katalog dan implementasi block siap dipakai. Itu **bukan**
 persetujuan untuk memigrasikan halaman. Migrasi beranda, layanan, jadwal, artikel, dan kontak
 tetap mengikuti tahap masing-masing di `docs/RENCANA-FASE.md`, setelah parity block terbukti.
+
+
+## Status implementasi (13 Nov 2026)
+
+### Sudah dibuat di `main`
+
+- Kontrak TypeScript block di `src/blocks/types.ts`.
+- Registry komponen di `src/blocks/registry.ts`.
+- `BlockRenderer.astro` untuk block konten dan `PageBlockRenderer.astro` untuk wrapper
+  layout `.container.layout`, sidebar, dan `.container` tanpa sidebar.
+- Adapter hero yang menyusun kembali komponen Hero, Breadcrumb, Nearest, HeroSlider,
+  facts, actions, dan media sesuai varian halaman.
+- Block reasons, benefits, FAQ, gallery, program-grid, class-tabs, nearest-schedule,
+  schedule-list, contact-band, class-detail, dan other-programs.
+- Komponen existing yang perlu diisi frontmatter menerima props data dengan default
+  tetap memakai data produksi saat ini; pemakaian halaman `.astro` lama tidak diganti.
+- Fixture nyata untuk beranda, listing layanan, indeks jadwal, dan factory fixture detail
+  layanan berdasarkan entry collection `kelas`: `src/blocks/fixtures.ts`.
+
+### Belum dianggap lolos
+
+- `npm run check` dan `npm run build` belum dijalankan pada runtime project.
+- DOM diff, screenshot, serta uji browser untuk slider, tabs/keyboard, show-more,
+  scrollspy, dan toggle jadwal lewat masih harus dijalankan.
+- Karena itu, katalog ini berstatus **implementasi awal — verifikasi parity pending**.
+  Jangan mulai migrasi halaman sebelum gerbang verifikasi pada dokumen ini lolos.

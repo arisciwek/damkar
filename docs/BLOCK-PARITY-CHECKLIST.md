@@ -124,5 +124,10 @@ sebagai divergensi terdokumentasi + selisih tanggal; rincian di
 `docs/VERIFIKASI-DOM-ROUTE.md`. Ini belum menutup kolom DOM per block (fixture vs section
 asal) maupun kolom Browser.
 
-Jangan mengubah status Tahap 0 menjadi selesai dan jangan mulai migrasi halaman
-berdasarkan checklist source-level ini saja.
+**Pilot migrasi beranda sudah dimulai** setelah source/props beranda diperiksa.
+Konfigurasi sekarang berada di `src/content/pages/home.md` dan route `/` memakai
+`PageBlockRenderer`. Ini belum membuktikan DOM parity. Check/build, diff DOM hasil
+render baru vs baseline, uji browser, dan screenshot masih wajib.
+
+Jangan migrasikan route layanan, jadwal, atau artikel sebelum verifikasi pilot beranda
+lolos. Tahap 0 juga belum boleh dinyatakan selesai.

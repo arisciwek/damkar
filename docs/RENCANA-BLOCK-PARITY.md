@@ -46,7 +46,7 @@ ada. Jangan membuat desain baru atau mengubah visual hanya agar cocok dengan abs
 | Area | Section/fitur saat ini | Kandidat block | Catatan parity |
 | --- | --- | --- | --- |
 | Beranda | Hero + slider + CTA + facts + jadwal terdekat | `hero` | Slot media/near/facts/actions harus tetap identik; slider adalah bagian media, bukan hero terpisah di konten. |
-| Beranda | Sidebar navigasi section | `section-sidebar` | Interaksi scrollspy, anchor, ikon, CTA, dan class tetap. Bukan block konten utama. |
+| Beranda/Layanan | Sidebar navigasi section | `content-layout` wrapper + komponen `Sidebar` | Interaksi scrollspy, anchor, ikon, CTA, dan class tetap. Sidebar adalah bagian layout, bukan content block yang berdiri sendiri. |
 | Beranda | Mengapa pelatihan penting | `reasons` | `block-intro`, `reason-list`, foto dan urutan nyata tetap. |
 | Beranda/Layanan | Kartu 4 jenjang | `program-grid` | Sumber collection `kelas`, urutan D-C-B-A dan link detail tetap. |
 | Beranda | Tab detail + materi | `class-tabs` | Tab ARIA, keyboard, panel, dan show-more tetap. |
@@ -61,6 +61,15 @@ ada. Jangan membuat desain baru atau mengubah visual hanya agar cocok dengan abs
 | Layanan | FAQ dan jenjang terkait | `faq`, `program-grid` | Gunakan block generik dengan props, bukan implementasi duplikat. |
 | Jadwal | Hero jadwal + breadcrumb + facts + CTA | `schedule-hero` | Reuse Hero dengan konfigurasi berbeda; markup harus sama dengan route saat ini. |
 | Jadwal | Scheduler | `schedule-list` | Halaman agregat, bulan, kelas, dan section kelas menggunakan props yang sesuai. |
+
+## Struktur layout dan renderer
+
+- `BlockRenderer.astro` hanya merender block konten.
+- `PageBlockRenderer.astro` menangani wrapper halaman: `content-layout` menghasilkan
+  `.container.layout` + `Sidebar` + `.content`; `content-container` menghasilkan
+  `.container` tanpa sidebar.
+- Header, footer, `main#konten`, meta/JSON-LD, dan navigasi global tetap menjadi tanggung
+  jawab layout halaman. Jangan memasukkannya ke array content blocks.
 
 ## Urutan commit
 

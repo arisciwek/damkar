@@ -76,7 +76,7 @@ const groups = [...new Set(list.map((batch) => batch.month))]
   .sort()
   .map((key) => ({
     key,
-    title: `Jadwal ${kelas ? `${byKey.get(kelas)?.data.name} ` : ''}${monthLabel(key)}`,
+    title: `Jadwal ${kelas ? `${byKey.get(kelas)?.data.name} ${byKey.get(kelas)?.data.role} ` : ''}${monthLabel(key)}`,
     batches: list.filter((batch) => batch.month === key),
   }));
 

@@ -2,6 +2,25 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — Fase 3 selesai (commit `dd62aa3`)
+
+- **63 URL jadwal live**: `/jadwal/` + 12 halaman bulan + 4 kelas + 46 kelas×bulan;
+  70 halaman total dibangun. Kombinasi kosong (C/2026-01, B/2026-01) & URL ngawur
+  (`kelas-x`, `2026-13`) diuji → **404**; URL valid → 200.
+- Komponen `Scheduler.astro` (port `schedule_block`/`batch_html`/`initSchedule`),
+  section `#jadwal` + sidebar "Jadwal & Persyaratan" di 4 halaman kelas (6 anchor).
+- **Bug ketika verifikasi**: judul grup & pesan WA berisi "undefined" — `byKey` memetakan
+  ke *entry*, bukan `entry.data` (salah akses `.name` vs `.data.name`). Diperbaiki.
+  Chip juga sempat urut A,B,C,D (id alfabetis) → di-sort `data.order` jadi D,C,B,A.
+- **HTML referensi basi**: `referensi/*/index.html` dibangun 10:15, `data/site.json`
+  diupdate 10:39 (D-G21 16–18 → 17–19 Nov) — data kita yang benar. `build.py`
+  diregenerasi sebelum diff supaya perbandingan adil.
+- **Diff kanonis** (skrip di `/tmp/opencode/diff-jadwal.py`, normalkan button→a,
+  disabled→is-off, whitespace, slug): ke-4 halaman kelas **IDENTIK**;
+  `/jadwal/` identik dengan blok jadwal home referensi kecuali judul section
+  (sengaja beda, hindari duplikasi h1). JSON-LD 69 blok valid; toggle JS teruji
+  di headless Chrome (8 aktif, 49 kartu tersembunyi, 10 grup bulan tersembunyi).
+
 ## 12 Nov 2026 — Revisi #13b: +12 halaman bulan (total 63 URL)
 
 - Saat mulai Fase 3 ditemukan celah: strip bulan di `/jadwal/` (semua kelas) tidak

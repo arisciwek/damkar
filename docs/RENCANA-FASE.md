@@ -27,7 +27,7 @@ di `/www/wwwroot/damkar`.
 | 1 | Fondasi: style referensi, layout, header/footer, config, collection kelas | ✅ Selesai | `ec5c12f` |
 | 1-fix | `site.url` ikut env `SITE_URL` | ✅ Selesai | `ae2cd64` |
 | 2 | Halaman `/layanan/` (listing + detail 4 kelas) + redirect 301 | ✅ Selesai | `495304b` (belum push) |
-| 3 | Jadwal: komponen Scheduler + halaman `/jadwal/` + section `#jadwal` di halaman kelas | ⬜ **Berikutnya** | — |
+| 3 | Jadwal: komponen Scheduler + halaman `/jadwal/` + section `#jadwal` di halaman kelas | ✅ Selesai | `dd62aa3` |
 | 4 | Beranda lengkap (port `page_home()` dari `build.py`) | ⬜ Belum | — |
 | 5 | Artikel (collection + halaman) + `/kontak/` | ⬜ Belum | — |
 | 6 | SEO: sitemap, robots, JSON-LD final, 404 final, AGENTS.md | ⬜ Belum | — |
@@ -83,9 +83,7 @@ dengan URL build. Diuji: `SITE_URL=http://pelatihan-damkar.lan npm run build` �
 referensi identik (title/desc/h1/facts/zigzag/materi/sidebar); tanpa anchor rusak;
 `.htaccess` IfModule seimbang, ikut ter-copy ke `dist/`.
 
-### Fase 3 — Jadwal ⬜ BERIKUTNYA
-
-Data sudah siap (`src/config/jadwal.ts`). Yang dikerjakan:
+### Fase 3 — Jadwal ✅ (commit `dd62aa3`)
 
 1. **Struktur route** (keputusan #13 — clean URL; **satu file catch-all** agar tidak
    ada dua dynamic route ambigu di `/jadwal/`):
@@ -99,24 +97,39 @@ Data sudah siap (`src/config/jadwal.ts`). Yang dikerjakan:
    - Data di-generate saat build, jadi tak ada fetch client-side.
 2. **Komponen `Scheduler`** — port perilaku dari `referensi/assets/js/main.js` (baris 147–326):
    - **Chip kelas & strip bulan = tautan** ke URL bersih (bukan filter in-page);
-     jumlah per bulan/kelas di-render saat build.
+     jumlah per bulan/kelas di-render saat build (agregat → aktif saja,
+     halaman bulan → semua). Chip urut jenjang D, C, B, A.
    - Toggle "Tampilkan jadwal yang sudah lewat" tetap JS (state lokal, tak mengubah URL),
      summary live (`aria-live`), empty state.
    - Kartu gelombang: badge status, tanggal, kelas, tombol **WA daftar** + **GCal**
      (`gcalLink` baris 156), status `open/soon/ongoing/done` (dihitung saat build).
    - Deep link `?kelas=&bulan=` **tidak dipakai** (sudah jadi URL bersih).
-3. **Section `#jadwal` di tiap halaman kelas** (`/layanan/[slug]/`) + tambah link sidebar
-   **"Jadwal & Persyaratan"** → jadi **6 anchor** seperti referensi
-   (urutan referensi `build.py` baris 590: manfaat, detail, fasilitas, **jadwal**, faq, jenjang).
-   Sekarang baru 5 (manfaat, detail, fasilitas, faq, jenjang).
+3. **Section `#jadwal` di tiap halaman kelas** (`/layanan/[slug]/`) + link sidebar
+   **"Jadwal & Persyaratan"** → **6 anchor** seperti referensi
+   (urutan `build.py` baris 590: manfaat, detail, fasilitas, **jadwal**, faq, jenjang).
    Judul: `Jadwal {nama kelas} 2026` + sub `{n} gelombang ... {m} di antaranya masih
    aktif atau akan datang` (dari `build.py` `page_class()` baris 611–614).
+   `chips={false}` — persis referensi (chips hanya di halaman agregat).
 4. **JSON-LD** tiap halaman jadwal: `WebPage` + `BreadcrumbList`
    (Beranda → Jadwal → [Kelas] → [Bulan]); `ItemList` juga di `/jadwal/`
-   (4 halaman kelas) dan `/jadwal/kelas-x/` (halaman bulan kelas itu).
-   Sitemap: 63 URL jadwal.
-5. **Halaman `/jadwal/` juga jadi tujuan** nav header, footer, 404, dan tombol
-   "Lihat Jadwal" di beranda (sekarang masih 404).
+   (4 halaman kelas) dan `/jadwal/kelas-x/` (12 halaman bulan kelas itu).
+   Sitemap: 63 URL jadwal (Fase 6).
+5. **Halaman `/jadwal/` jadi tujuan** nav header, footer, 404, dan tombol
+   "Lihat Jadwal" (sudah ada di `/layanan/`; beranda menyusul Fase 4).
+
+**Verifikasi**: `check` + `build` lolos (70 halaman); diff kanonis vs referensi
+(`build.py` diregenerasi dulu — HTML referensi sempat basi dari update `site.json`):
+**IDENTIK untuk ke-4 halaman kelas**; blok jadwal `/jadwal/` sama dengan blok jadwal
+home referensi **kecuali judul section** ("Semua Gelombang Public Training" — sengaja
+beda karena h1 sudah "Jadwal Pelatihan Damkar 2026."). Uji HTTP: URL valid 200,
+kombinasi kosong & URL ngawur 404. JSON-LD 69 blok valid. Headless Chrome:
+toggle jalan (8 aktif / 49 kartu tersembunyi, 10 grup bulan tersembunyi, summary diupdate).
+
+**Divergensi kecil yang disengaja** (keputusan #13):
+- Chip/mon = `<a>` (bukan `<button disabled>`); sel tanpa data → `<span aria-disabled>`,
+  sel berisi jadwal lewat tetap bisa diklik (tampil abu-abu `is-off`).
+- Strip bulan & chip tidak punya filter in-page — navigasi sepenuhnya lewat URL;
+  `data-count`/`aria-pressed` referensi diganti `aria-current` + hitungan statis.
 
 ### Fase 4 — Beranda ⬜
 

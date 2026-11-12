@@ -120,7 +120,6 @@ export type BlockConfig =
       chips?: boolean;
     }
   | { type: 'contact-band'; id?: string; heading?: string; kicker?: string }
-  | { type: 'section-sidebar'; ctaMsg: string; links: SidebarLink[] }
   | ClassDetailBlockConfig
   | { type: 'other-programs'; title?: string; lede?: string; items: readonly OtherProgramItem[] };
 

@@ -5,8 +5,8 @@
  * dimigrasikan ke Markdown, data dipindahkan ke frontmatter secara eksplisit.
  */
 import { benefits, blockCopy, faq, reasons } from '../config/blocks';
-import { countBatches } from '../config/jadwal';
-import { photos, site, waDaftar } from '../config/site';
+import { active, countBatches } from '../config/jadwal';
+import { organization, photos, site, waDaftar } from '../config/site';
 import type { PageBlockConfig } from './types';
 
 const homeHeroMessage = 'Halo saya ingin konsultasi Pelatihan Damkar.';
@@ -244,7 +244,7 @@ export function serviceDetailBlockFixture(
   ] as const;
   const ctaMsg = `Halo tim Betracom, saya ingin mendaftar Pelatihan ${data.name}. Mohon info jadwal, biaya, dan persyaratannya.`;
   const gelombangCount = countBatches(key);
-  const gelombangAktif = countBatches(key);
+  const gelombangAktif = active(key).length;
   const others = entries.filter((other) => other.data.key !== key);
 
   return [
@@ -253,7 +253,7 @@ export function serviceDetailBlockFixture(
       eyebrow: `Jenjang ${data.step} dari 4 · Sertifikasi Kemnaker RI`,
       heading: `Pelatihan ${data.name}`,
       highlight: data.role,
-      lead: `${data.desc} Program ${data.mode} dengan sertifikasi Kemnaker RI bersama PT Betracom Gemilang Nusa.`,
+      lead: `${data.desc} Program ${data.mode} dengan sertifikasi Kemnaker RI bersama ${organization.name}.`,
       breadcrumb: [
         { label: 'Beranda', href: '/' },
         { label: 'Program', href: '/layanan/' },

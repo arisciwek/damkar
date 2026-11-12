@@ -1,21 +1,38 @@
 ---
 /**
- * Section #pengalaman beranda — port gallery_block() build.py (baris 339–347):
- * 4 foto dengan caption.
+ * Section #pengalaman beranda — port gallery_block() build.py (baris 339–347): 4 foto
+ * dengan caption. Default memakai foto produksi; halaman md dapat memasok array foto
+ * sendiri tanpa mengubah struktur DOM atau class.
  */
 import { photos } from '../../config/site';
 import BlockHead from './BlockHead.astro';
+
+interface GalleryImage {
+  src: string;
+  w: number;
+  h: number;
+  alt: string;
+  cap: string;
+}
+
+interface Props {
+  title?: string;
+  lede?: string;
+  items?: GalleryImage[];
+}
+
+const {
+  title = 'Belajar Teori, Latihan di Lapangan',
+  lede = 'Peserta mempelajari teori lalu mempraktikkannya langsung dengan perlengkapan pemadam kebakaran.',
+  items = photos,
+} = Astro.props;
 ---
 
 <section class="block" id="pengalaman" aria-labelledby="pengalaman-title">
-  <BlockHead
-    id="pengalaman-title"
-    title="Belajar Teori, Latihan di Lapangan"
-    lede="Peserta mempelajari teori lalu mempraktikkannya langsung dengan perlengkapan pemadam kebakaran."
-  />
+  <BlockHead id="pengalaman-title" title={title} lede={lede} />
   <div class="gallery">
     {
-      photos.map((photo) => (
+      items.map((photo) => (
         <figure>
           <img
             class="bw"

@@ -105,7 +105,7 @@ const heading = kelas ? `Jadwal ${kelasLabel} — ${cls!.role}` : 'Jadwal Pelati
 const highlight = bulan ? `${monthText}.` : `${site.year}.`;
 const lead = kelas
   ? bulan
-    ? `${list.length} gelombang ${kelasLabel} pada ${monthText}. Pilih tanggal yang cocok, lalu daftar via WhatsApp.`
+    ? `${list.length} gelombang ${kelasLabel} (${cls!.role}) pada ${monthText}. Pilih tanggal yang cocok, lalu daftar via WhatsApp.`
     : `${cls!.desc} Program ${cls!.mode} dengan sertifikasi Kemnaker RI bersama PT Betracom Gemilang Nusa.`
   : bulan
     ? `Semua gelombang Pelatihan Damkar pada ${monthText} — dari Kelas D hingga Kelas A — dalam satu halaman.`
@@ -175,7 +175,7 @@ const blockTitle = kelas
   : `Gelombang ${monthText}`;
 const blockLede = kelas
   ? bulan
-    ? `${list.length} gelombang ${kelasLabel} pada ${monthText}.`
+    ? `${list.length} gelombang ${kelasLabel} (${cls!.role}) pada ${monthText}.`
     : `${list.length} gelombang Public Training sepanjang ${site.year}, ${nActive} di antaranya masih aktif atau akan datang.`
   : `${list.length} gelombang Public Training pada ${monthText} — semua jenjang dan kelas.`;
 ---

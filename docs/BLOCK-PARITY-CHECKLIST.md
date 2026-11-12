@@ -114,6 +114,17 @@ atau SEO. Jika normalisasi diperlukan, dokumentasikan alasan dan bentuknya.
 - `/jadwal/`
 - minimal satu route jadwal kelas dan satu route jadwal bulan.
 
+**Update 13 Nov 2026 — 63 route turunan jadwal memakai template Markdown blocks**
+
+- `src/content/pages/jadwal-detail.md` menyimpan struktur hero → content-container
+  (schedule-list) → contact-band.
+- `src/pages/jadwal/[...path].astro` mengisi props route-specific dan tetap memakai
+  sumber jadwal/kelas serta `getStaticPaths` yang sama.
+- Ini adalah migrasi konfigurasi/renderer, bukan bukti DOM parity. Kolom DOM dan Browser
+  tetap belum dicentang sampai build terbaru dibandingkan dengan baseline dan interaksi
+  diuji pada route kelas, bulan, serta kombinasi kelas/bulan.
+- Halaman jadwal tidak menggunakan tanggal editorial (`pubDate`/`updatedDate`).
+
 ## Status
 
 **Source-level review selesai; DOM, visual, dan interaksi belum diverifikasi.**

@@ -2,8 +2,8 @@
 type: page
 slug: damkar-kelas-a
 kelas: A
-title: Pelatihan Ahli K3 Pemadam Kebakaran Kemnaker RI | Jadwal 2026
-description: Pelatihan Ahli K3 Pemadam Kebakaran (Ahli K3 Pemadam Kebakaran) sertifikasi Kemnaker RI. Informasi metode, materi, persyaratan, dan jadwal pelatihan tahun 2026.
+title: Pelatihan Damkar Kelas A Kemnaker RI | Jadwal 2026
+description: "Pelatihan Damkar Kelas A (Ahli K3) sertifikasi Kemnaker RI. Informasi metode, materi, persyaratan, dan jadwal pelatihan tahun 2026."
 draft: false
 blocks:
   - type: hero

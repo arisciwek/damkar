@@ -46,6 +46,14 @@ export interface ClassDetailBlockConfig {
   photos: readonly [BlockImage, BlockImage, BlockImage];
 }
 
+export interface OtherProgramItem {
+  key: string;
+  step: number;
+  name: string;
+  role: string;
+  href: string;
+}
+
 export interface SidebarLink {
   id: string;
   label: string;
@@ -113,6 +121,7 @@ export type BlockConfig =
     }
   | { type: 'contact-band'; id?: string; heading?: string; kicker?: string }
   | { type: 'section-sidebar'; ctaMsg: string; links: SidebarLink[] }
-  | ClassDetailBlockConfig;
+  | ClassDetailBlockConfig
+  | { type: 'other-programs'; title?: string; lede?: string; items: readonly OtherProgramItem[] };
 
 export type BlockType = BlockConfig['type'];

@@ -2,6 +2,15 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — H1 jadwal kelas: tambah keterangan role (commit `8f02322`)
+
+- Permintaan user: H1 halaman jadwal kelas diberi keterangan "kelas ini apa".
+  Pilihan user (via tanya): pakai field **`role`** collection, di dalam H1 sebelum bulan/tahun.
+- `heading = kelas ? \`Jadwal ${kelasLabel} — ${cls.role}\` : 'Jadwal Pelatihan Damkar'`
+  → "Jadwal Kelas D — Petugas Pemadam November 2026."
+- Berlaku 4 kelas × (`/jadwal/kelas-x/` + bulan) = 46 halaman; halaman `/jadwal/` &
+  `/jadwal/bulan/` tanpa kelas tidak berubah. Meta title tidak diubah (tetap tanpa role).
+
 ## 12 Nov 2026 — Merge fix jadwal: "Jadwal undefined" (merge `d56c401`)
 
 - **Tag**: `checkpoint/fase-4` (annotated) di `b6c51a0` — penanda main sebelum merge branch remote.

@@ -1,7 +1,7 @@
 ---
 type: page
-pubDate: 2026-11-13T09:01:00Z
-updatedDate: 2026-11-13T09:16:00Z
+pubDate: 2026-11-13T08:01:00Z
+updatedDate: 2026-11-13T08:16:00Z
 slug: jadwal-detail
 title: Template Halaman Jadwal Pelatihan
 description: Konfigurasi block untuk halaman jadwal berdasarkan kelas dan bulan.

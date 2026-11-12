@@ -1,8 +1,8 @@
 ---
 type: page
 slug: /
-title: Pelatihan Damkar Kelas D, C, B & A
-description: Pelatihan Pemadam Kebakaran Kelas D, C, B & A untuk membangun kompetensi pencegahan, penanggulangan, dan evaluasi sistem proteksi kebakaran di tempat kerja.
+title: Pelatihan Damkar Kelas D, C, B, A Kemnaker RI | Jadwal 2026
+description: Pelatihan Damkar Kelas D, C, B & A bersertifikat Kemnaker RI. Teori dan praktik lapangan, jadwal 2026 setiap bulan. Bandingkan kelas dan daftar via WhatsApp.
 draft: false
 blocks:
   - type: hero

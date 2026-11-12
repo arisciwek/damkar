@@ -1,5 +1,33 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — Kebijakan tanggal: pelaksanaan untuk jadwal/Event, pubDate/updatedDate untuk sitemap
+
+- **Keputusan user**: tanggal **pelaksanaan** (`start`/`end`) untuk informasi jadwal &
+  JSON-LD `Event`; `pubDate`/`updatedDate` **hanya untuk `<lastmod>` sitemap** — data
+  gelombang tetap bisa diedit setelah pelaksanaan lewat (mis. galeri peserta).
+- **Pull 6 commit user** (`796baeb..3fc6ec9`):
+  - `astro.config.mjs`: lastmod indeks `/jadwal/` = max(`updatedDate` `jadwal.md`,
+    seluruh gelombang); 62 route turunan = max(`updatedDate` template `jadwal-detail.md`,
+    gelombang penyumbang) — resolver `scheduleIndexLastmod()` + `maxDate()`;
+  - `schema.ts`: fungsi baru `scheduleEventNode()` — `@type: Event`, `startDate`/
+    `endDate` = pelaksanaan, `@id` stabil `/jadwal/#event-KELAS-BATCH`;
+  - `jadwal/index.astro` + `[...path].astro`: `pubDate`/`updatedDate` **dihapus** dari
+    `webpageNode()` (WebPage halaman jadwal kini tanpa `datePublished`/`dateModified`);
+    Event ditambahkan per gelombang (indeks = 57, route = sesuai filter);
+  - `schedule.ts`: `Batch.pubDate`/`updatedDate` (komentar: dipakai untuk sitemap);
+  - `RENCANA-FASE.md`: kebijakan lastmod schedule ditulis ulang oleh user.
+- **Audit kepatuhan** (sudah sesuai, tanpa perubahan): JSON-LD halaman jadwal WebPage
+  TANPA `date*`; Event 57/23/2 di indeks/kelas/bulan memakai tanggal pelaksanaan;
+  CourseInstance layanan = pelaksanaan; `courseNode`/`scheduleItemList` bersih; hanya
+  `jadwal.md`+`jadwal-detail.md` punya `pubDate`/`updatedDate` (untuk sitemap).
+- **Perbaikan**: `BaseLayout.astro` — props mati `pubDate?`/`updatedDate?` dihapus
+  (didefinisikan, tidak pernah didestrukturisasi/diteruskan pemanggil mana pun).
+  `RENCANA-FASE.md`: paragraf kebijakan + Tahap 1 poin 2 diperbarui (masih menyatakan
+  sambungan `datePublished` WebPage jadwal yang sudah tidak berlaku).
+- **Gerbang**: check+build lolos; **70 HTML byte-identik** (props mati tak memengaruhi
+  output); sitemap valid XML, 69 URL; lastmod `/jadwal/` `2026-11-12T22:04:33Z`
+  (max editorial+gelombang); 46 unik/62; **0 lastmod masa depan**.
+
 ## 13 Nov 2026 — Geser tanggal editorial halaman jadwal ke waktu lampau
 
 - **Keputusan user**: `pubDate`/`updatedDate` halaman jadwal digeser ke waktu lampau

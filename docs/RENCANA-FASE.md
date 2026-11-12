@@ -83,25 +83,29 @@ di `/www/wwwroot/damkar`.
   jangan mengisi semua dokumen dengan `T00:00:00Z`.
 - `updatedDate` hanya diisi ketika konten benar-benar mengalami pembaruan editorial
   setelah publikasi. Jika belum pernah diperbarui, field dihilangkan.
-- Route `/jadwal/` kini mengikuti keputusan editorial terbaru: halaman indeks memakai tanggal
-  pada `src/content/pages/jadwal.md`, sedangkan seluruh route kelas/bulan/kombinasi memakai
-  tanggal pada template `src/content/pages/jadwal-detail.md`. Keduanya meneruskan
-  `pubDate`/`updatedDate` ke `datePublished`/`dateModified` WebPage JSON-LD. Karena route
-  dinamis memakai satu template, semua URL turunan template memiliki tanggal editorial yang sama;
-  jangan menganggapnya sebagai waktu perubahan data gelombang per URL.
-- Sitemap `lastmod` adalah metadata teknis yang terpisah. Untuk 63 route jadwal,
-  nilainya = **`max(updatedDate ?? pubDate)` file gelombang penyumbang route**
-  (`src/content/schedule/`, Tahap 4) — tanggal editorial per-file di frontmatter
-  (bukan commit git, bukan tanggal template `jadwal-detail.md`). Route induk
-  (kelas/bulan) menumpuk pada nilai anaknya karena max superset = max subset.
+- Route `/jadwal/` — **kebijakan 13 Nov 2026 (revisi)**: informasi jadwal dan JSON-LD
+  `Event` memakai **tanggal pelaksanaan** (`start`/`end` collection `schedule`);
+  `pubDate`/`updatedDate` **hanya untuk `<lastmod>` sitemap** dan tidak lagi diteruskan
+  ke `datePublished`/`dateModified` WebPage JSON-LD halaman jadwal. Alasan: data gelombang
+  tetap bisa diedit setelah tanggal pelaksanaan lewat (mis. galeri peserta), jadi
+  tanggal editorial mencerminkan kapan data berubah — bukan kapan pelaksanaan.
+- Sitemap `lastmod` adalah metadata teknis yang terpisah. Untuk route jadwal:
+  - `/jadwal/` (indeks) = **max(`updatedDate` halaman `jadwal.md`, `updatedDate` ??
+    `pubDate` seluruh gelombang)**;
+  - 62 route turunan = **max(`updatedDate` template `jadwal-detail.md`, `updatedDate` ??
+    `pubDate` file gelombang penyumbang route)**;
+  - tanggal editorial schedule tetap berlaku meskipun tanggal pelaksanaan sudah lewat.
+  Route induk (kelas/bulan) menumpuk pada nilai anaknya karena max superset = max subset.
 
 ### Tahap 1 — Tanggal editorial + lastmod per-URL 🟡 (lastmod per-URL ✅; sambungan editorial lain menunggu)
 
 1. `pubDate`/`updatedDate` pada collection `kelas` hanya untuk 4 halaman detail layanan
    jika keputusan editorialnya memang dipertahankan; nilai UTC tanpa milisecond dan
    unik sampai detik, dikonfirmasi sebelum rilis. ⬜
-2. Tanggal editorial halaman jadwal sudah dihubungkan ke `webpageNode()` →
-   `datePublished`/`dateModified` JSON-LD. Sambungan untuk halaman editorial lain masih menunggu. 🟡
+2. Tanggal editorial halaman jadwal **tidak lagi** diteruskan ke
+   `datePublished`/`dateModified` WebPage JSON-LD (kebijakan revisi: `pubDate`/
+   `updatedDate` = sitemap saja; informasi jadwal & Event = tanggal pelaksanaan).
+   Sambungan `webpageNode()` untuk halaman editorial lain masih menunggu. 🟡
 3. ✅ Ganti `serialize` di `astro.config.mjs`: peta **URL → lastmod** dibangun saat build,
    bukan commit HEAD seragam (dikerjakan 13 Nov 2026, `SOURCES` + `resolveLastmod` di config):
    - halaman editorial ← tanggal modifikasi editorial yang valid;

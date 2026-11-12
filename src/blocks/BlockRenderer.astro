@@ -63,8 +63,6 @@ function propsFor(block: BlockConfig): Record<string, unknown> {
       };
     case 'contact-band':
       return { id: block.id, heading: block.heading, kicker: block.kicker };
-    case 'section-sidebar':
-      return { ctaMsg: block.ctaMsg, links: block.links };
   }
 }
 ---

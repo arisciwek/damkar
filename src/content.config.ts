@@ -104,6 +104,8 @@ const pages = defineCollection({
     kelas: z.enum(['D', 'C', 'B', 'A']).optional(),
     title: z.string().min(1),
     description: z.string().optional(),
+    pubDate: z.coerce.date().optional(),
+    updatedDate: z.coerce.date().optional(),
     draft: z.boolean().default(false),
     blocks: z.array(pageBlock).min(1),
   }),

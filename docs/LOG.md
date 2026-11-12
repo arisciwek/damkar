@@ -2,6 +2,15 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Migrasi beranda ke Markdown + BlockRenderer
+
+- Commit `f6f3feb`: `/` mulai merender `PageBlockRenderer` dari `src/content/pages/home.md`; header, footer, floating WhatsApp, BaseLayout, JSON-LD, dan preload hero tetap dipertahankan.
+- Commit `945af6a` + `3f35541`: title dan meta description dipertahankan persis seperti metadata SEO sebelumnya, tetapi sekarang dibaca dari frontmatter.
+- Commit `cab96b1`: rapikan import setelah pergantian renderer.
+- Urutan block frontmatter: hero → content-layout/sidebar (reasons, program-grid, class-tabs, benefits, gallery, schedule-list, FAQ) → contact-band.
+- Data kelas, jadwal, navigasi global, dan informasi organisasi tetap bersumber dari collection/config yang sudah ada; tidak disalin ke frontmatter.
+- **Belum diverifikasi di runtime**: `npm run check`, `npm run build`, DOM diff `/`, dan browser interaction harus dijalankan setelah pull. Jangan anggap migrasi lolos parity sebelum hasil tersebut diperiksa.
+
 ## 13 Nov 2026 — Siapkan konten beranda dalam frontmatter Markdown
 
 - Commit `2caa1a0`: tambah collection `pages` beserta schema block yang membatasi tipe dan properti yang diterima.

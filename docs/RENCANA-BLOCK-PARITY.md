@@ -149,6 +149,20 @@ tetap mengikuti tahap masing-masing di `docs/RENCANA-FASE.md`, setelah parity bl
   **tidak ada selisih tak terduga**; 7 route **byte-identik** dengan baseline pre-pull
   `3eb515a`. Rincian: `docs/VERIFIKASI-DOM-ROUTE.md`.
 
+### Migrasi halaman ke Markdown blocks (13 Nov 2026)
+
+- Beranda `/` dan listing `/layanan/` sudah memakai dokumen Markdown + `PageBlockRenderer`.
+- Empat halaman detail `/layanan/damkar-kelas-{d,c,b,a}/` kini juga memakai pola yang sama.
+  Frontmatter mengatur susunan section, metadata, hero, CTA, dan sidebar; data kelas tetap
+  berasal dari collection `kelas` dan dijadikan props untuk block `class-detail` serta
+  `other-programs` saat build.
+- Route detail mempertahankan JSON-LD Course/CourseInstance, FAQPage, BreadcrumbList,
+  metadata gambar, preload hero, header/footer, dan wrapper layout lama.
+- **Gerbang runtime untuk migrasi detail masih pending**: jalankan `npm run check` dan
+  `npm run build`, lalu periksa keempat URL dan diff DOM/visual/interaksi. Source review
+  bukan bukti parity runtime. Setelah migrasi, checklist di bawah ini berlaku untuk block
+  dan route yang sudah aktif, bukan prasyarat untuk mengembalikan route ke bentuk lama.
+
 ### Hasil inspeksi source-level (13 Nov 2026)
 
 - Membandingkan adapter dengan komponen asal untuk hero, reasons, program-grid,
@@ -168,4 +182,4 @@ tetap mengikuti tahap masing-masing di `docs/RENCANA-FASE.md`, setelah parity bl
 - Karena itu, katalog ini berstatus **implementasi awal — verifikasi parity sebagian
   (check/build + diff seluruh route produksi lolos; parity block via fixture, visual &
   interaksi pending)**.
-  Jangan mulai migrasi halaman sebelum gerbang verifikasi pada dokumen ini lolos.
+  Migrasi halaman yang sudah berjalan harus tetap melewati gerbang verifikasi runtime sebelum dinyatakan selesai; jangan memperluas migrasi ke area lain sebelum hasilnya lolos.

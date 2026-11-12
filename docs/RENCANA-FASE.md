@@ -40,16 +40,33 @@ di `/www/wwwroot/damkar`.
 
 \* Fase 0 (scaffold) dikerjakan bersamaan dengan Fase 1 dalam satu commit.
 
-**Eksekusi selanjutnya** mengikuti **Rencana tahapan lanjutan** di bawah: Tahap 1–4 =
-perubahan arsitektur baru (di luar tabel), Fase 5 = Tahap 5, Fase 6 = Tahap 6, Fase 7 = Tahap 7.
+**Eksekusi selanjutnya**: Tahap 0–4 = persiapan block dan perubahan arsitektur baru
+(di luar tabel), Fase 5 = Tahap 5, Fase 6 = Tahap 6, Fase 7 = Tahap 7.
 
 ---
 
-## Rencana tahapan lanjutan (diputuskan 13 Nov 2026)
+## Rencana tahapan lanjutan (diputuskan 13 Nov 2026; revisi Design Parity Blocks)
 
-> Alasan & keputusan lengkap: **#14** + `docs/LOG.md` (entri 13 Nov 2026). Tiap tahap punya
-> **gerbang verifikasi** — jangan lanjut ke tahap berikut sebelum gerbang lolos. Jika sesi
-> berhenti, lanjutkan dari tahap bertanda ⬜.
+> Alasan & keputusan lengkap: **#14** + `docs/LOG.md` (entri 13 Nov 2026). Sebelum migrasi
+> halaman, kerjakan **Tahap 0 — Design Parity Blocks** sesuai `docs/RENCANA-BLOCK-PARITY.md`.
+> Tiap tahap punya **gerbang verifikasi** — jangan lanjut sebelum gerbang lolos. Jika sesi
+> berhenti, lanjutkan dari tahap bertanda ⬜. Eksekusi Tahap 0 dilakukan langsung di `main`
+> dengan commit kecil dan berurutan.
+
+### Tahap 0 — Design Parity Blocks ⬜ (tambahan sebelum migrasi)
+
+- Inventarisasi section nyata dari beranda, layanan, dan jadwal.
+- Bentuk kontrak block, registry, dan `BlockRenderer.astro` dari komponen yang sudah ada.
+- Bangun adapter block per kelompok: hero/CTA, reasons/benefits/FAQ/gallery,
+  program-grid/class-tabs, sidebar/nearest-schedule, schedule-list, dan detail layanan.
+- Gunakan **data nyata** dari collection/config/foto/jadwal yang sekarang dipakai halaman.
+  Data dummy bukan baseline visual.
+- Jangan migrasikan atau mengganti halaman produksi pada tahap ini.
+- Parity wajib meliputi tag, urutan DOM, class, ID, ARIA, data-attribute, tautan, teks,
+  selector CSS/JS, serta perilaku keyboard dan interaksi.
+- **Gerbang**: check + build lolos; route lama tidak berubah; setiap block punya tipe,
+  registry entry, implementasi, fixture nyata, dan catatan parity. Rincian urutan commit
+  dan peta section → block ada di `docs/RENCANA-BLOCK-PARITY.md`.
 
 ### Tahap 1 — Tanggal + lastmod per-URL ⬜ (tidak mengubah HTML)
 

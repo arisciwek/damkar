@@ -2,6 +2,18 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Penanda: pull kedua terverifikasi (`git pull` di `a519f22`)
+
+- `git pull origin main` → 5 commit, **3 file murni `docs/`** (baru
+  `BLOCK-PARITY-CHECKLIST.md`, revisi `RENCANA-BLOCK-PARITY.md` + `LOG.md`) — tidak ada
+  perubahan kode di `src/`.
+- `npm run check` + `npm run build` **lolos** (70 halaman, sitemap + lastmod normal).
+- Diff ulang tidak diperlukan: output identik dengan build `4713cad` karena tak ada kode
+  yang berubah.
+- **Status parity tidak berubah**: source review ✅ (`BLOCK-PARITY-CHECKLIST.md`),
+  DOM/visual/interaksi ⬜.
+- Commit ini = penanda bahwa pull terakhir sudah ditarik, dicek, dan dibangun bersih.
+
 ## 13 Nov 2026 — Rapikan peta parity sesuai registry aktual
 
 - Commit `88e24cd`: koreksi peta section → block. Varian hero layanan dan jadwal

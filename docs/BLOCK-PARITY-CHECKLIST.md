@@ -48,6 +48,19 @@
    `DetailTabs`, `Nearest`, dan `ContactBand` direuse dari komponen yang juga
    dipakai route produksi lama.
 
+### Rincian source parity — hero beranda (13 Nov 2026)
+
+- `src/pages/index.astro` → `Hero` menerima eyebrow, heading, highlight, dan lead yang
+  sama persis dengan `homeBlockFixture`.
+- Slot `near` → `Nearest` dengan `limit={3}`; adapter `HeroBlock` meneruskan `nearest.limit`
+  dan tidak mengisi `kelas`, sehingga perilaku prop sama.
+- Slot `facts` → tiga item (4 jenjang, jumlah gelombang dinamis, Kemnaker) dengan urutan
+  dan label sama.
+- Slot `actions` → dua tautan dengan label, href, class, target, dan rel yang sama.
+- Slot `media` → `HeroSlider` pada kedua jalur.
+- `HeroBlock` menggunakan komponen `Hero` yang sama. Source/props beranda **cocok**;
+  ini belum dianggap DOM parity karena hasil render belum dibandingkan.
+
 ## Pemeriksaan yang masih wajib
 
 ### DOM

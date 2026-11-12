@@ -2,6 +2,23 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Migrasi listing /layanan ke Markdown blocks
+
+- Commit `c0370e7`: tambah `src/content/pages/layanan.md` dengan seluruh konten listing
+  berada di frontmatter `blocks[]`: hero, wrapper `content-layout` + sidebar
+  (program-grid, benefits, FAQ), dan contact-band.
+- Commit `c5aab1d`: `src/pages/layanan/index.astro` mengambil entry `pages/layanan`
+  dan merender `PageBlockRenderer`; header/footer, BaseLayout, preload hero, canonical,
+  metadata, BreadcrumbList, ItemList program, dan FAQPage JSON-LD tetap dipertahankan.
+- Commit `59058ac`: fallback fakta gelombang frontmatter tetap `57`; nilai render tetap
+  dinamis dari `countBatches()` melalui `dynamic: batch-count`.
+- Sumber data program tetap collection `kelas`; FAQ, benefits, hero, CTA, dan sidebar
+  listing sekarang dikendalikan frontmatter. Tidak ada perubahan pada halaman beranda
+  atau route detail `/layanan/<slug>/`.
+- **Verifikasi runtime belum dilakukan dari sesi GitHub**: perlu `npm run check`,
+  `npm run build`, dan diff DOM `/layanan/` terhadap output sebelum migrasi. Jangan
+  menganggap migrasi ini lolos build sampai gerbang tersebut dijalankan.
+
 ## 13 Nov 2026 — Pull pilot migrasi beranda: build gagal → fix id collection (`slug`)
 
 - Pull **14 commit** (`1a856f5..879d9c5`): schema halaman blocks (`2caa1a0`), **beranda

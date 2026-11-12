@@ -18,15 +18,14 @@ function propsFor(block: BlockConfig): Record<string, unknown> {
         items: block.items,
       };
     case 'benefits':
-      return { title: block.title, lede: block.lede, items: block.items };
     case 'faq':
+    case 'gallery':
       return { title: block.title, lede: block.lede, items: block.items };
     case 'nearest-schedule':
       return { kelas: block.kelas, limit: block.limit };
     case 'schedule-list':
       return { kelas: block.kelas, bulan: block.bulan, chips: block.chips };
     case 'program-grid':
-    case 'gallery':
     case 'class-tabs':
       return {};
   }

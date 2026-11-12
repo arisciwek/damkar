@@ -5,7 +5,7 @@ import GalleryBlock from '../components/content/GalleryBlock.astro';
 import Nearest from '../components/content/Nearest.astro';
 import ProgramGrid from '../components/content/ProgramGrid.astro';
 import ReasonsBlock from '../components/content/ReasonsBlock.astro';
-import Scheduler from '../components/content/Scheduler.astro';
+import ScheduleListBlock from './ScheduleListBlock.astro';
 import type { BlockType } from './types';
 
 /**
@@ -22,5 +22,5 @@ export const blockRegistry = {
   gallery: GalleryBlock,
   'class-tabs': DetailTabs,
   'nearest-schedule': Nearest,
-  'schedule-list': Scheduler,
+  'schedule-list': ScheduleListBlock,
 } satisfies Record<BlockType, unknown>;

@@ -32,7 +32,43 @@ export interface GalleryItem extends BlockImage {
   cap: string;
 }
 
+export interface HeroCrumb {
+  label: string;
+  href?: string;
+}
+
+export interface HeroFact {
+  value: string;
+  label: string;
+}
+
+export interface HeroAction {
+  label: string;
+  href: string;
+  className: string;
+  target?: string;
+  rel?: string;
+}
+
+export type HeroMedia =
+  | { type: 'slider' }
+  | { type: 'photo'; photo: BlockImage; letter?: string };
+
+export interface HeroBlockConfig {
+  type: 'hero';
+  eyebrow: string;
+  heading: string;
+  highlight?: string;
+  lead: string;
+  breadcrumb?: HeroCrumb[];
+  nearest?: { kelas?: 'D' | 'C' | 'B' | 'A'; limit?: number };
+  facts: HeroFact[];
+  actions: HeroAction[];
+  media: HeroMedia;
+}
+
 export type BlockConfig =
+  | HeroBlockConfig
   | {
       type: 'reasons';
       title: string;

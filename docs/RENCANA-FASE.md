@@ -163,6 +163,10 @@ Port `page_home()` (`referensi/_tools/build.py` baris 448–551):
     2 item (Beranda + nama kelas) persis referensi.
 11. **Collection `artikel`**: sistem dulu, konten menyusul; `/kontak` fase pertama.
 12. **`trailingSlash: 'always'`** + `build.format: 'directory'`.
+13. **Jadwal TANPA URL per gelombang** (keputusan user, 12 Nov 2026) — ikuti referensi:
+    hanya `/jadwal/` (semua gelombang) + `#jadwal` per halaman kelas + deep link filter
+    `?kelas=D&bulan=2026-12` / `#jadwal-d`. Tiap gelombang = kartu dalam halaman,
+    bukan halaman sendiri → sitemap & navigasi tetap kecil.
 
 ## Peta file penting
 

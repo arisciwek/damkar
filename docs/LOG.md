@@ -2,6 +2,13 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — Keputusan: jadwal tanpa URL per gelombang
+
+- User memilih **ikuti referensi**: 57 gelombang tidak punya URL sendiri.
+  Struktur URL jadwal = `/jadwal/` + `#jadwal` per kelas + deep link `?kelas=&bulan=`
+  (ditangani `main.js` baris ~300). Tidak ada penambahan 57 halaman/sitemap/JSON-LD Event
+  per gelombang. Dicatat sebagai Keputusan #13 di `RENCANA-FASE.md`.
+
 ## 12 Nov 2026 — Fase 2 selesai: halaman /layanan + redirect 301
 
 - **Commit**: `495304b` `feat(fase2): halaman /layanan (listing + detail kelas) + redirect 301` (**belum push**).

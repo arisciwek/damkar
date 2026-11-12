@@ -43,7 +43,7 @@ export type BlockConfig =
   | { type: 'benefits'; title?: string; lede?: string; items?: BenefitItem[] }
   | { type: 'faq'; title?: string; lede?: string; items?: FaqItem[] }
   | { type: 'gallery'; title?: string; lede?: string; items?: GalleryItem[] }
-  | { type: 'program-grid' }
+  | { type: 'program-grid'; title?: string; lede?: string }
   | { type: 'class-tabs' }
   | { type: 'nearest-schedule'; kelas?: 'D' | 'C' | 'B' | 'A'; limit?: number }
   | { type: 'schedule-list'; kelas?: 'D' | 'C' | 'B' | 'A'; bulan?: string; chips?: boolean };

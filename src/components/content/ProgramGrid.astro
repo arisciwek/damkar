@@ -3,17 +3,23 @@ import { getCollection } from 'astro:content';
 import { nextLabel } from '../../config/jadwal';
 import BlockHead from './BlockHead.astro';
 
+interface Props {
+  title?: string;
+  lede?: string;
+}
+
+const {
+  title = 'Pilih Jenjang Sesuai Kebutuhan',
+  lede = 'Program berjenjang dari Petugas Pemadam hingga Ahli K3 Pemadam Kebakaran.',
+} = Astro.props;
+
 const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
 ---
 
 <section class="block" id="program" aria-labelledby="program-title">
-  <BlockHead
-    id="program-title"
-    title="Pilih Jenjang Sesuai Kebutuhan"
-    lede="Program berjenjang dari Petugas Pemadam hingga Ahli K3 Pemadam Kebakaran."
-  />
+  <BlockHead id="program-title" title={title} lede={lede} />
   <ul class="prog-grid">
     {
       kelas.map((entry) => {

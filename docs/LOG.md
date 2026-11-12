@@ -2,6 +2,18 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — Revisi #13b: +12 halaman bulan (total 63 URL)
+
+- Saat mulai Fase 3 ditemukan celah: strip bulan di `/jadwal/` (semua kelas) tidak
+  punya tujuan kalau hanya ada URL kelas+bulan. User memilih **tambah 12 halaman
+  bulan** `/jadwal/2026-01/ … /jadwal/2026-12/`.
+- Total URL jadwal: **63** (1 index + 12 bulan + 4 kelas + 46 kelas×bulan).
+- Aturan hitungan chip/bulan & perilaku (lihat Keputusan #13) ikut diperbarui;
+  route memakai satu file catch-all `src/pages/jadwal/[...path].astro` supaya
+  tidak ada dua dynamic route ambigu.
+- Response sempat terpotong di tengah riset (harness) — tidak ada kerjaan hilang,
+  working tree bersih.
+
 ## 12 Nov 2026 — Revisi: jadwal pakai clean URL per kelas & per bulan
 
 - Keputusan #13 **direvisi** setelah diskusi: awalnya ikuti referensi (query param),

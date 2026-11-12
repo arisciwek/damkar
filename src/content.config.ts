@@ -99,6 +99,7 @@ const pages = defineCollection({
   schema: z.object({
     type: z.literal('page'),
     slug: z.string().min(1),
+    kelas: z.enum(['D', 'C', 'B', 'A']).optional(),
     title: z.string().min(1),
     description: z.string().optional(),
     draft: z.boolean().default(false),

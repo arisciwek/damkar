@@ -14,11 +14,14 @@ const { kelas, limit = 3 } = Astro.props;
 const kelasEntries = await getCollection('kelas', (entry) => !entry.data.draft);
 const byKey = new Map(kelasEntries.map((entry) => [entry.data.key, entry.data]));
 
-const rows = upcoming(kelas).slice(0, limit).map((batch) => ({
-  label: batch.label,
-  name: byKey.get(batch.class)?.name ?? batch.class,
-  tag: byKey.get(batch.class)?.courseMode === 'Blended' ? 'Blended' : 'Offline',
-}));
+const rows = upcoming(kelas).slice(0, limit).map((batch) => {
+  const info = byKey.get(batch.class);
+  return {
+    label: batch.label,
+    name: info ? `${info.name} ${info.role}` : batch.class,
+    tag: info?.courseMode === 'Blended' ? 'Blended' : 'Offline',
+  };
+});
 ---
 
 <div class="nearest">

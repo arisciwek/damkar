@@ -1,20 +1,12 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Breadcrumb from '../../components/content/Breadcrumb.astro';
-import Hero from '../../components/content/Hero.astro';
-import Nearest from '../../components/content/Nearest.astro';
-import ProgramGrid from '../../components/content/ProgramGrid.astro';
-import BenefitsBlock from '../../components/content/BenefitsBlock.astro';
-import FaqBlock from '../../components/content/FaqBlock.astro';
-import Sidebar from '../../components/content/Sidebar.astro';
-import ContactBand from '../../components/shared/ContactBand.astro';
+import PageBlockRenderer from '../../blocks/PageBlockRenderer.astro';
+import type { PageBlockConfig } from '../../blocks/types';
 import SiteFooter from '../../components/shared/SiteFooter.astro';
 import SiteHeader from '../../components/shared/SiteHeader.astro';
 import WaFloat from '../../components/shared/WaFloat.astro';
-import { faq } from '../../config/blocks';
-import { countBatches } from '../../config/jadwal';
-import { photos, site, waDaftar } from '../../config/site';
+import { photos } from '../../config/site';
 import { ui } from '../../config/ui';
 import {
   breadcrumbNode,
@@ -25,96 +17,52 @@ import {
   webpageNode,
 } from '../../utils/schema';
 
-const title = 'Layanan Pelatihan Damkar Kelas D, C, B, A | Sertifikasi Kemnaker RI';
-const description =
-  'Empat jenjang layanan Pelatihan Damkar bersertifikat Kemnaker RI: Kelas D, C, B, dan A. Bandingkan metode, materi, dan persyaratan sebelum mendaftar via WhatsApp.';
+const page = await getEntry('pages', 'layanan');
+if (!page) throw new Error('Konten halaman layanan (src/content/pages/layanan.md) tidak ditemukan.');
+
+const blocks = page.data.blocks as unknown as PageBlockConfig[];
+const contentLayout = blocks.find(
+  (block): block is Extract<PageBlockConfig, { type: 'content-layout' }> =>
+    block.type === 'content-layout',
+);
+const faqBlock = contentLayout?.blocks.find((block) => block.type === 'faq');
+
+const title = page.data.title;
+const description = page.data.description ?? ui.meta.defaultDescription;
 const url = new URL('/layanan/', Astro.site).toString();
-const photo = photos[0];
-const ctaMsg =
-  'Halo tim Betracom, saya ingin mendaftar Pelatihan Damkar. Mohon info jadwal, biaya, dan persyaratannya.';
+
+const kelasItems = (await getCollection('kelas', (entry) => !entry.data.draft))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((entry) => ({
+    url: new URL(`/layanan/${entry.id}/`, Astro.site).toString(),
+    name: `Pelatihan ${entry.data.name}`,
+  }));
 
 const jsonLd = [
   organizationNode(),
   websiteNode(),
-  webpageNode({ url, name: title, description, extra: { mainEntity: { '@id': `${url}#program` } } }),
+  webpageNode({
+    url,
+    name: title,
+    description,
+    extra: { mainEntity: { '@id': `${url}#program` } },
+  }),
   breadcrumbNode(url, [
     { name: ui.nav.breadcrumbHome, url: new URL('/', Astro.site).toString() },
     { name: 'Layanan', url },
   ]),
-  programItemList(
-    (await getCollection('kelas', (entry) => !entry.data.draft))
-      .sort((a, b) => a.data.order - b.data.order)
-      .map((entry) => ({
-        url: new URL(`/layanan/${entry.id}/`, Astro.site).toString(),
-        name: `Pelatihan ${entry.data.name}`,
-      })),
-    `${url}#program`,
-  ),
+  programItemList(kelasItems, `${url}#program`),
   faqPageNode(
     url,
-    faq.map((item) => ({ q: item.q, a: item.a })),
+    faqBlock?.type === 'faq' ? (faqBlock.items ?? []).map((item) => ({ q: item.q, a: item.a })) : [],
   ),
 ];
 ---
 
-<BaseLayout title={title} description={description} preloadImage={photo.src} jsonLd={jsonLd}>
+<BaseLayout title={title} description={description} preloadImage={photos[0].src} jsonLd={jsonLd}>
   <SiteHeader />
   <main id="konten">
-    <Hero
-      eyebrow="Sertifikasi Kemnaker RI"
-      heading="Layanan Pelatihan Damkar"
-      highlight="Kelas D, C, B & A."
-      lead="Empat jenjang kompetensi pemadam kebakaran — dari Petugas Pemadam hingga Ahli K3 — dengan teori, praktik lapangan, dan sertifikasi Kemnaker RI bersama PT Betracom Gemilang Nusa."
-    >
-      <Breadcrumb
-        slot="crumbs"
-        items={[
-          { label: ui.nav.breadcrumbHome, href: '/' },
-          { label: 'Layanan' },
-        ]}
-      />
-      <Nearest slot="near" limit={3} />
-      <ul class="hero-facts" slot="facts">
-        <li><b>4</b>Jenjang kompetensi</li>
-        <li><b>{countBatches()}</b>Gelombang {site.year}</li>
-        <li><b>Kemnaker</b>Sertifikasi & lisensi resmi</li>
-      </ul>
-      <div class="actions" slot="actions">
-        <a class="btn btn-black btn-lg" href={waDaftar(ctaMsg)} target="_blank" rel="noopener">
-          Daftar Sekarang
-        </a>
-        <a class="btn btn-outline btn-lg" href="/jadwal/">Lihat Jadwal</a>
-      </div>
-      <figure class="hero-photo" slot="media">
-        <img
-          class="bw"
-          src={photo.src}
-          width={photo.w}
-          height={photo.h}
-          alt={photo.alt}
-          fetchpriority="high"
-          decoding="async"
-        />
-      </figure>
-    </Hero>
-
-    <div class="container layout">
-      <Sidebar
-        ctaMsg={ctaMsg}
-        links={[
-          { id: 'program', label: 'Program Pelatihan', icon: 'list' },
-          { id: 'fasilitas', label: 'Mengapa Pilih Kami', icon: 'badge' },
-          { id: 'faq', label: 'FAQ', icon: 'info' },
-        ]}
-      />
-      <div class="content">
-        <ProgramGrid />
-        <BenefitsBlock />
-        <FaqBlock />
-      </div>
-    </div>
-
-    <ContactBand />
+    <PageBlockRenderer blocks={blocks} />
   </main>
   <SiteFooter />
   <WaFloat />

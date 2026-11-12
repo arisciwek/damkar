@@ -2,6 +2,24 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Pull migrasi listing /layanan/: build gagal → fix YAML (`layanan.md`)
+
+- Pull **4 commit** (`3a0661c..9712b44`): frontmatter block halaman layanan (`c0370e7`),
+  **listing `/layanan/` render dari Markdown blocks** (`c5aab1d`), fallback fakta gelombang
+  (`59058ac`), docs (`9712b44`).
+- `npm run check` **gagal** di `astro sync`: `Nested mappings are not allowed in compact
+  mappings` — `src/content/pages/layanan.md` baris 5, `description:` berisi teks
+  `"…Kemnaker RI: Kelas D, …"` tanpa kutip → `: ` di nilai polos dianggap nested mapping.
+- **Fix (1 baris)**: bungkus nilai `description` dengan tanda kutip ganda. Cek menyeluruh
+  `grep ': .*: '` di `layanan.md` & `home.md` → hanya 1 baris yang kena.
+- **Verifikasi setelah fix**: check + build lolos (70 halaman); **listing `/layanan/`
+  pre-migrasi (build `3a0661c`) vs migrasi blocks = IDENTIK 610 token** (baseline disimpan
+  ke `/tmp/opencode/layanan-pre-migration.html` sebelum dist tertimpa — build gagal sebelumnya
+  membuat dist masih berisi versi lama). Sanity: beranda 3892/3892, 4 detail & `/jadwal/`
+  tidak berubah dari sesi sebelumnya, sitemap 69 URL + lastmod normal.
+- Pelajaran: **simpan baseline dist SEBELUM rebuild** ketika build sebelumnya gagal — dist
+  lama masih utuh dan jadi pembanding gratis.
+
 ## 13 Nov 2026 — Migrasi listing /layanan ke Markdown blocks
 
 - Commit `c0370e7`: tambah `src/content/pages/layanan.md` dengan seluruh konten listing

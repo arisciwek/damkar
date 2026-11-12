@@ -36,6 +36,35 @@ Dua hal ini terpisah. Jangan dicampur.
   `<lastmod>` per-URL. Jangan ubah resolver tanpa membaca kebijakan lastmod di
   `docs/RENCANA-FASE.md`.
 
+
+## Konvensi artikel (wajib)
+
+- `description` adalah **meta description ringkas** untuk `<meta name="description">`,
+  Open Graph, dan kartu artikel. Tulis ringkas, spesifik, menjelaskan topik/benefit,
+  dan relevan dengan intent pencarian. Jangan memaksakan kalimat pembuka artikel
+  yang panjang ke field ini. Panjang SERP bukan batas karakter yang dijamin Google.
+- Paragraf pembuka lengkap berada di `blocks[]`, sebagai `type: p` pertama
+  pada section pertama. Paragraf ini harus menjelaskan topik secara utuh dan natural,
+  bukan sekadar mengulang meta description. Keduanya saling mendukung, tetapi
+  **tidak wajib identik**.
+- Jangan membuat field `intro` metadata tambahan untuk menduplikasi paragraf pertama.
+  Isi artikel tetap berada di `blocks[]`; `description` khusus metadata/kartu.
+- Google dapat memilih snippet dari isi halaman sesuai kueri; meta description
+  bukan instruksi agar Google selalu menampilkan teks itu. Tulis paragraf pembuka
+  yang berdiri sendiri dan informatif.
+- Artikel wajib frontmatter-only: tepat satu delimiter pembuka `---` dan satu
+  delimiter penutup `---`; tidak boleh ada body Markdown setelah delimiter penutup.
+  Pastikan delimiter penutup tetap ada setelah mengedit YAML.
+- Quote string YAML yang berpotensi ditafsirkan sebagai sintaks YAML (terutama
+  `description` dengan tanda baca seperti `: `, kutip, atau karakter khusus).
+  Setelah menulis artikel, validasi parse frontmatter melalui `npm run check`.
+- Saat mengubah `.astro`, periksa pasangan backtick, kurung, kurawal, dan array
+  pada ekspresi JSX/Astro, terutama `class:list` dan template literal. Jangan
+  menganggap edit satu karakter aman tanpa `npm run check` + `npm run build`.
+- Jangan menyamakan perubahan teks dengan sekadar edit metadata: periksa halaman
+  detail, kartu/listing yang memakai `description`, JSON-LD, OG, serta sitemap
+  `lastmod`. Perbarui `updatedDate` hanya jika data entri memang berubah.
+
 ## Aturan kerja
 
 - **Jangan mengubah data sebelum paham.** Audit dulu, laporkan temuan, tunggu

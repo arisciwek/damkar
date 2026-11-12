@@ -81,6 +81,8 @@ const contentBlock = z.discriminatedUnion('type', [
     items: z.array(z.object({ q: z.string(), a: z.string() })).optional(),
   }),
   z.object({ type: z.literal('contact-band'), id: z.string().optional(), heading: z.string().optional(), kicker: z.string().optional() }),
+  z.object({ type: z.literal('class-detail') }),
+  z.object({ type: z.literal('other-programs'), title: z.string().optional(), lede: z.string().optional() }),
 ]);
 
 const pageBlock = z.union([

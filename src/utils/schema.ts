@@ -184,6 +184,29 @@ export function programItemList(
   };
 }
 
+/** Event terstruktur untuk satu gelombang pelatihan; tanggal berasal dari pelaksanaan. */
+export function scheduleEventNode(input: {
+  url: string;
+  kelas: string;
+  batch: string;
+  start: string;
+  end: string;
+  label: string;
+}): JsonLd {
+  const id = `${input.url}#event-${input.kelas.toLowerCase()}-${input.batch}`;
+  return {
+    '@type': 'Event',
+    '@id': id,
+    url: input.url,
+    name: `Pelatihan Damkar ${input.kelas} — Gelombang ${input.batch}`,
+    description: `Public Training Pelatihan Damkar ${input.kelas}, ${input.label}.`,
+    startDate: input.start,
+    endDate: input.end,
+    inLanguage: site.language,
+    organizer: { '@id': ids.org },
+  };
+}
+
 /** ItemList untuk halaman jadwal (halaman kelas / halaman bulan). */
 export function scheduleItemList(
   url: string,

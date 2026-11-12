@@ -84,6 +84,25 @@
   
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Sitemap lastmod per-URL (Tahap 1 poin 3+4) — gerbang lulus
+
+- Ganti `serialize` di `astro.config.mjs` (commit HEAD seragam → peta **URL → lastmod**
+  yang dibangun saat build): helper `gitLastmodFiles()` (`git log -1 --format=%cI -- <file>`)
+  + `readUpdatedDate()` (regex frontmatter) + `SOURCES` (5 aturan pathname) +
+  `resolveLastmod()`; fallback: editorial → commit file sumber → HEAD → tanpa lastmod.
+- Kebijakan per grup: beranda/listing/4 detail ← `updatedDate` jika ada, else commit file
+  md-nya; indeks `/jadwal/` ← `updatedDate` `jadwal.md`; 63 route turunan ← commit
+  `jadwal.ts` + `jadwal-detail.md` (**tanpa** tanggal editorial template).
+- **Gerbang Tahap 1 terpenuhi**:
+  1. **nol perubahan HTML** — 70 file byte-identik (md5 sebelum/sesudah);
+  2. XML valid (`sitemap-0.xml` + `sitemap-index.xml`);
+  3. lastmod per grup sumber terverifikasi: home `18:46:21Z`, layanan `18:55:26Z`, detail
+     `19:05:49Z`, indeks `08:15:00Z` (updatedDate), 63 route `19:36:42Z` (commit data+template)
+     — 69 URL, 404 tetap tak ikut.
+- `RENCANA-FASE.md` Tahap 1: poin 3 & 4 ditandai ✅ (status tetap 🟡 — poin 1, sambungan
+  editorial lain menunggu). `fix-sitemap-lastmod.mjs` tetap dipakai (normalisasi ms dari
+  format integrasi).
+
 ## 13 Nov 2026 — Pull tanggal editorial jadwal → JSON-LD: build lolos tanpa fix
 
 - Pull **9 commit** (`d82fcbd..2a1c884`): field `pubDate`/`updatedDate` di schema `pages`

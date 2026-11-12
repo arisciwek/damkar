@@ -93,21 +93,22 @@ di `/www/wwwroot/damkar`.
   dihitung dari commit terakhir file data jadwal yang berkontribusi pada route tersebut;
   bukan dengan membuat tanggal publikasi/pembaruan editorial palsu.
 
-### Tahap 1 — Tanggal editorial + lastmod per-URL 🟡 (tanggal halaman jadwal diterapkan)
+### Tahap 1 — Tanggal editorial + lastmod per-URL 🟡 (lastmod per-URL ✅; sambungan editorial lain menunggu)
 
 1. `pubDate`/`updatedDate` pada collection `kelas` hanya untuk 4 halaman detail layanan
    jika keputusan editorialnya memang dipertahankan; nilai UTC tanpa milisecond dan
-   unik sampai detik, dikonfirmasi sebelum rilis.
+   unik sampai detik, dikonfirmasi sebelum rilis. ⬜
 2. Tanggal editorial halaman jadwal sudah dihubungkan ke `webpageNode()` →
-   `datePublished`/`dateModified` JSON-LD. Sambungan untuk halaman editorial lain masih menunggu.
-3. Ganti `serialize` di `astro.config.mjs`: peta **URL → lastmod** dibangun saat build,
-   bukan commit HEAD seragam:
+   `datePublished`/`dateModified` JSON-LD. Sambungan untuk halaman editorial lain masih menunggu. 🟡
+3. ✅ Ganti `serialize` di `astro.config.mjs`: peta **URL → lastmod** dibangun saat build,
+   bukan commit HEAD seragam (dikerjakan 13 Nov 2026, `SOURCES` + `resolveLastmod` di config):
    - halaman editorial ← tanggal modifikasi editorial yang valid;
    - beranda & `/layanan/` listing ← waktu commit file sumber selama metadata editorial belum tersedia;
    - route jadwal ← commit terakhir file data jadwal yang berkontribusi pada route, tanpa
      menambah `pubDate`/`updatedDate` ke halaman jadwal.
-4. **Gerbang**: XML tervalidasi, nilai lastmod merefleksikan sumber tiap URL, dan
-   **nol perubahan HTML** (`diff` nol).
+4. ✅ **Gerbang**: XML tervalidasi, nilai lastmod merefleksikan sumber tiap URL, dan
+   **nol perubahan HTML** (`diff` nol) — terpenuhi (70 HTML byte-identik; lastmod per grup
+   sumber terverifikasi; `sitemap-0.xml` + `sitemap-index.xml` valid XML).
 
 ### Tahap 2 — Fondasi md+blocks ⬜ (sebagian sudah diterapkan)
 

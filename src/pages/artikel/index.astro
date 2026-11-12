@@ -1,0 +1,89 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteFooter from '../../components/shared/SiteFooter.astro';
+import SiteHeader from '../../components/shared/SiteHeader.astro';
+import WaFloat from '../../components/shared/WaFloat.astro';
+import { breadcrumbNode, organizationNode, websiteNode, webpageNode } from '../../utils/schema';
+
+const articles = (await getCollection('articles', (entry) => !entry.data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const title = 'Artikel Pelatihan Damkar dan K3 Kebakaran';
+const description = 'Panduan pelatihan Damkar, tugas petugas peran kebakaran, kompetensi, persyaratan, dan penanggulangan kebakaran di tempat kerja.';
+const url = new URL('/artikel/', Astro.site).toString();
+const jsonLd = [
+  organizationNode(),
+  websiteNode(),
+  webpageNode({ url, name: title, description, extra: { breadcrumb: { '@id': `${url}#breadcrumb` } } }),
+  breadcrumbNode(url, [
+    { name: 'Beranda', url: new URL('/', Astro.site).toString() },
+    { name: 'Artikel', url },
+  ]),
+  {
+    '@type': 'Blog',
+    '@id': `${url}#blog`,
+    url,
+    name: title,
+    blogPost: articles.map((entry) => ({
+      '@type': entry.data.schemaType,
+      headline: entry.data.title,
+      url: new URL(`/artikel/${entry.data.slug}/`, Astro.site).toString(),
+      datePublished: entry.data.pubDate.toISOString(),
+      dateModified: entry.data.updatedDate.toISOString(),
+    })),
+  },
+];
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main id="konten" class="article-index">
+    <div class="container article-index__container">
+      <header class="article-index__header">
+        <p class="article-index__eyebrow">Wawasan & panduan</p>
+        <h1>Artikel Pelatihan Damkar</h1>
+        <p>Informasi seputar kompetensi penanggulangan kebakaran, tugas personel, materi pelatihan, dan penerapannya di tempat kerja.</p>
+      </header>
+      <div class="article-index__grid">
+        {articles.map((entry) => (
+          <article class="article-card">
+            <a class="article-card__link" href={`/artikel/${entry.data.slug}/`}>
+              {entry.data.featuredImage && <img src={entry.data.featuredImage} alt={entry.data.featuredImageAlt ?? entry.data.title} loading="lazy" width="640" height="420" />}
+              <div class="article-card__body">
+                <span class="article-card__category">{entry.data.category}</span>
+                <h2>{entry.data.title}</h2>
+                <p>{entry.data.description}</p>
+                <span class="article-card__read">Baca artikel <span aria-hidden="true">→</span></span>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+      {articles.length === 0 && <p class="article-index__empty">Artikel sedang disiapkan.</p>}
+    </div>
+  </main>
+  <SiteFooter />
+  <WaFloat />
+</BaseLayout>
+
+<style>
+.article-index{padding:3.5rem 0 5rem}
+.article-index__container{max-width:1120px}
+.article-index__header{max-width:720px;margin:0 auto 2.5rem;text-align:center}
+.article-index__eyebrow{margin:0 0 .6rem;color:var(--black,#dc1e1e);font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.article-index__header h1{margin:0;font-size:clamp(2rem,4vw,3rem);line-height:1.2;color:var(--ink,#111)}
+.article-index__header>p:last-child{margin:.9rem 0 0;color:var(--mute,#555);line-height:1.75}
+.article-index__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem}
+.article-card{overflow:hidden;border:1px solid var(--line,#eee);border-radius:var(--r-lg,16px);background:#fff;transition:transform .2s ease,box-shadow .2s ease}
+.article-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgb(0 0 0 / .08)}
+.article-card__link{display:flex;height:100%;flex-direction:column;color:inherit;text-decoration:none}
+.article-card__link>img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:var(--soft,#fff2f1)}
+.article-card__body{display:flex;flex:1;flex-direction:column;padding:1.2rem}
+.article-card__category{color:var(--black,#dc1e1e);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.article-card h2{margin:.55rem 0;font-size:1.12rem;line-height:1.4;color:var(--ink,#111)}
+.article-card__body>p{margin:0 0 1rem;color:var(--mute,#555);font-size:.9rem;line-height:1.65}
+.article-card__read{margin-top:auto;color:var(--black,#dc1e1e);font-size:.85rem;font-weight:700}
+.article-index__empty{text-align:center;color:var(--mute,#666)}
+@media(max-width:850px){.article-index__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.article-index{padding:2.5rem 0 3.5rem}.article-index__grid{grid-template-columns:1fr}}
+</style>

@@ -5,9 +5,12 @@
  * dimigrasikan ke Markdown, data dipindahkan ke frontmatter secara eksplisit.
  */
 import { benefits, blockCopy, faq, reasons } from '../config/blocks';
-import { active, countBatches } from '../config/jadwal';
+import { active, countBatches } from '../utils/schedule';
 import { organization, photos, site, waDaftar } from '../config/site';
 import type { PageBlockConfig } from './types';
+
+/** countBatches/active kini async (collection schedule) — fixture tetap konstanta sync. */
+const countBatchesTotal = await countBatches();
 
 const homeHeroMessage = 'Halo saya ingin konsultasi Pelatihan Damkar.';
 const registrationMessage =
@@ -23,7 +26,7 @@ export const homeBlockFixture = [
     nearest: { limit: 3 },
     facts: [
       { value: '4', label: 'Jenjang kompetensi' },
-      { value: String(countBatches()), label: `Gelombang ${site.year}` },
+      { value: String(countBatchesTotal), label: `Gelombang ${site.year}` },
       { value: 'Kemnaker', label: 'Sertifikasi & lisensi resmi' },
     ],
     actions: [
@@ -115,7 +118,7 @@ export const serviceListingBlockFixture = [
     nearest: { limit: 3 },
     facts: [
       { value: '4', label: 'Jenjang kompetensi' },
-      { value: String(countBatches()), label: `Gelombang ${site.year}` },
+      { value: String(countBatchesTotal), label: `Gelombang ${site.year}` },
       { value: 'Kemnaker', label: 'Sertifikasi & lisensi resmi' },
     ],
     actions: [
@@ -171,14 +174,14 @@ export const scheduleIndexBlockFixture = [
     eyebrow: 'Jadwal & Pendaftaran',
     heading: 'Jadwal Pelatihan Damkar',
     highlight: `${site.year}.`,
-    lead: `Semua gelombang Public Training bersertifikat Kemnaker RI dalam satu halaman — ${countBatches()} gelombang sepanjang ${site.year} untuk Kelas D, C, B, dan A. Pilih kelas dan bulan, lalu daftar via WhatsApp.`,
+    lead: `Semua gelombang Public Training bersertifikat Kemnaker RI dalam satu halaman — ${countBatchesTotal} gelombang sepanjang ${site.year} untuk Kelas D, C, B, dan A. Pilih kelas dan bulan, lalu daftar via WhatsApp.`,
     breadcrumb: [
       { label: 'Beranda', href: '/' },
       { label: 'Jadwal' },
     ],
     facts: [
       { value: '4', label: 'Jenjang kompetensi' },
-      { value: String(countBatches()), label: `Gelombang ${site.year}` },
+      { value: String(countBatchesTotal), label: `Gelombang ${site.year}` },
       { value: 'Kemnaker', label: 'Sertifikasi & lisensi resmi' },
     ],
     actions: [
@@ -229,10 +232,10 @@ interface ServiceClassEntry {
 }
 
 /** Fixture halaman detail kelas dengan data entry collection yang benar-benar dipakai route. */
-export function serviceDetailBlockFixture(
+export async function serviceDetailBlockFixture(
   entry: ServiceClassEntry,
   entries: readonly ServiceClassEntry[],
-): PageBlockConfig[] {
+): Promise<PageBlockConfig[]> {
   const data = entry.data;
   const key = data.key;
   const step = (['D', 'C', 'B', 'A'] as const).indexOf(key);
@@ -243,8 +246,8 @@ export function serviceDetailBlockFixture(
     photos[(step + 3) % photos.length],
   ] as const;
   const ctaMsg = `Halo tim Betracom, saya ingin mendaftar Pelatihan ${data.name}. Mohon info jadwal, biaya, dan persyaratannya.`;
-  const gelombangCount = countBatches(key);
-  const gelombangAktif = active(key).length;
+  const gelombangCount = await countBatches(key);
+  const gelombangAktif = (await active(key)).length;
   const others = entries.filter((other) => other.data.key !== key);
 
   return [

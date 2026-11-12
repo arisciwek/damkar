@@ -24,7 +24,7 @@ import {
   monthLabel,
   monthsIn,
   type KelasKey,
-} from '../../config/jadwal';
+} from '../../utils/schedule';
 import { photos, site, waDaftar } from '../../config/site';
 import { ui } from '../../config/ui';
 import {
@@ -48,7 +48,7 @@ export async function getStaticPaths() {
   const paths: { params: { path: string }; props: Props }[] = [];
 
   // /jadwal/2026-01/ ... /jadwal/2026-12/ (semua kelas yang punya gelombang)
-  for (const bulan of monthsIn()) {
+  for (const bulan of await monthsIn()) {
     paths.push({ params: { path: bulan }, props: { bulan } });
   }
   for (const kelas of keys) {
@@ -56,7 +56,7 @@ export async function getStaticPaths() {
     // /jadwal/kelas-d/
     paths.push({ params: { path: slug }, props: { kelas } });
     // /jadwal/kelas-d/2026-06/ (hanya kombinasi terisi)
-    for (const bulan of monthsIn(kelas)) {
+    for (const bulan of await monthsIn(kelas)) {
       paths.push({ params: { path: `${slug}/${bulan}` }, props: { kelas, bulan } });
     }
   }
@@ -75,7 +75,7 @@ const cls = kelas ? byKey.get(kelas) : undefined;
 if (kelas && !cls) throw new Error(`Kelas ${kelas} tidak ada di collection`);
 const kelasLabel = kelas ? `Kelas ${kelas}` : '';
 
-const list = batchesIn(kelas, bulan);
+const list = await batchesIn(kelas, bulan);
 const nActive = list.filter((batch) => batch.status !== 'done').length;
 const monthText = bulan ? monthLabel(bulan) : '';
 const kelasCount = new Set(list.map((batch) => batch.class)).size;
@@ -154,7 +154,7 @@ if (kelas && !bulan) {
     scheduleItemList(
       url,
       `Bulan jadwal ${kelasLabel} ${site.year}`,
-      monthsIn(kelas).map((key) => ({
+      (await monthsIn(kelas)).map((key) => ({
         url: new URL(`/jadwal/kelas-${kelas.toLowerCase()}/${key}/`, Astro.site).toString(),
         name: monthLabel(key),
       })),
@@ -172,7 +172,7 @@ const facts = kelas
   : [
       { value: String(list.length), label: `Gelombang ${monthText}` },
       { value: String(kelasCount), label: 'Jenjang kelas' },
-      { value: String(countBatches()), label: `Gelombang ${site.year}` },
+      { value: String(await countBatches()), label: `Gelombang ${site.year}` },
     ];
 
 // ---- Blocks ----------------------------------------------------------------

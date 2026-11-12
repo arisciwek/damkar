@@ -6,7 +6,7 @@
  * Perbedaan dari referensi (keputusan #13):
  * - Chip kelas & strip bulan adalah TAUTAN ke URL bersih (/jadwal/kelas-d/2026-06/),
  *   bukan filter in-page → navigasi jalan tanpa JS dan bisa di-crawl.
- * - Status gelombang dihitung saat build (config/jadwal.ts), jadi script klien
+ * - Status gelombang dihitung saat build (utils/schedule.ts), jadi script klien
  *   hanya untuk toggle "tampilkan jadwal yang sudah lewat" + ringkasan.
  */
 import { getCollection } from 'astro:content';
@@ -18,7 +18,7 @@ import {
   monthLabel,
   type Batch,
   type KelasKey,
-} from '../../config/jadwal';
+} from '../../utils/schedule';
 import { organization, site, waDaftar, waKonsultasi, whatsapp } from '../../config/site';
 import Icon from '../ui/Icon.astro';
 
@@ -41,8 +41,8 @@ const entries = (await getCollection('kelas', (entry) => !entry.data.draft)).sor
 const byKey = new Map(entries.map((entry) => [entry.data.key as KelasKey, entry]));
 const keys = entries.map((entry) => entry.data.key as KelasKey); // urut jenjang: D, C, B, A
 
-const list = batchesIn(kelas, bulan);
-const nActive = countIn({ kelas, bulan, activeOnly: true });
+const list = await batchesIn(kelas, bulan);
+const nActive = await countIn({ kelas, bulan, activeOnly: true });
 
 /** URL jadwal: /jadwal/, /jadwal/kelas-d/, /jadwal/2026-06/, /jadwal/kelas-d/2026-06/ */
 const jadwalUrl = (k?: KelasKey, b?: string) =>
@@ -53,24 +53,33 @@ const jadwalUrl = (k?: KelasKey, b?: string) =>
 const targetCount = (k?: KelasKey, b?: string) =>
   countIn({ kelas: k, bulan: b, activeOnly: bulan === undefined });
 
-const chipItems = [
-  { level: 'all' as string, label: 'Semua kelas', target: undefined as KelasKey | undefined },
-  ...keys.map((key) => ({ level: key as string, label: `Kelas ${key}`, target: key })),
-];
+const chipItems = await Promise.all(
+  [
+    { level: 'all' as string, label: 'Semua kelas', target: undefined as KelasKey | undefined },
+    ...keys.map((key) => ({ level: key as string, label: `Kelas ${key}`, target: key })),
+  ].map(async (item) => ({
+    ...item,
+    /** total = jumlah gelombang untuk chip is-off; count = angka pada chip. */
+    total: await countIn({ kelas: item.target, bulan }),
+    count: await targetCount(item.target, bulan),
+  })),
+);
 
-const monthItems = MONTHS.map((_, index) => {
-  const key = `${site.year}-${String(index + 1).padStart(2, '0')}`;
-  const exists = countIn({ kelas, bulan: key }) > 0;
-  return {
-    key,
-    short: MON[index],
-    base: `${MONTHS[index]} ${site.year}`,
-    exists,
-    count: targetCount(kelas, key),
-    current: bulan === key,
-    href: exists ? jadwalUrl(kelas, key) : undefined,
-  };
-});
+const monthItems = await Promise.all(
+  MONTHS.map(async (_, index) => {
+    const key = `${site.year}-${String(index + 1).padStart(2, '0')}`;
+    const exists = (await countIn({ kelas, bulan: key })) > 0;
+    return {
+      key,
+      short: MON[index],
+      base: `${MONTHS[index]} ${site.year}`,
+      exists,
+      count: await targetCount(kelas, key),
+      current: bulan === key,
+      href: exists ? jadwalUrl(kelas, key) : undefined,
+    };
+  }),
+);
 
 const groups = [...new Set(list.map((batch) => batch.month))]
   .sort()
@@ -102,10 +111,10 @@ function gcalUrl(batch: Batch, name: string, mode: string): string {
     chips && (
       <div class="chips" role="group" aria-label="Filter kelas">
         {chipItems.map((item) => {
-          const total = countIn({ kelas: item.target, bulan });
+          const total = item.total;
           const href = jadwalUrl(item.target, bulan);
           const current = kelas === item.target;
-          const count = targetCount(item.target, bulan);
+          const count = item.count;
           const className = `chip${total === 0 ? ' is-off' : ''}`;
           return total === 0 ? (
             <span class={className} data-level={item.level}>

@@ -7,7 +7,7 @@ import SiteFooter from '../../components/shared/SiteFooter.astro';
 import SiteHeader from '../../components/shared/SiteHeader.astro';
 import WaFloat from '../../components/shared/WaFloat.astro';
 import { faq } from '../../config/blocks';
-import { active, batches, countBatches, type KelasKey } from '../../config/jadwal';
+import { active, getBatches, countBatches, type KelasKey } from '../../utils/schedule';
 import { organization, photos, site } from '../../config/site';
 import { ui } from '../../config/ui';
 import {
@@ -44,8 +44,8 @@ const url = new URL(`/layanan/${entry.id}/`, Astro.site).toString();
 const title = page.data.title;
 const description = `Pelatihan ${data.name} (${data.role}) sertifikasi Kemnaker RI. ${data.mode}, pendidikan minimal ${data.education}, ${data.materi.length} materi. Cek jadwal ${site.year} di sini.`;
 const ctaMsg = `Halo tim Betracom, saya ingin mendaftar Pelatihan ${data.name}. Mohon info jadwal, biaya, dan persyaratannya.`;
-const gelombangCount = countBatches(key);
-const gelombangAktif = active(key).length;
+const gelombangCount = await countBatches(key);
+const gelombangAktif = (await active(key)).length;
 const lokasi = faq[3].a;
 const zigPhotos = [photos[(step + 1) % 4], photos[(step + 2) % 4], photos[(step + 3) % 4]];
 
@@ -125,7 +125,7 @@ const blocks = page.data.blocks.map((pageBlock: any) => {
   };
 }) as PageBlockConfig[];
 
-const scheduleForSchema = batches
+const scheduleForSchema = (await getBatches())
   .filter((batch) => batch.class === key)
   .map((batch) => ({
     class: batch.class,

@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { upcoming, type KelasKey } from '../../config/jadwal';
+import { upcoming, type KelasKey } from '../../utils/schedule';
 import Icon from '../ui/Icon.astro';
 
 interface Props {
@@ -14,7 +14,7 @@ const { kelas, limit = 3 } = Astro.props;
 const kelasEntries = await getCollection('kelas', (entry) => !entry.data.draft);
 const byKey = new Map(kelasEntries.map((entry) => [entry.data.key, entry.data]));
 
-const rows = upcoming(kelas).slice(0, limit).map((batch) => {
+const rows = (await upcoming(kelas)).slice(0, limit).map((batch) => {
   const info = byKey.get(batch.class);
   return {
     label: batch.label,

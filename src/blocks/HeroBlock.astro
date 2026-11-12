@@ -1,6 +1,6 @@
 ---
 import Breadcrumb from '../components/content/Breadcrumb.astro';
-import { countBatches } from '../config/jadwal';
+import { countBatches } from '../utils/schedule';
 import Hero from '../components/content/Hero.astro';
 import HeroSlider from '../components/content/HeroSlider.astro';
 import Nearest from '../components/content/Nearest.astro';
@@ -57,6 +57,8 @@ const {
   actions,
   media,
 } = Astro.props;
+/** Jumlah gelombang global (fact dynamic batch-count) — dihitung sekali di frontmatter. */
+const batchCount = await countBatches();
 ---
 
 <Hero eyebrow={eyebrow} heading={heading} highlight={highlight} lead={lead}>
@@ -66,7 +68,7 @@ const {
     {
       facts.map((fact) => (
         <li>
-          <b>{fact.dynamic === 'batch-count' ? countBatches() : fact.value}</b>
+          <b>{fact.dynamic === 'batch-count' ? batchCount : fact.value}</b>
           {fact.label}
         </li>
       ))

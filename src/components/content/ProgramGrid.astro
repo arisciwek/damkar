@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { nextLabel } from '../../config/jadwal';
+import { nextLabel } from '../../utils/schedule';
 import BlockHead from './BlockHead.astro';
 
 interface Props {
@@ -16,13 +16,15 @@ const {
 const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
+/** Label gelombang terdekat dihitung di frontmatter (nextLabel kini async). */
+const nextLabels = await Promise.all(kelas.map((entry) => nextLabel(entry.data.key)));
 ---
 
 <section class="block" id="program" aria-labelledby="program-title">
   <BlockHead id="program-title" title={title} lede={lede} />
   <ul class="prog-grid">
     {
-      kelas.map((entry) => {
+      kelas.map((entry, index) => {
         const { key, step, name, role, desc, mode, education } = entry.data;
         return (
           <li class="prog-card" id={`kelas-${key.toLowerCase()}`}>
@@ -46,7 +48,7 @@ const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
               </div>
               <div>
                 <dt>Terdekat</dt>
-                <dd data-next={key}>{nextLabel(key)}</dd>
+                <dd data-next={key}>{nextLabels[index]}</dd>
               </div>
             </dl>
             <a class="btn btn-outline btn-sm btn-block" href={`/layanan/${entry.id}/`}>

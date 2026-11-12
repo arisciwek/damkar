@@ -6,7 +6,7 @@ import type { PageBlockConfig } from '../../blocks/types';
 import SiteFooter from '../../components/shared/SiteFooter.astro';
 import SiteHeader from '../../components/shared/SiteHeader.astro';
 import WaFloat from '../../components/shared/WaFloat.astro';
-import { countBatches } from '../../config/jadwal';
+import { countBatches } from '../../utils/schedule';
 import { photos, site, waDaftar } from '../../config/site';
 import { ui } from '../../config/ui';
 import {
@@ -20,7 +20,7 @@ import {
 const page = await getEntry('pages', 'jadwal');
 if (!page) throw new Error('Konten halaman jadwal (src/content/pages/jadwal.md) tidak ditemukan.');
 
-const totalBatches = countBatches();
+const totalBatches = await countBatches();
 const title = page.data.title
   .replaceAll('{{year}}', String(site.year))
   .replaceAll('{{count}}', String(totalBatches));

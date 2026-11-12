@@ -161,6 +161,7 @@ button, input { font: inherit; color: inherit; }
 
 .content { min-width: 0; }
 .block { padding: 56px 0; border-top: 1px solid var(--line); }
+.block:first-child { border-top: 0; padding-top: 48px; } /* langsung di bawah hero (border-bottom sudah jadi pemisah) */
 .block:first-child { padding-top: 0; border-top: 0; }
 .block-head { max-width: 640px; margin: 0 auto 36px; text-align: center; }
 .block-head h2 { margin-bottom: .4rem; font-size: clamp(1.5rem, 2.4vw, 1.95rem); }
@@ -254,6 +255,16 @@ html:not(.js) .more-btn { display: none; }
 .mon:hover:not(:disabled) { border-color: var(--black); }
 .mon:disabled { cursor: default; color: var(--line-2); background: var(--soft); border-color: var(--soft); }
 .mon[aria-pressed="true"] { background: var(--black); border-color: var(--black); color: #fff; }
+/* Chip & strip bulan berupa <a> (keputusan #13 — navigasi clean URL, bukan filter in-page). */
+a.chip, a.mon { text-decoration: none; }
+.chip[aria-current="true"] { border-color: var(--black); background: var(--black); color: #fff; }
+.chip[aria-current="true"] b { background: #fff; color: var(--black); }
+.mon[aria-current="true"] { background: var(--black); border-color: var(--black); color: #fff; }
+.mon[aria-current="true"] b { color: #fff; }
+/* Sel tanpa data tampil abu-abu; sel berisi jadwal lewat tetap bisa diklik (bukan disabled). */
+.chip.is-off, .mon.is-off { cursor: default; color: var(--line-2); background: var(--soft); border-color: var(--soft); }
+.chip.is-off b, .mon.is-off b { background: transparent; color: inherit; }
+a.chip.is-off:hover, a.mon.is-off:hover { border-color: var(--line-2); color: var(--line-2); }
 .sched-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
 .sched-summary { margin: 0; font-size: .9rem; font-weight: 600; }
 .switch { display: inline-flex; align-items: center; gap: .65rem; font-size: .86rem; cursor: pointer; }

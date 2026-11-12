@@ -1,0 +1,107 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlockHead from '../../components/content/BlockHead.astro';
+import Breadcrumb from '../../components/content/Breadcrumb.astro';
+import Hero from '../../components/content/Hero.astro';
+import Scheduler from '../../components/content/Scheduler.astro';
+import ContactBand from '../../components/shared/ContactBand.astro';
+import SiteFooter from '../../components/shared/SiteFooter.astro';
+import SiteHeader from '../../components/shared/SiteHeader.astro';
+import WaFloat from '../../components/shared/WaFloat.astro';
+import { countBatches } from '../../config/jadwal';
+import { photos, site, waDaftar } from '../../config/site';
+import { ui } from '../../config/ui';
+import {
+  breadcrumbNode,
+  organizationNode,
+  scheduleItemList,
+  webpageNode,
+  websiteNode,
+} from '../../utils/schema';
+
+const title = `Jadwal Pelatihan Damkar ${site.year} — ${countBatches()} Gelombang Kelas D, C, B, A`;
+const description =
+  `Semua jadwal ${countBatches()} gelombang Public Training Pelatihan Damkar ${site.year} — ` +
+  'Kelas D, C, B, dan A. Pilih kelas dan bulan, lalu daftar langsung via WhatsApp.';
+const url = new URL('/jadwal/', Astro.site).toString();
+const photo = photos[0];
+const ctaMsg =
+  'Halo tim Betracom, saya ingin mendaftar Pelatihan Damkar. Mohon info jadwal, biaya, dan persyaratannya.';
+
+// ItemList: 4 halaman jadwal per kelas (anak dari halaman ini).
+const kelasItems = (await getCollection('kelas', (entry) => !entry.data.draft))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((entry) => ({
+    url: new URL(`/jadwal/kelas-${entry.data.key.toLowerCase()}/`, Astro.site).toString(),
+    name: `Jadwal ${entry.data.name}`,
+  }));
+
+const jsonLd = [
+  organizationNode(),
+  websiteNode(),
+  webpageNode({ url, name: title, description }),
+  breadcrumbNode(url, [
+    { name: ui.nav.breadcrumbHome, url: new URL('/', Astro.site).toString() },
+    { name: 'Jadwal', url },
+  ]),
+  scheduleItemList(url, `Halaman jadwal per kelas ${site.year}`, kelasItems),
+];
+---
+
+<BaseLayout title={title} description={description} preloadImage={photo.src} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main id="konten">
+    <Hero
+      eyebrow="Jadwal & Pendaftaran"
+      heading="Jadwal Pelatihan Damkar"
+      highlight={`${site.year}.`}
+      lead={`Semua gelombang Public Training bersertifikat Kemnaker RI dalam satu halaman — ${countBatches()} gelombang sepanjang ${site.year} untuk Kelas D, C, B, dan A. Pilih kelas dan bulan, lalu daftar via WhatsApp.`}
+    >
+      <Breadcrumb
+        slot="crumbs"
+        items={[
+          { label: ui.nav.breadcrumbHome, href: '/' },
+          { label: 'Jadwal' },
+        ]}
+      />
+      <ul class="hero-facts" slot="facts">
+        <li><b>4</b>Jenjang kompetensi</li>
+        <li><b>{countBatches()}</b>Gelombang {site.year}</li>
+        <li><b>Kemnaker</b>Sertifikasi & lisensi resmi</li>
+      </ul>
+      <div class="actions" slot="actions">
+        <a class="btn btn-black btn-lg" href={waDaftar(ctaMsg)} target="_blank" rel="noopener">
+          Daftar Sekarang
+        </a>
+        <a class="btn btn-outline btn-lg" href="/layanan/">Pilih Kelas</a>
+      </div>
+      <figure class="hero-photo" slot="media">
+        <img
+          class="bw"
+          src={photo.src}
+          width={photo.w}
+          height={photo.h}
+          alt={photo.alt}
+          fetchpriority="high"
+          decoding="async"
+        />
+      </figure>
+    </Hero>
+
+    <div class="container">
+      <section class="block" id="jadwal" aria-labelledby="jadwal-title">
+        <BlockHead
+          id="jadwal-title"
+          title="Semua Gelombang Public Training"
+          lede="Temukan tanggal yang cocok. Pilih kelas dan bulan, lalu daftar langsung via WhatsApp."
+        />
+        <Scheduler />
+      </section>
+    </div>
+
+    <ContactBand />
+  </main>
+  <SiteFooter />
+  <WaFloat />
+</BaseLayout>

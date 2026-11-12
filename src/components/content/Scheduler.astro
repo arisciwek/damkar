@@ -1,0 +1,334 @@
+---
+/**
+ * Daftar jadwal gelombang — port dari schedule_block()/batch_html() di
+ * referensi/_tools/build.py dan initSchedule() di referensi/assets/js/main.js.
+ *
+ * Perbedaan dari referensi (keputusan #13):
+ * - Chip kelas & strip bulan adalah TAUTAN ke URL bersih (/jadwal/kelas-d/2026-06/),
+ *   bukan filter in-page → navigasi jalan tanpa JS dan bisa di-crawl.
+ * - Status gelombang dihitung saat build (config/jadwal.ts), jadi script klien
+ *   hanya untuk toggle "tampilkan jadwal yang sudah lewat" + ringkasan.
+ */
+import { getCollection } from 'astro:content';
+import {
+  MON,
+  MONTHS,
+  batchesIn,
+  countIn,
+  monthLabel,
+  type Batch,
+  type KelasKey,
+} from '../../config/jadwal';
+import { organization, site, waDaftar, waKonsultasi, whatsapp } from '../../config/site';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  /** Jenjang tertentu; kosong = semua kelas. */
+  kelas?: KelasKey;
+  /** Bulan tertentu (YYYY-MM); kosong = semua bulan. */
+  bulan?: string;
+  /** Tampilkan chip navigasi kelas (false untuk section #jadwal di halaman kelas). */
+  chips?: boolean;
+}
+
+const { kelas, bulan, chips = true } = Astro.props;
+/** Halaman bulan: menampilkan semua gelombang (termasuk yang lewat), tanpa toggle. */
+const isMonth = bulan !== undefined;
+
+const entries = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const byKey = new Map(entries.map((entry) => [entry.data.key as KelasKey, entry]));
+const keys = entries.map((entry) => entry.data.key as KelasKey); // urut jenjang: D, C, B, A
+
+const list = batchesIn(kelas, bulan);
+const nActive = countIn({ kelas, bulan, activeOnly: true });
+
+/** URL jadwal: /jadwal/, /jadwal/kelas-d/, /jadwal/2026-06/, /jadwal/kelas-d/2026-06/ */
+const jadwalUrl = (k?: KelasKey, b?: string) =>
+  `/${['jadwal', k && `kelas-${k.toLowerCase()}`, b].filter(Boolean).join('/')}/`;
+
+/** Jumlah pada chip/bulan = yang terlihat di halaman ini (agregat → aktif saja,
+ *  halaman bulan → semua, sesuai keputusan #13). */
+const targetCount = (k?: KelasKey, b?: string) =>
+  countIn({ kelas: k, bulan: b, activeOnly: bulan === undefined });
+
+const chipItems = [
+  { level: 'all' as string, label: 'Semua kelas', target: undefined as KelasKey | undefined },
+  ...keys.map((key) => ({ level: key as string, label: `Kelas ${key}`, target: key })),
+];
+
+const monthItems = MONTHS.map((_, index) => {
+  const key = `${site.year}-${String(index + 1).padStart(2, '0')}`;
+  const exists = countIn({ kelas, bulan: key }) > 0;
+  return {
+    key,
+    short: MON[index],
+    base: `${MONTHS[index]} ${site.year}`,
+    exists,
+    count: targetCount(kelas, key),
+    current: bulan === key,
+    href: exists ? jadwalUrl(kelas, key) : undefined,
+  };
+});
+
+const groups = [...new Set(list.map((batch) => batch.month))]
+  .sort()
+  .map((key) => ({
+    key,
+    title: `Jadwal ${kelas ? `${byKey.get(kelas)?.data.name} ` : ''}${monthLabel(key)}`,
+    batches: list.filter((batch) => batch.month === key),
+  }));
+
+/** Tautan Google Calendar — port gcal() di build.py. */
+function gcalUrl(batch: Batch, name: string, mode: string): string {
+  const end = new Date(batch.en);
+  end.setDate(end.getDate() + 1);
+  const fmt = (d: Date) =>
+    `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: `Pelatihan ${name} Gelombang ${batch.batch}`,
+    dates: `${fmt(batch.st)}/${fmt(end)}`,
+    details: `Public Training ${name} (${mode}) bersama ${organization.name}. Konfirmasi jadwal dan lokasi: wa.me/${whatsapp.daftar}`,
+    ctz: 'Asia/Jakarta',
+  });
+  return `https://calendar.google.com/calendar/render?${params}`;
+}
+---
+
+<div class="sched-tools" id="schedTools">
+  {
+    chips && (
+      <div class="chips" role="group" aria-label="Filter kelas">
+        {chipItems.map((item) => {
+          const total = countIn({ kelas: item.target, bulan });
+          const href = jadwalUrl(item.target, bulan);
+          const current = kelas === item.target;
+          const count = targetCount(item.target, bulan);
+          const className = `chip${total === 0 ? ' is-off' : ''}`;
+          return total === 0 ? (
+            <span class={className} data-level={item.level}>
+              {item.label}
+              <b>{count}</b>
+            </span>
+          ) : (
+            <a
+              class={className}
+              href={href}
+              data-level={item.level}
+              aria-current={current ? 'true' : undefined}
+            >
+              {item.label}
+              <b>{count}</b>
+            </a>
+          );
+        })}
+      </div>
+    )
+  }
+  <ol class="months" aria-label="Pilih bulan">
+    {
+      monthItems.map((month) =>
+        month.href ? (
+          <li>
+            <a
+              class={`mon${month.count === 0 ? ' is-off' : ''}`}
+              href={month.href}
+              data-month={month.key}
+              data-base={month.base}
+              aria-current={month.current ? 'true' : undefined}
+              aria-label={month.base}
+            >
+              <span>{month.short}</span>
+              <b data-mon-count>{month.count}</b>
+            </a>
+          </li>
+        ) : (
+          <li>
+            <span
+              class="mon is-off"
+              data-month={month.key}
+              data-base={month.base}
+              aria-label={month.base}
+              aria-disabled="true"
+            >
+              <span>{month.short}</span>
+              <b data-mon-count>{month.count}</b>
+            </span>
+          </li>
+        ),
+      )
+    }
+  </ol>
+  <div class="sched-bar">
+    <p class="sched-summary" id="schedSummary" aria-live="polite">
+      {
+        isMonth ? (
+          <>
+            Menampilkan {list.length} gelombang pada {monthLabel(bulan)}.
+          </>
+        ) : (
+          <>Menampilkan {nActive} gelombang aktif dan mendatang.</>
+        )
+      }
+    </p>
+    {
+      !isMonth && (
+        <label class="switch">
+          <input type="checkbox" id="showPast" />
+          <span>Tampilkan jadwal yang sudah lewat</span>
+        </label>
+      )
+    }
+  </div>
+</div>
+<div class="sched-list" id="schedList" data-kelas={kelas ?? 'all'}>
+  {
+    groups.map((group) => (
+      <section class="month-group" data-month={group.key} aria-labelledby={`bln-${group.key}`}>
+        <h3 class="month-title" id={`bln-${group.key}`}>
+          {group.title}
+        </h3>
+        <ol class="batch-grid">
+          {group.batches.map((batch) => {
+            const info = byKey.get(batch.class)!;
+            const closed = batch.status === 'done' || batch.status === 'ongoing';
+            const showClass = kelas === undefined;
+            const msg = `Halo tim Betracom, saya ingin mendaftar Pelatihan ${info.data.name} Gelombang ${batch.batch} (${batch.label}). Mohon info biaya dan persyaratannya.`;
+            return (
+              <li
+                class={`batch${closed ? ' is-closed' : ''}`}
+                data-level={batch.class}
+                data-start={batch.start}
+                data-end={batch.end}
+                data-status={batch.status}
+                data-month={batch.month}
+              >
+                <div class="batch-day" aria-hidden="true">
+                  <b>{batch.st.getDate()}</b>
+                  <span>{MON[batch.st.getMonth()]}</span>
+                </div>
+                <div class="batch-body">
+                  <div class="batch-head">
+                    <h4 class="batch-title">
+                      {showClass ? (
+                        <>
+                          <a href={`/layanan/${info.id}/`}>{info.data.name}</a>{' '}
+                          <span>Gelombang {batch.batch}</span>
+                        </>
+                      ) : (
+                        `Gelombang ${batch.batch}`
+                      )}
+                    </h4>
+                    <span class={`status status--${batch.status}`}>{batch.statusText}</span>
+                  </div>
+                  <p class="batch-when">
+                    <time datetime={batch.start}>{batch.label}</time>
+                  </p>
+                  <ul class="batch-facts">
+                    <li>{info.data.mode}</li>
+                    <li>Pendidikan min. {info.data.education}</li>
+                  </ul>
+                  <div class="batch-actions">
+                    {closed ? (
+                      <p class="closed-text">Pendaftaran ditutup</p>
+                    ) : (
+                      <>
+                        <a
+                          class="btn btn-black btn-sm"
+                          href={waDaftar(msg)}
+                          target="_blank"
+                          rel="noopener nofollow"
+                        >
+                          Daftar Sekarang
+                        </a>
+                        <a
+                          class="icon-btn"
+                          href={gcalUrl(batch, info.data.name, info.data.mode)}
+                          target="_blank"
+                          rel="noopener nofollow"
+                          aria-label={`Simpan Gelombang ${batch.batch} ${info.data.name} ke Google Calendar`}
+                          title="Simpan ke Google Calendar"
+                        >
+                          <Icon name="cal" size={18} />
+                        </a>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+    ))
+  }
+</div>
+<div class="sched-empty" id="schedEmpty" hidden>
+  <p>Belum ada gelombang untuk pilihan ini. Konsultasikan jadwal berikutnya dengan tim kami.</p>
+  <a
+    class="btn btn-outline btn-sm"
+    href={waKonsultasi('Halo saya ingin menanyakan jadwal Pelatihan Damkar berikutnya.')}
+    target="_blank"
+    rel="noopener">Tanya jadwal</a>
+</div>
+<p class="note">
+  <Icon name="info" size={16} /> Jadwal dapat berubah sesuai kebijakan penyelenggara.
+  Konfirmasi jadwal terbaru sebelum mendaftar.
+</p>
+
+<script>
+  // Tautan sudah menangani filter kelas/bulan; script ini hanya untuk toggle
+  // "jadwal lewat" + ringkasan + hitungan strip bulan (port initSchedule/main.js).
+  const list = document.getElementById('schedList');
+  const past = document.getElementById('showPast') as HTMLInputElement | null;
+  if (list && past) {
+    const summary = document.getElementById('schedSummary');
+    const empty = document.getElementById('schedEmpty');
+    const months = Array.from(document.querySelectorAll<HTMLElement>('.months .mon[data-month]'));
+    const groups = Array.from(list.querySelectorAll<HTMLElement>('.month-group'));
+    const items = Array.from(list.querySelectorAll<HTMLElement>('.batch'));
+    const isActive = (el: HTMLElement) => el.dataset.status !== 'done';
+
+    const render = () => {
+      const showPast = past.checked;
+      let n = 0;
+      items.forEach((el) => {
+        const show = showPast || isActive(el);
+        el.hidden = !show;
+        if (show) n += 1;
+      });
+      groups.forEach((group) => {
+        group.hidden = !group.querySelector('.batch:not([hidden])');
+      });
+      months.forEach((btn) => {
+        const key = btn.dataset.month ?? '';
+        const inMonth = items.filter(
+          (el) => el.dataset.month === key && (showPast || isActive(el)),
+        );
+        const count = btn.querySelector('[data-mon-count]');
+        if (count) count.textContent = String(inMonth.length);
+        btn.classList.toggle('is-off', inMonth.length === 0);
+        btn.setAttribute('aria-label', `${btn.dataset.base ?? ''}, ${inMonth.length} gelombang`);
+      });
+      list.hidden = n === 0;
+      if (empty) empty.hidden = n > 0;
+      if (summary) {
+        summary.textContent = n
+          ? `Menampilkan ${n} gelombang${showPast ? '' : ' aktif dan mendatang'}.`
+          : '';
+      }
+    };
+
+    past.addEventListener('change', render);
+    render();
+
+    // Geser strip bulan ke bulan pertama yang aktif (layar kecil) — port main.js.
+    const strip = document.querySelector('.months');
+    const first = months.find((month) => !month.classList.contains('is-off'));
+    if (strip && first && strip.scrollWidth > strip.clientWidth) {
+      strip.scrollLeft = (first.parentElement?.offsetLeft ?? 0) - strip.offsetLeft - 12;
+    }
+  }
+</script>

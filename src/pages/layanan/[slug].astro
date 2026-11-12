@@ -9,13 +9,14 @@ import Hero from '../../components/content/Hero.astro';
 import MateriList from '../../components/content/MateriList.astro';
 import Nearest from '../../components/content/Nearest.astro';
 import ReasonsBlock from '../../components/content/ReasonsBlock.astro';
+import Scheduler from '../../components/content/Scheduler.astro';
 import Sidebar from '../../components/content/Sidebar.astro';
 import ContactBand from '../../components/shared/ContactBand.astro';
 import SiteFooter from '../../components/shared/SiteFooter.astro';
 import SiteHeader from '../../components/shared/SiteHeader.astro';
 import WaFloat from '../../components/shared/WaFloat.astro';
 import { faq } from '../../config/blocks';
-import { batches, countBatches, type KelasKey } from '../../config/jadwal';
+import { active, batches, countBatches, type KelasKey } from '../../config/jadwal';
 import { organization, photos, site, waDaftar } from '../../config/site';
 import { ui } from '../../config/ui';
 import {
@@ -49,6 +50,7 @@ const description = `Pelatihan ${data.name} (${data.role}) sertifikasi Kemnaker 
 const ctaMsg = `Halo tim Betracom, saya ingin mendaftar Pelatihan ${data.name}. Mohon info jadwal, biaya, dan persyaratannya.`;
 
 const gelombangCount = countBatches(key);
+const gelombangAktif = active(key).length;
 const others = entries.filter((other) => other.data.key !== key);
 const lokasi = faq[3].a;
 
@@ -156,6 +158,7 @@ const jsonLd = [
           { id: 'manfaat', label: 'Manfaat Pelatihan', icon: 'check' },
           { id: 'detail', label: 'Detail Program', icon: 'list' },
           { id: 'fasilitas', label: 'Mengapa Pilih Kami', icon: 'badge' },
+          { id: 'jadwal', label: 'Jadwal & Persyaratan', icon: 'cal' },
           { id: 'faq', label: 'FAQ', icon: 'info' },
           { id: 'jenjang', label: 'Jenjang Lainnya', icon: 'arrow-ur' },
         ]}
@@ -243,6 +246,17 @@ const jsonLd = [
         </section>
 
         <BenefitsBlock />
+
+        <section class="block" id="jadwal" aria-labelledby="jadwal-title">
+          <header class="block-head">
+            <h2 id="jadwal-title">Jadwal {data.name} {site.year}</h2>
+            <p>
+              {gelombangCount} gelombang Public Training sepanjang {site.year}, {gelombangAktif} di
+              antaranya masih aktif atau akan datang.
+            </p>
+          </header>
+          <Scheduler kelas={key} chips={false} />
+        </section>
 
         <FaqBlock />
 

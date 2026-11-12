@@ -184,6 +184,27 @@ export function programItemList(
   };
 }
 
+/** ItemList untuk halaman jadwal (halaman kelas / halaman bulan). */
+export function scheduleItemList(
+  url: string,
+  name: string,
+  items: { url: string; name: string }[],
+): JsonLd {
+  return {
+    '@type': 'ItemList',
+    '@id': `${url}#jadwal-list`,
+    name,
+    itemListOrder: 'https://schema.org/ItemListOrderAscending',
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: item.url,
+      name: item.name,
+    })),
+  };
+}
+
 export function faqPageNode(url: string, faq: { q: string; a: string }[]): JsonLd {
   return {
     '@type': 'FAQPage',

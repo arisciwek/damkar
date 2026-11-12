@@ -1,0 +1,224 @@
+---
+/**
+ * Route jadwal selain index — satu file catch-all supaya tidak ada dua
+ * dynamic route ambigu di /jadwal/ (keputusan #13):
+ *   /jadwal/kelas-d/             → kelas saja
+ *   /jadwal/2026-06/             → bulan saja (semua kelas)
+ *   /jadwal/kelas-d/2026-06/     → kelas + bulan
+ * Path di luar 63 yang dihasilkan getStaticPaths (termasuk kombinasi kosong
+ * C/2026-01 & B/2026-01) tidak dibuat → 404.
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlockHead from '../../components/content/BlockHead.astro';
+import Breadcrumb from '../../components/content/Breadcrumb.astro';
+import Hero from '../../components/content/Hero.astro';
+import Scheduler from '../../components/content/Scheduler.astro';
+import ContactBand from '../../components/shared/ContactBand.astro';
+import SiteFooter from '../../components/shared/SiteFooter.astro';
+import SiteHeader from '../../components/shared/SiteHeader.astro';
+import WaFloat from '../../components/shared/WaFloat.astro';
+import {
+  batchesIn,
+  countBatches,
+  monthLabel,
+  monthsIn,
+  type KelasKey,
+} from '../../config/jadwal';
+import { photos, site, waDaftar } from '../../config/site';
+import { ui } from '../../config/ui';
+import {
+  breadcrumbNode,
+  organizationNode,
+  scheduleItemList,
+  webpageNode,
+  websiteNode,
+} from '../../utils/schema';
+
+interface Props {
+  kelas?: KelasKey;
+  bulan?: string;
+}
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+    (a, b) => a.data.order - b.data.order,
+  );
+  const keys = entries.map((entry) => entry.data.key as KelasKey);
+  const paths: { params: { path: string }; props: Props }[] = [];
+
+  // /jadwal/2026-01/ ... /jadwal/2026-12/ (semua kelas yang punya gelombang)
+  for (const bulan of monthsIn()) {
+    paths.push({ params: { path: bulan }, props: { bulan } });
+  }
+  for (const kelas of keys) {
+    const slug = `kelas-${kelas.toLowerCase()}`;
+    // /jadwal/kelas-d/
+    paths.push({ params: { path: slug }, props: { kelas } });
+    // /jadwal/kelas-d/2026-06/ (hanya kombinasi terisi)
+    for (const bulan of monthsIn(kelas)) {
+      paths.push({ params: { path: `${slug}/${bulan}` }, props: { kelas, bulan } });
+    }
+  }
+  return paths;
+}
+
+const { kelas, bulan } = Astro.props;
+
+const entries = await getCollection('kelas', (entry) => !entry.data.draft);
+const byKey = new Map(entries.map((entry) => [entry.data.key as KelasKey, entry]));
+const cls = kelas ? byKey.get(kelas) : undefined;
+if (kelas && !cls) throw new Error(`Kelas ${kelas} tidak ada di collection`);
+
+const list = batchesIn(kelas, bulan);
+const nActive = list.filter((batch) => batch.status !== 'done').length;
+const monthText = bulan ? monthLabel(bulan) : '';
+const kelasCount = new Set(list.map((batch) => batch.class)).size;
+
+// ---- Meta -----------------------------------------------------------------
+let title: string;
+let description: string;
+if (kelas && bulan) {
+  title = `Jadwal ${cls!.name} ${monthText} — ${list.length} Gelombang`;
+  description = `Jadwal ${list.length} gelombang ${cls!.name} pada ${monthText}. Pilih tanggal yang cocok, lalu daftar langsung via WhatsApp.`;
+} else if (kelas) {
+  title = `Jadwal ${cls!.name} ${site.year} — ${list.length} Gelombang Public Training`;
+  description = `${nActive} dari ${list.length} gelombang Public Training ${cls!.name} sepanjang ${site.year} masih aktif atau akan datang. Lihat jadwal per bulan dan daftar via WhatsApp.`;
+} else if (bulan) {
+  title = `Jadwal Pelatihan Damkar ${monthText} — ${list.length} Gelombang`;
+  description = `${list.length} gelombang Pelatihan Damkar pada ${monthText} untuk semua jenjang (D, C, B, A). Pilih gelombang dan daftar via WhatsApp.`;
+} else {
+  throw new Error('Route jadwal tanpa kelas dan tanpa bulan');
+}
+
+const url = new URL(Astro.url.pathname, Astro.site).toString();
+const photo = photos[0];
+const ctaMsg =
+  'Halo tim Betracom, saya ingin mendaftar Pelatihan Damkar. Mohon info jadwal, biaya, dan persyaratannya.';
+
+// ---- Hero -----------------------------------------------------------------
+const heading = kelas ? `Jadwal ${cls!.name}` : 'Jadwal Pelatihan Damkar';
+const highlight = bulan ? `${monthText}.` : `${site.year}.`;
+const lead = kelas
+  ? bulan
+    ? `${list.length} gelombang ${cls!.name} pada ${monthText}. Pilih tanggal yang cocok, lalu daftar via WhatsApp.`
+    : `${cls!.desc} Program ${cls!.mode} dengan sertifikasi Kemnaker RI bersama PT Betracom Gemilang Nusa.`
+  : bulan
+    ? `Semua gelombang Pelatihan Damkar pada ${monthText} — dari Kelas D hingga Kelas A — dalam satu halaman.`
+    : '';
+
+// ---- Breadcrumb -----------------------------------------------------------
+const homeUrl = new URL('/', Astro.site).toString();
+const jadwalUrl = new URL('/jadwal/', Astro.site).toString();
+const crumbs: { label: string; href?: string }[] = [
+  { label: ui.nav.breadcrumbHome, href: homeUrl },
+  { label: 'Jadwal', href: jadwalUrl },
+];
+if (kelas) {
+  crumbs.push({
+    label: cls!.name,
+    href: bulan ? `/jadwal/kelas-${kelas.toLowerCase()}/` : undefined,
+  });
+}
+if (bulan) crumbs.push({ label: monthText });
+
+// ---- JSON-LD --------------------------------------------------------------
+const jsonLd = [
+  organizationNode(),
+  websiteNode(),
+  webpageNode({ url, name: title, description }),
+  breadcrumbNode(
+    url,
+    crumbs.map((crumb) => ({
+      name: crumb.label,
+      url: crumb.href ? new URL(crumb.href, Astro.site).toString() : url,
+    })),
+  ),
+];
+
+// ItemList halaman bulan untuk halaman kelas (per keputusan #13).
+if (kelas && !bulan) {
+  jsonLd.push(
+    scheduleItemList(
+      url,
+      `Bulan jadwal ${cls!.name} ${site.year}`,
+      monthsIn(kelas).map((key) => ({
+        url: new URL(`/jadwal/kelas-${kelas.toLowerCase()}/${key}/`, Astro.site).toString(),
+        name: monthLabel(key),
+      })),
+    ),
+  );
+}
+
+// ---- Facts ----------------------------------------------------------------
+const facts = kelas
+  ? [
+      { value: String(list.length), label: `Gelombang ${bulan ? monthText : site.year}` },
+      { value: String(nActive), label: 'Aktif & mendatang' },
+      { value: `Jenjang ${cls!.step}`, label: cls!.role },
+    ]
+  : [
+      { value: String(list.length), label: `Gelombang ${monthText}` },
+      { value: String(kelasCount), label: 'Jenjang kelas' },
+      { value: String(countBatches()), label: `Gelombang ${site.year}` },
+    ];
+
+// ---- Block head -----------------------------------------------------------
+const blockTitle = kelas
+  ? bulan
+    ? `Gelombang ${monthText}`
+    : 'Gelombang per Bulan'
+  : `Gelombang ${monthText}`;
+const blockLede = kelas
+  ? bulan
+    ? `${list.length} gelombang ${cls!.name} pada ${monthText}.`
+    : `${list.length} gelombang Public Training sepanjang ${site.year}, ${nActive} di antaranya masih aktif atau akan datang.`
+  : `${list.length} gelombang Public Training pada ${monthText} — semua jenjang dan kelas.`;
+---
+
+<BaseLayout title={title} description={description} preloadImage={photo.src} jsonLd={jsonLd}>
+  <SiteHeader />
+  <main id="konten">
+    <Hero eyebrow="Jadwal & Pendaftaran" heading={heading} highlight={highlight} lead={lead}>
+      <Breadcrumb slot="crumbs" items={crumbs} />
+      <ul class="hero-facts" slot="facts">
+        {
+          facts.map((fact) => (
+            <li>
+              <b>{fact.value}</b>
+              {fact.label}
+            </li>
+          ))
+        }
+      </ul>
+      <div class="actions" slot="actions">
+        <a class="btn btn-black btn-lg" href={waDaftar(ctaMsg)} target="_blank" rel="noopener">
+          Daftar Sekarang
+        </a>
+        <a class="btn btn-outline btn-lg" href="/jadwal/">Semua Jadwal</a>
+      </div>
+      <figure class="hero-photo" slot="media">
+        <img
+          class="bw"
+          src={photo.src}
+          width={photo.w}
+          height={photo.h}
+          alt={photo.alt}
+          fetchpriority="high"
+          decoding="async"
+        />
+      </figure>
+    </Hero>
+
+    <div class="container">
+      <section class="block" id="jadwal" aria-labelledby="jadwal-title">
+        <BlockHead id="jadwal-title" title={blockTitle} lede={blockLede} />
+        <Scheduler kelas={kelas} bulan={bulan} />
+      </section>
+    </div>
+
+    <ContactBand />
+  </main>
+  <SiteFooter />
+  <WaFloat />
+</BaseLayout>

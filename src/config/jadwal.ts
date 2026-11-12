@@ -147,3 +147,37 @@ export function nextLabel(key?: KelasKey | string): string {
 export function countBatches(key?: KelasKey | string): number {
   return batches.filter((b) => key === undefined || b.class === key).length;
 }
+
+/** Nama bulan panjang (Januari..Desember) — sama dengan MONTHS di build.py. */
+export const MONTHS = [
+  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+] as const;
+
+/** Inisial bulan pendek (Jan..Des) — sama dengan MON di build.py. */
+export const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'] as const;
+
+/** "2026-06" -> "Juni 2026". */
+export function monthLabel(key: string): string {
+  const [y, m] = key.split('-');
+  return `${MONTHS[Number(m) - 1]} ${y}`;
+}
+
+/** Gelombang yang cocok dengan filter (kelas dan/atau bulan), urut tanggal. */
+export function batchesIn(kelas?: KelasKey, bulan?: string): Batch[] {
+  return batches.filter(
+    (b) => (kelas === undefined || b.class === kelas) && (bulan === undefined || b.month === bulan),
+  );
+}
+
+/** Kunci bulan unik (YYYY-MM) urut naik untuk satu jenjang — dasar halaman bulan. */
+export function monthsIn(kelas?: KelasKey): string[] {
+  return [...new Set(batchesIn(kelas).map((b) => b.month))].sort();
+}
+
+/** Jumlah gelombang dalam konteks; activeOnly = hitung yang belum selesai. */
+export function countIn(options: { kelas?: KelasKey; bulan?: string; activeOnly?: boolean }): number {
+  return batchesIn(options.kelas, options.bulan).filter(
+    (b) => !options.activeOnly || b.status !== 'done',
+  ).length;
+}

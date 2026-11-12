@@ -3,21 +3,41 @@ import { blockCopy, reasons } from '../../config/blocks';
 import { photos } from '../../config/site';
 import BlockHead from './BlockHead.astro';
 
+interface ReasonItem {
+  title: string;
+  text: string;
+  image?: {
+    src: string;
+    w: number;
+    h: number;
+    alt: string;
+  };
+}
+
 interface Props {
   /** Judul section, mis. "Mengapa Damkar Kelas A Penting?". */
   title: string;
+  lede?: string;
+  intro?: string;
+  /** Data dapat berasal dari frontmatter; default tetap memakai data produksi saat ini. */
+  items?: ReasonItem[];
 }
 
-const { title } = Astro.props;
+const {
+  title,
+  lede = blockCopy.reasonsLede,
+  intro = blockCopy.reasonsIntro,
+  items = reasons,
+} = Astro.props;
 ---
 
 <section class="block" id="manfaat" aria-labelledby="manfaat-title">
-  <BlockHead id="manfaat-title" title={title} lede={blockCopy.reasonsLede} />
-  <p class="block-intro">{blockCopy.reasonsIntro}</p>
+  <BlockHead id="manfaat-title" title={title} lede={lede} />
+  <p class="block-intro">{intro}</p>
   <ul class="reason-list">
     {
-      reasons.map((reason, index) => {
-        const photo = photos[(index + 1) % photos.length];
+      items.map((reason, index) => {
+        const photo = reason.image ?? photos[(index + 1) % photos.length];
         return (
           <li class="reason">
             <img

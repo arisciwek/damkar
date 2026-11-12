@@ -4,8 +4,11 @@
  * Ubah file ini lalu jalankan `npm run build` — meta, footer, dan JSON-LD ikut berubah.
  */
 
+/** URL dasar: mengikuti `site` di astro.config.mjs (env SITE_URL / VERCEL_*). */
+const baseUrl = (import.meta.env.SITE ?? 'https://pelatihandamkar.web.id').replace(/\/$/, '');
+
 export const site = {
-  url: 'https://pelatihandamkar.web.id',
+  url: baseUrl,
   name: 'Pelatihan Damkar Betracom',
   shortName: 'Betracom',
   year: 2026,

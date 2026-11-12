@@ -2,6 +2,15 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Source parity section beranda (tanpa perubahan route)
+
+- Inspeksi dilanjutkan pada Reasons, ProgramGrid, DetailTabs, Benefits, Gallery, Scheduler, FAQ, ContactBand, serta wrapper Sidebar/layout.
+- Nilai fixture cocok dengan props/default komponen asal; wrapper `PageBlockRenderer` mengikuti urutan DOM wrapper yang dipakai `index.astro`.
+- Scheduler tetap memakai komponen dan script produksi yang sama; default `chips=true` serta filter kelas/bulan kosong setara dengan `<Scheduler />`.
+- Rincian per section dicatat di `docs/BLOCK-PARITY-CHECKLIST.md`.
+- Belum ada klaim DOM/browser parity; route `/` belum dimigrasikan dan tetap aman.
+- Commit: `8762d72` (`docs: rinci source parity section beranda`).
+
 ## 13 Nov 2026 — Source parity hero beranda (tanpa perubahan route)
 
 - Membandingkan `src/pages/index.astro`, `homeBlockFixture`, `HeroBlock.astro`, dan komponen `Hero.astro`.

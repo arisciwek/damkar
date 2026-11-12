@@ -28,6 +28,10 @@ export interface FaqItem {
   a: string;
 }
 
+export interface GalleryItem extends BlockImage {
+  cap: string;
+}
+
 export type BlockConfig =
   | {
       type: 'reasons';
@@ -38,8 +42,8 @@ export type BlockConfig =
     }
   | { type: 'benefits'; title?: string; lede?: string; items?: BenefitItem[] }
   | { type: 'faq'; title?: string; lede?: string; items?: FaqItem[] }
+  | { type: 'gallery'; title?: string; lede?: string; items?: GalleryItem[] }
   | { type: 'program-grid' }
-  | { type: 'gallery' }
   | { type: 'class-tabs' }
   | { type: 'nearest-schedule'; kelas?: 'D' | 'C' | 'B' | 'A'; limit?: number }
   | { type: 'schedule-list'; kelas?: 'D' | 'C' | 'B' | 'A'; bulan?: string; chips?: boolean };

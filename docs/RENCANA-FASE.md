@@ -1,7 +1,7 @@
 # Rencana & Status Fase
 
 > Dokumen hidup. **Update setiap satu fase selesai** (status, commit, catatan).
-> Terakhir diperbarui: **12 Nov 2026 — Fase 2 selesai**.
+> Terakhir diperbarui: **12 Nov 2026 — Fase 4 selesai**.
 
 ## Ikhtisar
 
@@ -28,7 +28,7 @@ di `/www/wwwroot/damkar`.
 | 1-fix | `site.url` ikut env `SITE_URL` | ✅ Selesai | `ae2cd64` |
 | 2 | Halaman `/layanan/` (listing + detail 4 kelas) + redirect 301 | ✅ Selesai | `495304b` (belum push) |
 | 3 | Jadwal: komponen Scheduler + halaman `/jadwal/` + section `#jadwal` di halaman kelas | ✅ Selesai | `dd62aa3` |
-| 4 | Beranda lengkap (port `page_home()` dari `build.py`) | ⬜ Belum | — |
+| 4 | Beranda lengkap (port `page_home()` dari `build.py`) | ✅ Selesai | `b8c56ab` |
 | 5 | Artikel (collection + halaman) + `/kontak/` | ⬜ Belum | — |
 | 6 | SEO: sitemap, robots, JSON-LD final, 404 final, AGENTS.md | ⬜ Belum | — |
 | 7 | Verifikasi menyeluruh + staging `.lan` | ⬜ Belum | — |
@@ -131,7 +131,7 @@ toggle jalan (8 aktif / 49 kartu tersembunyi, 10 grup bulan tersembunyi, summary
 - Strip bulan & chip tidak punya filter in-page — navigasi sepenuhnya lewat URL;
   `data-count`/`aria-pressed` referensi diganti `aria-current` + hitungan statis.
 
-### Fase 4 — Beranda ⬜
+### Fase 4 — Beranda ✅ (commit `b8c56ab`)
 
 Port `page_home()` (`referensi/_tools/build.py` baris 448–551):
 
@@ -143,7 +143,10 @@ Port `page_home()` (`referensi/_tools/build.py` baris 448–551):
   (Scheduler semua kelas) → `#faq` → contact band.
 - Nav header referensi memakai anchor `/#jadwal`, `/#detail`, `/#faq` — **keputusan**: nav
   memakai halaman (`/jadwal/`, `/layanan/`, dst.) sesuai Fase 2; anchor lama di-redirect/None.
-- `src/pages/index.astro` sekarang masih pratinjau (hero + ContactBand) → diganti total.
+- `src/pages/index.astro` diganti total (pratinjau hero+ContactBand → `page_home()` lengkap).
+- **Verifikasi**: check+build lolos (70 halaman); diff kanonis `<main>` **IDENTIK 3892 token**
+  (`/tmp/opencode/diff-home.py`); JS slider/tabs/materi teruji headless Chrome + CDP;
+  JSON-LD home 5 node valid; alt foto hydrant disamakan dengan referensi.
 
 ### Fase 5 — Artikel + Kontak ⬜
 

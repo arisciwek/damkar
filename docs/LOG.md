@@ -2,6 +2,28 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — Fase 4 selesai: beranda (commit `b8c56ab`)
+
+- Port `page_home()` (`build.py` 448–551) ke `src/pages/index.astro` + komponen baru:
+  `HeroSlider.astro` (auto-slide 6500ms, hormati `prefers-reduced-motion`),
+  `DetailTabs.astro` (4 tab kelas + panel materi `limit=6`, klik + panah/Home/End),
+  `GalleryBlock.astro` (4 foto + caption). Section: hero+slider → sidebar 7 anchor →
+  reasons → program → detail-tabs → benefits → gallery → `#jadwal` (Scheduler) → `#faq`.
+- `BaseLayout`: `<script is:inline>document.documentElement.classList.add("js")</script>`
+  — tab & "lihat semua materi" tampil penuh tanpa JS (progressive enhancement).
+- Copy persis referensi: WA hero "…konsultasi…" vs sidebar "…mendaftar…", tombol
+  "Lihat Jadwal" → `#jadwal` (anchor, bukan `/jadwal/` — divergensi disengaja).
+- **Diff kanonis** (`/tmp/opencode/diff-home.py`, normalisasi: entitas HTML `&amp;`/`&middot;`,
+  foto remote→lokal di-drop `src`, bentuk `<path></path>`≡`<path/>`, button→a chip):
+  `<main>` **IDENTIK — 3892 token**.
+- **Bug saat verifikasi**: alt foto hydrant di `config/site.ts` beda dengan referensi
+  (berlaku juga di halaman kelas) → disamakan.
+- **JS teruji** headless Chrome + CDP: `html.js`; slider `1 / 2` → auto `2 / 2` →
+  next/prev wrap-around + `aria-hidden`; tab klik & keyboard (ArrowRight/End) memindah
+  `aria-selected` + panel (`display:none` non-aktif); "Lihat semua materi" 6→13.
+- JSON-LD home: EducationalOrganization + WebSite + WebPage + ItemList (4 program) +
+  FAQPage (4) — 1 blok valid. Screenshot hero/gallery/jadwal/faq cocok referensi.
+
 ## 12 Nov 2026 — Fase 3 selesai (commit `dd62aa3`)
 
 - **63 URL jadwal live**: `/jadwal/` + 12 halaman bulan + 4 kelas + 46 kelas×bulan;

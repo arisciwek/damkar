@@ -22,6 +22,19 @@ function propsFor(block: BlockConfig): Record<string, unknown> {
         actions: block.actions,
         media: block.media,
       };
+    case 'class-detail':
+      return {
+        name: block.name,
+        role: block.role,
+        description: block.description,
+        mode: block.mode,
+        modeNote: block.modeNote,
+        step: block.step,
+        materi: block.materi,
+        requirement: block.requirement,
+        location: block.location,
+        photos: block.photos,
+      };
     case 'reasons':
       return {
         title: block.title,

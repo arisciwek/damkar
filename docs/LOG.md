@@ -2,6 +2,25 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Diff DOM seluruh route layanan/jadwal/beranda (tanpa perubahan kode)
+
+- `npm run build` lolos (70 halaman) di `486c1a2`, working tree bersih; **tidak ada commit
+  kode** — semua selisih diselidiki sebelum menyentuh komponen.
+- Alat: `diff-jadwal.py` + varian tanpa batas baris (`/tmp/opencode/diff-full.py`,
+  `diff-jadwal-full.py`) karena script bawaan memotong diff.
+- **Hasil lengkap + metode: `docs/VERIFIKASI-DOM-ROUTE.md`** (dokumen baru).
+- Temuan: semua selisih = divergensi terdokumentasi (breadcrumb **#10**, role nr-class
+  `d519571`/month-title `f2d2272`/batch-title `fbb9fb4`, judul section jadwal Fase 3) +
+  selisih tanggal `Mulai N hari lagi` (ref diregenerasi 12 Nov vs kita 13 Nov, −1 hari).
+  **Tidak ada selisih tak terduga → tidak ada komponen yang perlu diperbaiki.**
+- Bukti pull Tahap 0 **nol efek**: 7 route **byte-identik** (md5) dengan baseline pre-pull
+  `3eb515a` (git worktree, sudah dihapus). `/layanan/` listing tidak punya referensi
+  (build.py hanya home/class/404) → baseline memakai build pre-pull.
+- **Sisa gerbang Tahap 0**: DOM diff per-block via fixture, uji interaksi browser,
+  screenshot desktop/mobile.
+- Update menyertainya: `RENCANA-BLOCK-PARITY.md` (diff route → "sudah diverifikasi"),
+  `BLOCK-PARITY-CHECKLIST.md` (catatan di bagian Status).
+
 ## 13 Nov 2026 — Penanda: pull kedua terverifikasi (`git pull` di `a519f22`)
 
 - `git pull origin main` → 5 commit, **3 file murni `docs/`** (baru

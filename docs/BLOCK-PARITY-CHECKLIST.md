@@ -85,5 +85,12 @@ atau SEO. Jika normalisasi diperlukan, dokumentasikan alasan dan bentuknya.
 ## Status
 
 **Source-level review selesai; DOM, visual, dan interaksi belum diverifikasi.**
+
+**Update 13 Nov (sesi kedua)**: diff DOM **route produksi** (beranda, `/jadwal/`, 4 detail,
+listing `/layanan/`) terhadap referensi/pre-pull sudah lolos — semua selisih tercatat
+sebagai divergensi terdokumentasi + selisih tanggal; rincian di
+`docs/VERIFIKASI-DOM-ROUTE.md`. Ini belum menutup kolom DOM per block (fixture vs section
+asal) maupun kolom Browser.
+
 Jangan mengubah status Tahap 0 menjadi selesai dan jangan mulai migrasi halaman
 berdasarkan checklist source-level ini saja.

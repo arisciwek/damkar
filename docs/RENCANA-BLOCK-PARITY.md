@@ -143,7 +143,11 @@ tetap mengikuti tahap masing-masing di `docs/RENCANA-FASE.md`, setelah parity bl
 - ✅ Route lama tetap dirender halaman `.astro` — diff kanonis `<main>` beranda
   (`referensi/index.html` vs `dist/index.html`): **hanya divergensi role yang disengaja**
   (`d519571`, `fbb9fb4`); 6 komponen yang dimodifikasi di pull tidak mengubah output.
-  (Halaman layanan & jadwal belum di-diff pada sesi ini.)
+- ✅ **Diff seluruh route layanan/jadwal/beranda** (13 Nov, sesi kedua): semua selisih =
+  divergensi terdokumentasi (breadcrumb #10, role nr-class/month-title/batch-title, judul
+  section jadwal) + selisih tanggal "Mulai N hari lagi" (ref 12 Nov vs kita 13 Nov);
+  **tidak ada selisih tak terduga**; 7 route **byte-identik** dengan baseline pre-pull
+  `3eb515a`. Rincian: `docs/VERIFIKASI-DOM-ROUTE.md`.
 
 ### Hasil inspeksi source-level (13 Nov 2026)
 
@@ -156,13 +160,12 @@ tetap mengikuti tahap masing-masing di `docs/RENCANA-FASE.md`, setelah parity bl
 
 ### Belum dianggap lolos
 
-- Diff halaman layanan (listing + 4 detail) dan jadwal (`diff-jadwal.py`) terhadap build
-  sebelum pull.
 - DOM diff per-block terhadap section asal: tag, urutan, atribut, ID, class, ARIA,
   data-attribute, link, teks.
 - Screenshot serta uji browser untuk slider, tabs/keyboard, show-more, scrollspy, dan
   toggle jadwal lewat.
 - Checklist parity per block (tipe, registry entry, fixture nyata, catatan parity).
 - Karena itu, katalog ini berstatus **implementasi awal — verifikasi parity sebagian
-  (check/build + beranda lolos; parity visual & interaksi pending)**.
+  (check/build + diff seluruh route produksi lolos; parity block via fixture, visual &
+  interaksi pending)**.
   Jangan mulai migrasi halaman sebelum gerbang verifikasi pada dokumen ini lolos.

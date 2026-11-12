@@ -1,0 +1,100 @@
+# Tahap 0 — Design Parity Blocks
+
+> Addendum dan revisi pelaksanaan untuk `docs/RENCANA-FASE.md`, disepakati 13 Nov 2026.
+> Tahap ini dikerjakan sebelum migrasi halaman ke Markdown. Semua pekerjaan langsung di
+> branch `main`, dengan commit kecil dan berurutan agar mudah ditinjau atau di-revert.
+
+## Tujuan
+
+Membentuk katalog block yang merepresentasikan section nyata pada tiga area yang sudah
+berjalan: beranda, layanan, dan jadwal. Tujuannya menjaga desain, struktur HTML, semantic
+class, dan interaksi tetap tersedia ketika halaman kelak dipindahkan ke frontmatter
+Markdown `blocks[]`.
+
+Tahap ini **tidak memigrasikan halaman** dan tidak mengubah output halaman produksi.
+Implementasi block harus menggunakan komponen, CSS, ikon, data, serta perilaku yang sudah
+ada. Jangan membuat desain baru atau mengubah visual hanya agar cocok dengan abstraksi block.
+
+## Prinsip implementasi
+
+1. **Parity sebelum migrasi.** Halaman `.astro` yang sekarang tetap menjadi sumber pembanding.
+   Setiap block harus menghasilkan struktur dan class yang sama dengan section asalnya.
+2. **Data nyata sebagai fixture utama.** Gunakan collection `kelas`, data `faq/reasons/benefits`,
+   foto, konfigurasi organisasi, dan jadwal yang benar-benar dipakai halaman saat ini.
+   Data contoh hanya boleh dipakai untuk menguji variasi opsional, bukan sebagai baseline.
+3. **Tidak ada pemaksaan semua UI menjadi block.** Block mewakili section konten yang dapat
+   diurutkan/dikonfigurasi. Elemen layout global seperti header/footer, metadata, navigasi
+   route, dan kontrol internal yang tidak berdiri sendiri tetap menjadi komponen/layout.
+4. **Komponen ≠ block.** Komponen menangani markup, style hook, dan interaksi. Block adalah
+   adapter/kontrak konfigurasi untuk menggunakan satu atau beberapa komponen. Markdown
+   nantinya menentukan urutan dan data block.
+5. **Jangan duplikasi data.** Selama migrasi belum dimulai, komponen block membaca sumber
+   data yang sama dengan halaman lama. Saat frontmatter menjadi sumber konten, pindahkan data
+   secara eksplisit dan pertahankan bentuk output.
+6. **Jaga perilaku JavaScript.** ID, data-attribute, ARIA, event, progressive enhancement,
+   keyboard interaction, dan selector CSS tidak boleh berubah tanpa alasan dan verifikasi.
+7. **Class semantik dipertahankan.** Jangan menghapus atau mengganti class HTML yang dipakai
+   stylesheet atau script. Elemen wrapper baru harus punya class yang jelas dan tidak
+   mengubah layout.
+8. **Tidak ada block yatim.** Setiap block yang didaftarkan harus punya implementasi, tipe
+   konfigurasi, data nyata untuk preview, dan catatan parity.
+9. **Tidak mengubah halaman produksi pada tahap katalog.** Jangan mengganti halaman lama
+   dengan renderer sampai tahap migrasi halaman yang terpisah.
+
+## Pemetaan section ke block
+
+| Area | Section/fitur saat ini | Kandidat block | Catatan parity |
+| --- | --- | --- | --- |
+| Beranda | Hero + slider + CTA + facts + jadwal terdekat | `hero` | Slot media/near/facts/actions harus tetap identik; slider adalah bagian media, bukan hero terpisah di konten. |
+| Beranda | Sidebar navigasi section | `section-sidebar` | Interaksi scrollspy, anchor, ikon, CTA, dan class tetap. Bukan block konten utama. |
+| Beranda | Mengapa pelatihan penting | `reasons` | `block-intro`, `reason-list`, foto dan urutan nyata tetap. |
+| Beranda/Layanan | Kartu 4 jenjang | `program-grid` | Sumber collection `kelas`, urutan D-C-B-A dan link detail tetap. |
+| Beranda | Tab detail + materi | `class-tabs` | Tab ARIA, keyboard, panel, dan show-more tetap. |
+| Beranda/Layanan | Keunggulan/fasilitas | `benefits` | Ikon dan data dari sumber sekarang. |
+| Beranda | Galeri praktik | `gallery` | Foto/caption lokal dan lazy loading tetap. |
+| Beranda/Layanan | FAQ | `faq` | Details/summary dan FAQ schema tetap. |
+| Beranda/Jadwal/Layanan | Jadwal terdekat | `nearest-schedule` | Menggunakan helper jadwal sekarang; kelak adapter collection schedule. |
+| Beranda/Jadwal/Layanan | Daftar jadwal dan navigasi bulan/kelas | `schedule-list` | URL bersih, status, toggle jadwal lewat, summary, GCal, WA, empty state, dan note tetap. |
+| Semua halaman | CTA kontak | `contact-band` | Reuse komponen shared; bukan duplikasi markup. |
+| Layanan | Hero layanan + breadcrumb + facts + CTA + foto | `service-hero` | Dapat memakai komponen Hero dan slot yang sama dengan hero generik; hindari fork markup. |
+| Layanan | Detail kelas/zigzag/materi/persyaratan | `class-detail` | Perlu inventarisasi file detail sebelum kontrak final; jangan menebak struktur. |
+| Layanan | FAQ dan jenjang terkait | `faq`, `program-grid` | Gunakan block generik dengan props, bukan implementasi duplikat. |
+| Jadwal | Hero jadwal + breadcrumb + facts + CTA | `schedule-hero` | Reuse Hero dengan konfigurasi berbeda; markup harus sama dengan route saat ini. |
+| Jadwal | Scheduler | `schedule-list` | Halaman agregat, bulan, kelas, dan section kelas menggunakan props yang sesuai. |
+
+## Urutan commit
+
+Setiap commit hanya mengambil satu unit yang bisa ditinjau. Jangan menggabungkan beberapa
+tahap jika verifikasi tahap sebelumnya belum lolos.
+
+| Urutan | Isi commit | Gerbang |
+| --- | --- | --- |
+| 0.1 | Revisi dokumen rencana dan peta parity | Dokumen menyatakan batas migrasi, data fixture, dan checklist. |
+| 0.2 | Kontrak block + renderer + registry awal | `npm run check` dan `npm run build`; halaman lama tidak berubah. |
+| 0.3 | Adapter block hero dan CTA | Markup hero beranda/layanan/jadwal tetap identik. |
+| 0.4 | Block reasons, benefits, FAQ, gallery | Urutan data, class, heading, foto, dan details tetap. |
+| 0.5 | Block program-grid dan class-tabs | Link kelas, tab keyboard/ARIA, panel, materi tetap. |
+| 0.6 | Block sidebar dan nearest-schedule | Anchor scrollspy dan jadwal terdekat tetap. |
+| 0.7 | Block schedule-list | 63 URL, navigasi, toggle jadwal lewat, summary, GCal/WA tetap. |
+| 0.8 | Block detail layanan + katalog final | Detail kelas dipetakan; seluruh block punya fixture dan checklist parity. |
+
+## Gerbang verifikasi wajib
+
+Untuk setiap kelompok block:
+
+- `npm run check` berhasil.
+- `npm run build` berhasil.
+- Route produksi lama tetap dirender oleh halaman `.astro`, bukan renderer baru.
+- Bandingkan DOM block terhadap section asal: tag, urutan, atribut, ID, class, ARIA,
+  data-attribute, link, dan teks harus sama kecuali perubahan yang terdokumentasi.
+- Uji interaksi yang relevan di browser: tabs (klik + ArrowLeft/ArrowRight/Home/End),
+  materi show-more, sidebar scrollspy, hero slider, dan toggle jadwal lewat.
+- Tidak ada selector CSS/JS yang menjadi orphan.
+- Catat commit, hasil check/build, route yang diperiksa, dan setiap intentional diff di
+  `docs/LOG.md`.
+
+## Batas tahap
+
+Selesainya Tahap 0 hanya berarti katalog dan implementasi block siap dipakai. Itu **bukan**
+persetujuan untuk memigrasikan halaman. Migrasi beranda, layanan, jadwal, artikel, dan kontak
+tetap mengikuti tahap masing-masing di `docs/RENCANA-FASE.md`, setelah parity block terbukti.

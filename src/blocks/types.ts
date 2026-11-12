@@ -68,6 +68,8 @@ export interface HeroCrumb {
 export interface HeroFact {
   value: string;
   label: string;
+  /** Nilai yang dihitung dari data terstruktur saat build. */
+  dynamic?: 'batch-count';
 }
 
 export interface HeroAction {

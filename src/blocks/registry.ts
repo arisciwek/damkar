@@ -5,6 +5,7 @@ import GalleryBlock from '../components/content/GalleryBlock.astro';
 import Nearest from '../components/content/Nearest.astro';
 import ProgramGrid from '../components/content/ProgramGrid.astro';
 import ReasonsBlock from '../components/content/ReasonsBlock.astro';
+import Sidebar from '../components/content/Sidebar.astro';
 import ContactBandBlock from './ContactBandBlock.astro';
 import HeroBlock from './HeroBlock.astro';
 import ScheduleListBlock from './ScheduleListBlock.astro';
@@ -19,6 +20,7 @@ import type { BlockType } from './types';
 export const blockRegistry = {
   hero: HeroBlock,
   reasons: ReasonsBlock,
+  'section-sidebar': Sidebar,
   benefits: BenefitsBlock,
   faq: FaqBlock,
   'program-grid': ProgramGrid,

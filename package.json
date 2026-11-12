@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "check": "astro sync && tsc --noEmit",
-    "build": "npm run check && astro build",
+    "build": "npm run check && astro build && node scripts/fix-sitemap-lastmod.mjs",
     "preview": "astro preview"
   },
   "engines": {

@@ -165,10 +165,13 @@ export function courseNode(kelas: KelasSchemaInput, today = new Date()): JsonLd 
   return node;
 }
 
-export function programItemList(items: { url: string; name: string }[]): JsonLd {
+export function programItemList(
+  items: { url: string; name: string }[],
+  id = `${site.url}#program`,
+): JsonLd {
   return {
     '@type': 'ItemList',
-    '@id': `${site.url}#program`,
+    '@id': id,
     name: 'Program Pelatihan Damkar Kemnaker RI',
     itemListOrder: 'https://schema.org/ItemListOrderAscending',
     numberOfItems: items.length,

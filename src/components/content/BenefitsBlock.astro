@@ -1,0 +1,28 @@
+---
+import { benefits, blockCopy } from '../../config/blocks';
+import BlockHead from './BlockHead.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  title?: string;
+}
+
+const { title = blockCopy.benefitsTitle } = Astro.props;
+---
+
+<section class="block" id="fasilitas" aria-labelledby="fasilitas-title">
+  <BlockHead id="fasilitas-title" title={title} lede={blockCopy.benefitsLede} />
+  <ul class="benefit-grid">
+    {
+      benefits.map((benefit) => (
+        <li class="benefit">
+          <span class="benefit-icon">
+            <Icon name={benefit.icon} size={30} />
+          </span>
+          <h3>{benefit.title}</h3>
+          <p>{benefit.text}</p>
+        </li>
+      ))
+    }
+  </ul>
+</section>

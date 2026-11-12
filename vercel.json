@@ -1,0 +1,13 @@
+{
+  "trailingSlash": true,
+  "redirects": [
+    { "source": "/damkar-kelas-d", "destination": "/layanan/damkar-kelas-d/", "permanent": true },
+    { "source": "/damkar-kelas-d/", "destination": "/layanan/damkar-kelas-d/", "permanent": true },
+    { "source": "/damkar-kelas-c", "destination": "/layanan/damkar-kelas-c/", "permanent": true },
+    { "source": "/damkar-kelas-c/", "destination": "/layanan/damkar-kelas-c/", "permanent": true },
+    { "source": "/damkar-kelas-b", "destination": "/layanan/damkar-kelas-b/", "permanent": true },
+    { "source": "/damkar-kelas-b/", "destination": "/layanan/damkar-kelas-b/", "permanent": true },
+    { "source": "/damkar-kelas-a", "destination": "/layanan/damkar-kelas-a/", "permanent": true },
+    { "source": "/damkar-kelas-a/", "destination": "/layanan/damkar-kelas-a/", "permanent": true }
+  ]
+}

@@ -1,0 +1,41 @@
+---
+import { blockCopy, reasons } from '../../config/blocks';
+import { photos } from '../../config/site';
+import BlockHead from './BlockHead.astro';
+
+interface Props {
+  /** Judul section, mis. "Mengapa Damkar Kelas A Penting?". */
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<section class="block" id="manfaat" aria-labelledby="manfaat-title">
+  <BlockHead id="manfaat-title" title={title} lede={blockCopy.reasonsLede} />
+  <p class="block-intro">{blockCopy.reasonsIntro}</p>
+  <ul class="reason-list">
+    {
+      reasons.map((reason, index) => {
+        const photo = photos[(index + 1) % photos.length];
+        return (
+          <li class="reason">
+            <img
+              class="bw"
+              src={photo.src}
+              width={photo.w}
+              height={photo.h}
+              alt={photo.alt}
+              loading="lazy"
+              decoding="async"
+            />
+            <div>
+              <h3>{reason.title}</h3>
+              <p>{reason.text}</p>
+            </div>
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>

@@ -1,0 +1,31 @@
+---
+interface Props {
+  eyebrow: string;
+  /** Bagian utama judul, mis. "Pelatihan Damkar Kelas A". */
+  heading: string;
+  /** Bagian judul yang ditonjolkan (dirender sebagai <span>). */
+  highlight?: string;
+  lead: string;
+  /** Lead berisi HTML (dipakai bila ada tautan di dalam kalimat). */
+  leadHtml?: string;
+}
+
+const { eyebrow, heading, highlight, lead, leadHtml } = Astro.props;
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container">
+    <slot name="crumbs" />
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">{eyebrow}</p>
+        <h1 id="hero-title">{heading}{highlight && <> <span>{highlight}</span></>}</h1>
+        {leadHtml ? <p class="hero-lead" set:html={leadHtml} /> : <p class="hero-lead">{lead}</p>}
+        <slot name="near" />
+        <slot name="facts" />
+        <slot name="actions" />
+      </div>
+      <div class="hero-media"><slot name="media" /></div>
+    </div>
+  </div>
+</section>

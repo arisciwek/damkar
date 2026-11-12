@@ -1,0 +1,69 @@
+# =====================================================================
+# .htaccess untuk pelatihandamkar.web.id (Apache / cPanel)
+# Berbasis file referensi, disesuaikan dengan output build Astro (dist/).
+# =====================================================================
+AddDefaultCharset utf-8
+Options -Indexes
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType application/json .json
+  AddType font/woff2 .woff2
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # ---- 301 URL lama (situs statis) ke halaman baru --------------------
+  # /damkar-kelas-{d,c,b,a}/ -> /layanan/damkar-kelas-{d,c,b,a}/
+  RewriteRule ^damkar-kelas-([dcba])/?$ /layanan/damkar-kelas-$1/ [R=301,L]
+
+  # ---- Satu alamat kanonis: https tanpa www ---------------------------
+  # Hanya untuk domain produksi, supaya staging di domain .lan tetap jalan.
+  RewriteCond %{HTTP_HOST} ^(www\.)?pelatihandamkar\.web\.id$ [NC]
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://pelatihandamkar.web.id%{REQUEST_URI} [L,R=301]
+  RewriteCond %{HTTP_HOST} ^www\.pelatihandamkar\.web\.id$ [NC]
+  RewriteRule ^ https://pelatihandamkar.web.id%{REQUEST_URI} [L,R=301]
+
+  # /index.html -> / (hindari konten ganda)
+  RewriteCond %{THE_REQUEST} \s/+(.*/)?index\.html[\s?] [NC]
+  RewriteRule ^ /%1 [L,R=301]
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json application/xml application/manifest+json image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 week"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType application/json "access plus 0 seconds"
+  ExpiresByType application/xml "access plus 1 hour"
+  ExpiresByType text/xml "access plus 1 hour"
+  ExpiresByType text/plain "access plus 1 minute"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType application/manifest+json "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  <FilesMatch "\.(html|json)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.woff2$">
+    Header set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+</IfModule>

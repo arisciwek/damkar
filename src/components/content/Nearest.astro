@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import { upcoming, type KelasKey } from '../../config/jadwal';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  /** Jenjang tertentu; kosong = semua kelas. */
+  kelas?: KelasKey;
+  limit?: number;
+}
+
+const { kelas, limit = 3 } = Astro.props;
+
+const kelasEntries = await getCollection('kelas', (entry) => !entry.data.draft);
+const byKey = new Map(kelasEntries.map((entry) => [entry.data.key, entry.data]));
+
+const rows = upcoming(kelas).slice(0, limit).map((batch) => ({
+  label: batch.label,
+  name: byKey.get(batch.class)?.name ?? batch.class,
+  tag: byKey.get(batch.class)?.courseMode === 'Blended' ? 'Blended' : 'Offline',
+}));
+---
+
+<div class="nearest">
+  <p class="nearest-title"><Icon name="cal" size={18} /> Jadwal terdekat</p>
+  <ul class="nearest-list" data-nearest={kelas ?? 'all'} data-limit={limit}>
+    {
+      rows.length > 0 ? (
+        rows.map((row) => (
+          <li>
+            <span class="nr-date">{row.label}</span>
+            <span class="nr-class">{row.name}</span>
+            <span class="tag">{row.tag}</span>
+          </li>
+        ))
+      ) : (
+        <li class="nr-empty">Jadwal berikutnya segera diumumkan.</li>
+      )
+    }
+  </ul>
+</div>

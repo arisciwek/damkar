@@ -60,6 +60,8 @@ export const ui = {
     },
     certificateValue: 'Kemnaker RI',
     certificateNote: 'Sertifikat & lisensi resmi',
+    /** Nomor konsultasi yang ditampilkan di sidebar (format lokal, seperti referensi). */
+    helpLine: '0812-9805-3891',
   },
 
   footer: {

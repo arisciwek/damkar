@@ -1,0 +1,279 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/ui/Icon.astro';
+import BenefitsBlock from '../../components/content/BenefitsBlock.astro';
+import Breadcrumb from '../../components/content/Breadcrumb.astro';
+import FaqBlock from '../../components/content/FaqBlock.astro';
+import Hero from '../../components/content/Hero.astro';
+import MateriList from '../../components/content/MateriList.astro';
+import Nearest from '../../components/content/Nearest.astro';
+import ReasonsBlock from '../../components/content/ReasonsBlock.astro';
+import Sidebar from '../../components/content/Sidebar.astro';
+import ContactBand from '../../components/shared/ContactBand.astro';
+import SiteFooter from '../../components/shared/SiteFooter.astro';
+import SiteHeader from '../../components/shared/SiteHeader.astro';
+import WaFloat from '../../components/shared/WaFloat.astro';
+import { faq } from '../../config/blocks';
+import { batches, countBatches, type KelasKey } from '../../config/jadwal';
+import { organization, photos, site, waDaftar } from '../../config/site';
+import { ui } from '../../config/ui';
+import {
+  breadcrumbNode,
+  courseNode,
+  faqPageNode,
+  organizationNode,
+  websiteNode,
+  webpageNode,
+} from '../../utils/schema';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+    (a, b) => a.data.order - b.data.order,
+  );
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry, entries },
+  }));
+}
+
+const { entry, entries } = Astro.props;
+const data = entry.data;
+const key = data.key as KelasKey;
+const step = (['D', 'C', 'B', 'A'] as KelasKey[]).indexOf(key); // 0..3 → urutan foto
+const photo = photos[step];
+const url = new URL(`/layanan/${entry.id}/`, Astro.site).toString();
+
+const title = `Pelatihan ${data.name} Kemnaker RI | Jadwal ${site.year}`;
+const description = `Pelatihan ${data.name} (${data.role}) sertifikasi Kemnaker RI. ${data.mode}, pendidikan minimal ${data.education}, ${data.materi.length} materi. Cek jadwal ${site.year} di sini.`;
+const ctaMsg = `Halo tim Betracom, saya ingin mendaftar Pelatihan ${data.name}. Mohon info jadwal, biaya, dan persyaratannya.`;
+
+const gelombangCount = countBatches(key);
+const others = entries.filter((other) => other.data.key !== key);
+const lokasi = faq[3].a;
+
+// Foto zigzag detail: pola (indeks + 1..3) % 4, sama dengan referensi.
+const zigPhotos = [photos[(step + 1) % 4], photos[(step + 2) % 4], photos[(step + 3) % 4]];
+
+/** Gelombang untuk CourseInstance di JSON-LD (hanya field yang dibutuhkan schema). */
+const scheduleForSchema = batches
+  .filter((batch) => batch.class === key)
+  .map((batch) => ({
+    class: batch.class,
+    batch: batch.batch,
+    start: batch.start,
+    end: batch.end,
+    label: batch.label,
+  }));
+
+const jsonLd = [
+  organizationNode(),
+  websiteNode(),
+  webpageNode({
+    url,
+    name: title,
+    description,
+    extra: { about: { '@id': `${url}#course` }, breadcrumb: { '@id': `${url}#breadcrumb` } },
+  }),
+  breadcrumbNode(url, [
+    { name: ui.nav.breadcrumbHome, url: new URL('/', Astro.site).toString() },
+    { name: `Pelatihan ${data.name}`, url },
+  ]),
+  courseNode({
+    key,
+    slug: entry.id,
+    name: data.name,
+    role: data.role,
+    desc: data.desc,
+    mode: data.mode,
+    courseMode: data.courseMode,
+    education: data.education,
+    materi: [...data.materi],
+    schedule: scheduleForSchema,
+  }),
+  faqPageNode(
+    url,
+    faq.map((item) => ({ q: item.q, a: item.a })),
+  ),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image={photo.ogSrc}
+  imageAlt={photo.alt}
+  preloadImage={photo.src}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+  <main id="konten">
+    <Hero
+      eyebrow={`Jenjang ${data.step} dari 4 · Sertifikasi Kemnaker RI`}
+      heading={`Pelatihan ${data.name}`}
+      highlight={data.role}
+      lead={`${data.desc} Program ${data.mode} dengan sertifikasi Kemnaker RI bersama ${organization.name}.`}
+    >
+      <Breadcrumb
+        slot="crumbs"
+        items={[
+          { label: ui.nav.breadcrumbHome, href: '/' },
+          { label: 'Program', href: '/layanan/' },
+          { label: data.name },
+        ]}
+      />
+      <Nearest slot="near" kelas={key} limit={2} />
+      <ul class="hero-facts" slot="facts">
+        <li><b>{data.step}/4</b>Jenjang</li>
+        <li><b>{data.materi.length}</b>Materi</li>
+        <li><b>{gelombangCount}</b>Gelombang {site.year}</li>
+        <li><b>{data.education}</b>Pendidikan min.</li>
+      </ul>
+      <div class="actions" slot="actions">
+        <a class="btn btn-black btn-lg" href={waDaftar(ctaMsg)} target="_blank" rel="noopener">
+          Daftar Sekarang
+        </a>
+        <a class="btn btn-outline btn-lg" href="#detail">Lihat Materi</a>
+      </div>
+      <figure class="hero-photo" slot="media">
+        <img
+          class="bw"
+          src={photo.src}
+          width={photo.w}
+          height={photo.h}
+          alt={photo.alt}
+          fetchpriority="high"
+          decoding="async"
+        />
+        <span class="hero-letter" aria-hidden="true">{key}</span>
+      </figure>
+    </Hero>
+
+    <div class="container layout">
+      <Sidebar
+        ctaMsg={ctaMsg}
+        links={[
+          { id: 'manfaat', label: 'Manfaat Pelatihan', icon: 'check' },
+          { id: 'detail', label: 'Detail Program', icon: 'list' },
+          { id: 'fasilitas', label: 'Mengapa Pilih Kami', icon: 'badge' },
+          { id: 'faq', label: 'FAQ', icon: 'info' },
+          { id: 'jenjang', label: 'Jenjang Lainnya', icon: 'arrow-ur' },
+        ]}
+      />
+      <div class="content">
+        <ReasonsBlock title={`Mengapa ${data.name} Penting?`} />
+
+        <section class="block" id="detail" aria-labelledby="detail-title">
+          <header class="block-head">
+            <h2 id="detail-title">Detail Program {data.name}</h2>
+            <p>Peran, materi, dan persyaratan peserta.</p>
+          </header>
+          <div class="zigzag">
+            <article class="zig">
+              <img
+                class="bw"
+                src={zigPhotos[0].src}
+                width={zigPhotos[0].w}
+                height={zigPhotos[0].h}
+                alt={zigPhotos[0].alt}
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="zig-body">
+                <h3>Peran &amp; Fokus</h3>
+                <p>
+                  <strong>{data.role}.</strong> {data.desc}
+                </p>
+                <dl class="dl">
+                  <div>
+                    <dt>Metode</dt>
+                    <dd>{data.mode} · {data.modeNote}</dd>
+                  </div>
+                  <div>
+                    <dt>Jenjang</dt>
+                    <dd>Jenjang {data.step} dari 4 (Kelas D, C, B, A)</dd>
+                  </div>
+                </dl>
+              </div>
+            </article>
+            <article class="zig">
+              <img
+                class="bw"
+                src={zigPhotos[1].src}
+                width={zigPhotos[1].w}
+                height={zigPhotos[1].h}
+                alt={zigPhotos[1].alt}
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="zig-body">
+                <h3>Materi Pelatihan ({data.materi.length} Materi)</h3>
+                <MateriList items={[...data.materi]} limit={7} />
+              </div>
+            </article>
+            <article class="zig">
+              <img
+                class="bw"
+                src={zigPhotos[2].src}
+                width={zigPhotos[2].w}
+                height={zigPhotos[2].h}
+                alt={zigPhotos[2].alt}
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="zig-body">
+                <h3>Persyaratan &amp; Lokasi</h3>
+                <dl class="dl">
+                  <div>
+                    <dt>Persyaratan peserta</dt>
+                    <dd>{data.requirement}</dd>
+                  </div>
+                  <div>
+                    <dt>Dokumen</dt>
+                    <dd>Pas foto, KTP, dan surat keterangan sehat.</dd>
+                  </div>
+                  <div>
+                    <dt>Lokasi</dt>
+                    <dd>{lokasi}</dd>
+                  </div>
+                </dl>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <BenefitsBlock />
+
+        <FaqBlock />
+
+        <section class="block" id="jenjang" aria-labelledby="jenjang-title">
+          <header class="block-head">
+            <h2 id="jenjang-title">Jenjang Pelatihan Lainnya</h2>
+            <p>Lanjutkan kompetensi ke jenjang berikutnya.</p>
+          </header>
+          <ul class="others">
+            {
+              others.map((other) => (
+                <li>
+                  <a class="other" href={`/layanan/${other.id}/`}>
+                    <span class="prog-letter" aria-hidden="true">{other.data.key}</span>
+                    <span>
+                      <small>Jenjang {other.data.step}</small>
+                      <strong>{other.data.name}</strong>
+                      <em>{other.data.role}</em>
+                    </span>
+                    <Icon name="arrow-ur" size={20} />
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+      </div>
+    </div>
+
+    <ContactBand />
+  </main>
+  <SiteFooter />
+  <WaFloat />
+</BaseLayout>

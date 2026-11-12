@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import { nextLabel } from '../../config/jadwal';
+import BlockHead from './BlockHead.astro';
+
+const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<section class="block" id="program" aria-labelledby="program-title">
+  <BlockHead
+    id="program-title"
+    title="Pilih Jenjang Sesuai Kebutuhan"
+    lede="Program berjenjang dari Petugas Pemadam hingga Ahli K3 Pemadam Kebakaran."
+  />
+  <ul class="prog-grid">
+    {
+      kelas.map((entry) => {
+        const { key, step, name, role, desc, mode, education } = entry.data;
+        return (
+          <li class="prog-card" id={`kelas-${key.toLowerCase()}`}>
+            <div class="prog-top">
+              <span class="prog-letter" aria-hidden="true">{key}</span>
+              <span class="prog-step">Jenjang {step}</span>
+            </div>
+            <h3>
+              <a href={`/layanan/${entry.id}/`}>{name}</a>
+            </h3>
+            <p class="prog-role">{role}</p>
+            <p class="prog-desc">{desc}</p>
+            <dl class="prog-meta">
+              <div>
+                <dt>Metode</dt>
+                <dd>{mode}</dd>
+              </div>
+              <div>
+                <dt>Pendidikan</dt>
+                <dd>Min. {education}</dd>
+              </div>
+              <div>
+                <dt>Terdekat</dt>
+                <dd data-next={key}>{nextLabel(key)}</dd>
+              </div>
+            </dl>
+            <a class="btn btn-outline btn-sm btn-block" href={`/layanan/${entry.id}/`}>
+              Lihat detail kelas
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>

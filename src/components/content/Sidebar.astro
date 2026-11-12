@@ -1,0 +1,83 @@
+---
+import { organization, waDaftar, waKonsultasi } from '../../config/site';
+import { ui } from '../../config/ui';
+import type { IconName } from '../../utils/icons';
+import Icon from '../ui/Icon.astro';
+
+interface Link {
+  /** Id section di dalam .content yang dituju (anchor). */
+  id: string;
+  label: string;
+  icon: IconName;
+}
+
+interface Props {
+  links: Link[];
+  /** Pesan WhatsApp untuk tombol pendaftaran. */
+  ctaMsg: string;
+}
+
+const { links, ctaMsg } = Astro.props;
+---
+
+<aside class="sidebar" aria-label="Navigasi halaman">
+  <div class="side-card">
+    <p class="side-title">Informasi</p>
+    <nav aria-label="Bagian halaman">
+      <ul class="info-links">
+        {
+          links.map((link) => (
+            <li>
+              <a href={`#${link.id}`}>
+                <Icon name={link.icon} size={18} />
+                <span>{link.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <a class="btn btn-black btn-block" href={waDaftar(ctaMsg)} target="_blank" rel="noopener">
+      Daftar Sekarang
+    </a>
+  </div>
+  <div class="side-help">
+    <p class="side-help-title">Butuh bantuan?</p>
+    <p>Konsultasikan jadwal dan pendaftaran dengan tim kami.</p>
+    <a href={waKonsultasi('Halo saya ingin konsultasi Pelatihan Damkar.')} target="_blank" rel="noopener">
+      <Icon name="chat" size={18} /> {ui.contact.helpLine}
+    </a>
+    <a href={`mailto:${organization.email}`}><Icon name="mail" size={18} /> Kirim email</a>
+  </div>
+</aside>
+
+<script>
+  // Penanda bagian aktif pada navigasi "Informasi" (scrollspy) — port dari main.js.
+  const infoLinks = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('.info-links a'),
+  );
+  if (infoLinks.length && 'IntersectionObserver' in window) {
+    const map = new Map(infoLinks.map((a) => [a.getAttribute('href')?.slice(1) ?? '', a]));
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          infoLinks.forEach((a) => a.classList.remove('is-active'));
+          const link = map.get(entry.target.id);
+          if (link) {
+            link.classList.add('is-active');
+            link.parentElement?.parentElement?.scrollTo?.({
+              left: link.offsetLeft - 24,
+              behavior: 'smooth',
+            });
+          }
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    map.forEach((_, id) => {
+      const el = document.getElementById(id);
+      if (el) io.observe(el);
+    });
+  }
+</script>

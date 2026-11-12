@@ -1,0 +1,26 @@
+---
+interface Crumb {
+  label: string;
+  /** Tanpa href = halaman aktif (aria-current="page"). */
+  href?: string;
+}
+
+interface Props {
+  items: Crumb[];
+  label?: string;
+}
+
+const { items, label = 'Breadcrumb' } = Astro.props;
+---
+
+<nav class="breadcrumb" aria-label={label}>
+  <ol>
+    {
+      items.map((item) => (
+        <li aria-current={item.href ? undefined : 'page'}>
+          {item.href ? <a href={item.href}>{item.label}</a> : item.label}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

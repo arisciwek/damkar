@@ -2,6 +2,20 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Checklist parity per block + source review
+
+- Commit `ec90d3e`: tambah `docs/BLOCK-PARITY-CHECKLIST.md` untuk memetakan 12
+  block konten dan 2 wrapper layout terhadap komponen asal, fixture, dan route pembanding.
+- Inspeksi source-level dilakukan pada adapter Hero, class-detail, other-programs,
+  schedule-list, serta komponen Reasons, Benefits, FAQ, Gallery, ProgramGrid, DetailTabs,
+  Nearest, Sidebar, Scheduler, dan ContactBand.
+- Tidak ditemukan alasan untuk mengganti komponen produksi atau mengubah markup pada tahap ini;
+  adapter menggunakan ulang komponen yang sama. Ini bukan bukti DOM/visual/browser parity.
+- Commit `59e1c74`: tautkan checklist dari `RENCANA-BLOCK-PARITY.md` dan catat batas
+  antara source review dengan verifikasi runtime.
+- **Masih pending**: diff route layanan/jadwal, DOM diff per block, screenshot desktop/mobile,
+  dan uji interaksi browser. Tidak ada route produksi yang dimigrasikan atau diubah.
+
 ## 13 Nov 2026 — Verifikasi runtime Tahap 0: check/build lolos (fix `4713cad`)
 
 - `git pull` (19 file, `3eb515a..8b05643`): 3 dokumen (termasuk baru

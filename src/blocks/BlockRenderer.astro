@@ -10,6 +10,18 @@ const { blocks } = Astro.props;
 
 function propsFor(block: BlockConfig): Record<string, unknown> {
   switch (block.type) {
+    case 'hero':
+      return {
+        eyebrow: block.eyebrow,
+        heading: block.heading,
+        highlight: block.highlight,
+        lead: block.lead,
+        breadcrumb: block.breadcrumb,
+        nearest: block.nearest,
+        facts: block.facts,
+        actions: block.actions,
+        media: block.media,
+      };
     case 'reasons':
       return {
         title: block.title,

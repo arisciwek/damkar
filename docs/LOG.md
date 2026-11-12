@@ -2,6 +2,14 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Siapkan konten beranda dalam frontmatter Markdown
+
+- Commit `2caa1a0`: tambah collection `pages` beserta schema block yang membatasi tipe dan properti yang diterima.
+- Commit `e5abef3`: tambah `src/content/pages/home.md` berisi konfigurasi hero, sidebar/layout, reasons, program-grid, class-tabs, benefits, gallery, schedule-list, FAQ, dan contact-band.
+- Konten editorial beranda kini tersimpan sebagai frontmatter; data kelas dan gelombang tetap dibaca dari collection/config produksi oleh komponen dinamis.
+- File Markdown belum dipakai route `/` pada commit ini; perubahan ini menyiapkan sumber konten sebelum pergantian renderer.
+- Check/build belum dijalankan di lingkungan ini. Verifikasi lokal tetap wajib sebelum dinyatakan lolos.
+
 ## 13 Nov 2026 — Source parity section beranda (tanpa perubahan route)
 
 - Inspeksi dilanjutkan pada Reasons, ProgramGrid, DetailTabs, Benefits, Gallery, Scheduler, FAQ, ContactBand, serta wrapper Sidebar/layout.

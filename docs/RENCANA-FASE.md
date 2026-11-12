@@ -87,10 +87,9 @@ di `/www/wwwroot/damkar`.
 
 1. Collection `pages`: `pubDate`/`updatedDate` wajib, `slug`, `draft`, `canonical`,
    `noindex`, `blocks[]`.
-2. `BlockRenderer.astro` + registry — daftar block **disusun dari komponen
-   `src/components/content/` yang sudah ada** (hero, scheduler, nearest, benefits, reasons,
-   faq, gallery, program-grid, detail-tabs, materi, sidebar, contact-band, ...), bukan
-   menyalin 27 block konsultan-slf sekaligus.
+2. Gunakan kembali `src/blocks/BlockRenderer.astro`, `PageBlockRenderer.astro`, registry,
+   dan adapter yang dibangun pada Tahap 0. Tambahkan hanya kontrak/schema yang memang
+   diperlukan collection `pages`; jangan membuat renderer atau block duplikat.
 3. **Gerbang**: `npm run check` + build lolos; halaman lama tidak tersentuh → diff IDENTIK aman.
 
 ### Tahap 3 — Migrasi halaman bertahap ⬜ (urutan murah → mahal)

@@ -11,6 +11,7 @@ interface Props {
   step: number;
   materi: readonly string[];
   requirement: string;
+  location: string;
   photos: readonly [BlockImage, BlockImage, BlockImage];
 }
 
@@ -23,6 +24,7 @@ const {
   step,
   materi,
   requirement,
+  location,
   photos,
 } = Astro.props;
 ---
@@ -95,6 +97,10 @@ const {
           <div>
             <dt>Dokumen</dt>
             <dd>Pas foto, KTP, dan surat keterangan sehat.</dd>
+          </div>
+          <div>
+            <dt>Lokasi</dt>
+            <dd>{location}</dd>
           </div>
         </dl>
       </div>

@@ -2,6 +2,15 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Rapikan peta parity sesuai registry aktual
+
+- Commit `88e24cd`: koreksi peta section → block. Varian hero layanan dan jadwal
+  menggunakan `hero` yang sama (bukan tipe konseptual `service-hero`/`schedule-hero`).
+- Catatan `class-detail` diperbarui karena inventarisasi dan adapter sudah tersedia.
+- Section jenjang terkait pada halaman detail dicatat sebagai `other-programs`, bukan
+  `program-grid`, karena markup dan tujuan UI-nya berbeda.
+- Tidak ada perubahan komponen atau output route produksi.
+
 ## 13 Nov 2026 — Checklist parity per block + source review
 
 - Commit `ec90d3e`: tambah `docs/BLOCK-PARITY-CHECKLIST.md` untuk memetakan 12

@@ -1,5 +1,7 @@
 ---
 type: page
+pubDate: 2026-11-13T09:00:00Z
+updatedDate: 2026-11-13T09:15:00Z
 slug: jadwal
 title: "Jadwal Pelatihan Damkar {{year}} — {{count}} Gelombang Kelas D, C, B, A"
 description: "Semua jadwal {{count}} gelombang Public Training Pelatihan Damkar {{year}} — Kelas D, C, B, dan A. Pilih kelas dan bulan, lalu daftar langsung via WhatsApp."

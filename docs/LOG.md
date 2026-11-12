@@ -40,6 +40,19 @@
   
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Pull migrasi indeks jadwal ke blocks: build lolos tanpa fix
+
+- Pull **3 commit** (`d7d71d2..eb1bdf4`): `src/content/pages/jadwal.md` (blok konfigurasi
+  halaman indeks jadwal), `src/pages/jadwal/index.astro` render dari entry `pages/jadwal`
+  (−61/+36 baris), docs.
+- `npm run check` + `npm run build` **lolos pertama kali** — tanpa kegagalan, tanpa fix.
+- **Verifikasi**: diff `/jadwal/` vs referensi **2777 = 2777 token**, 122 baris — selisih
+  persis kategori terdokumentasi lama (role nr-class/batch-title, judul section jadwal,
+  selisih tanggal "Mulai N hari"); sanity beranda 3892/3892, listing IDENTIK 610, 4 detail
+  tak berubah; 63 route detail bulan (`/jadwal/2026-xx/`, `/jadwal/kelas-x/…`) tetap ada;
+  sitemap 69 URL + lastmod normal.
+- Sisa migrasi: 63 route detail jadwal (`[...path].astro`), `/kontak/`, 404.
+
 ## 13 Nov 2026 — Pull migrasi 4 detail ke blocks: build gagal → fix frontmatter tak tertutup
 
 - Pull **19 commit** (`4d6c4ff..257e0a3`): 4 halaman detail (`damkar-kelas-{d,c,b,a}.md`)

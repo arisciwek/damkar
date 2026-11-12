@@ -138,4 +138,53 @@ const schedule = defineCollection({
   }),
 });
 
-export const collections = { kelas, pages, schedule };
+
+/** Konten artikel — isi lengkap berada di frontmatter blocks[]. */
+const articleContent = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('p'), text: z.string().min(1) }),
+  z.object({ type: z.literal('list'), ordered: z.boolean().default(false), items: z.array(z.string().min(1)).min(1) }),
+  z.object({ type: z.literal('h3'), text: z.string().min(1) }),
+  z.object({ type: z.literal('h4'), text: z.string().min(1) }),
+]);
+const articleBlock = z.discriminatedUnion('component', [
+  z.object({ component: z.literal('section'), id: z.string().min(1), heading: z.string().min(1), content: z.array(articleContent).min(1) }),
+  z.object({ component: z.literal('note'), id: z.string().min(1), variant: z.enum(['info', 'success', 'warning', 'danger']).default('info'), title: z.string().optional(), text: z.string().min(1) }),
+  z.object({ component: z.literal('comparison-table'), id: z.string().min(1), title: z.string().min(1), intro: z.string().optional(), headers: z.array(z.string().min(1)).min(1), rows: z.array(z.array(z.string().min(1))).min(1), note: z.string().optional() }),
+  z.object({ component: z.literal('checklist-card'), id: z.string().min(1), title: z.string().min(1), description: z.string().optional(), items: z.array(z.object({ label: z.string().min(1), detail: z.string().optional(), required: z.boolean().optional() })).min(1), note: z.string().optional() }),
+  z.object({ component: z.literal('process-timeline'), id: z.string().min(1), title: z.string().min(1), steps: z.array(z.object({ title: z.string().min(1), description: z.string().min(1) })).min(1) }),
+  z.object({ component: z.literal('feature-card-grid'), id: z.string().min(1), title: z.string().min(1), columns: z.union([z.literal(2), z.literal(3)]).default(3), items: z.array(z.object({ title: z.string().min(1), description: z.string().optional(), points: z.array(z.string()).optional() })).min(1) }),
+  z.object({ component: z.literal('source-links'), id: z.string().min(1), title: z.string().min(1), intro: z.string().optional(), items: z.array(z.object({ label: z.string().min(1), url: z.url(), description: z.string().optional() })).min(1) }),
+  z.object({ component: z.literal('faq'), id: z.string().min(1), heading: z.string().min(1), items: z.array(z.object({ question: z.string().min(1), answer: z.string().min(1) })).min(1) }),
+  z.object({ component: z.literal('cta'), id: z.string().min(1), heading: z.string().optional(), message: z.string().min(1), button: z.string().optional(), serviceHref: z.string().optional(), serviceLabel: z.string().optional() }),
+]);
+const articles = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/articles' }),
+  schema: z.object({
+    id: z.number().int().positive(),
+    ulid: z.string().regex(/^[0-9A-HJKMNP-TV-Z]{26}$/),
+    type: z.literal('article'),
+    schemaType: z.enum(['Article', 'BlogPosting', 'TechArticle']).default('Article'),
+    slug: z.string().min(1),
+    title: z.string().min(1),
+    description: z.string().min(1),
+    draft: z.boolean().default(false),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date(),
+    author: z.object({ name: z.string().min(1), type: z.enum(['Person', 'Organization']).default('Organization'), url: z.url().optional() }),
+    category: z.string().min(1),
+    tags: z.array(z.string()).default([]),
+    featuredImage: z.string().optional(),
+    featuredImageAlt: z.string().optional(),
+    relatedServices: z.array(z.number().int().positive()).max(1).default([]),
+    relatedArticles: z.array(z.number().int().positive()).default([]),
+    blocks: z.array(articleBlock).min(1),
+  }).superRefine((data, ctx) => {
+    if (data.featuredImage && data.featuredImageAlt !== data.title) {
+      ctx.addIssue({ code: 'custom', message: 'featuredImageAlt harus sama persis dengan title artikel.' });
+    }
+    if (data.updatedDate < data.pubDate) {
+      ctx.addIssue({ code: 'custom', message: 'updatedDate tidak boleh lebih awal daripada pubDate.' });
+    }
+  }),
+});
+export const collections = { kelas, pages, schedule, articles };

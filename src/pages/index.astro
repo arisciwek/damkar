@@ -26,7 +26,7 @@ const faqBlock = blocks
   .flatMap((layout) => layout.blocks)
   .find((block) => block.type === 'faq');
 
-const title = ui.meta.defaultTitle;
+const title = page.data.title;
 const description = page.data.description ?? ui.meta.defaultDescription;
 const url = new URL('/', Astro.site).toString();
 

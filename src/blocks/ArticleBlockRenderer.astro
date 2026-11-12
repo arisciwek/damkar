@@ -33,7 +33,7 @@ function blockError(component: string): never {
     }
     if (block.component === 'note') {
       return (
-        <aside id={block.id} class:list={['article-note-block', `article-note-block--${block.variant ?? 'info'}']} role="note">
+        <aside id={block.id} class:list={['article-note-block', `article-note-block--${block.variant ?? 'info'}`]} role="note">
           {block.title && <h2 class="article-note-block__title">{block.title}</h2>}
           <p class="article-note-block__text">{block.text}</p>
         </aside>

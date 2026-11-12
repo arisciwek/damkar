@@ -4,6 +4,7 @@ import DetailTabs from '../components/content/DetailTabs.astro';
 import FaqBlock from '../components/content/FaqBlock.astro';
 import GalleryBlock from '../components/content/GalleryBlock.astro';
 import Nearest from '../components/content/Nearest.astro';
+import OtherProgramsBlock from './OtherProgramsBlock.astro';
 import ProgramGrid from '../components/content/ProgramGrid.astro';
 import ReasonsBlock from '../components/content/ReasonsBlock.astro';
 import Sidebar from '../components/content/Sidebar.astro';
@@ -21,6 +22,7 @@ import type { BlockType } from './types';
 export const blockRegistry = {
   hero: HeroBlock,
   'class-detail': ClassDetailBlock,
+  'other-programs': OtherProgramsBlock,
   reasons: ReasonsBlock,
   'section-sidebar': Sidebar,
   benefits: BenefitsBlock,

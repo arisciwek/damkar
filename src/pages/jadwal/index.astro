@@ -77,7 +77,7 @@ const jsonLd = [
   ...(await getBatches()).map((batch) =>
     scheduleEventNode({
       url,
-      kelas: `Kelas ${batch.class}`,
+      kelas: batch.class,
       batch: batch.batch,
       start: batch.start,
       end: batch.end,

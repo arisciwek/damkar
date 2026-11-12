@@ -2,6 +2,24 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — Sitemap + `<lastmod>` (commit `17d5b3d`, `752e99a`)
+
+- `@astrojs/sitemap` 3.7.4 di `astro.config.mjs`, filter buang `/404.html`.
+  Output bawaan: **`sitemap-index.xml`** (pembungkus) + `sitemap-0.xml` (**69 URL**:
+  1 beranda + 5 layanan + 63 jadwal). ⚠️ `/sitemap.xml` = **404**, memang tidak pernah
+  dibuat (user pilih biarkan, keputusan via tanya).
+- URL kosong B/2026-01 & C/2026-01 absen dari sitemap — benar (memang 404, keputusan #13).
+- **`<lastmod>`**: via `serialize` = waktu **commit HEAD** (bukan waktu build, agar tidak
+  berubah tiap rebuild). Format ISO-8601 **UTC tanpa milidetik** (`2026-11-12T16:18:34Z`).
+  `@astrojs/sitemap` memaksa `toISOString()` (selalu `.000Z`) → dirapikan langkah akhir
+  `npm run build` oleh `scripts/fix-sitemap-lastmod.mjs`.
+  **Bug skrip saat pertama**: replacement `'$1Z'` lupa `$2` → tag `</lastmod>` hilang dan
+  XML rusak; diperbaiki jadi `'$1Z$2'`, divalidasi `ET.fromstring` (69/69 lastmod, XML valid).
+- `SITE_URL` staging diuji: `http://pelatihan-damkar.lan/` → sitemap ikut, 0 referensi domain
+  produksi, lalu build normal dikembalikan.
+- ⚠️ **Setelah tambah artikel (Fase 5): `npm run build` ulang** supaya URL baru ikut sitemap.
+- Push `58e78c1` (sebelum sitemap): main sinkron dengan origin.
+
 ## 12 Nov 2026 — batch-title kartu gelombang: tambah role (commit `fbb9fb4`)
 
 - Pertanyaan user: role di `<a>Damkar Kelas A</a> <span>Gelombang 11</span>` → di mana?

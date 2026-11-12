@@ -31,7 +31,7 @@ di `/www/wwwroot/damkar`.
 | 3 | Jadwal: komponen Scheduler + halaman `/jadwal/` + section `#jadwal` di halaman kelas | ✅ Selesai | `dd62aa3` |
 | 4 | Beranda lengkap (port `page_home()` dari `build.py`) | ✅ Selesai | `b8c56ab` |
 | 5 | Artikel (collection + halaman) + `/kontak/` | ⬜ Belum | — |
-| 6 | SEO: sitemap, robots, JSON-LD final, 404 final, AGENTS.md | ⬜ Belum | — |
+| 6 | SEO: sitemap, robots, JSON-LD final, 404 final, AGENTS.md | 🟡 Sitemap ✅ (`17d5b3d`), sisanya ⬜ | — |
 | 7 | Verifikasi menyeluruh + staging `.lan` | ⬜ Belum | — |
 
 \* Fase 0 (scaffold) dikerjakan bersamaan dengan Fase 1 dalam satu commit.
@@ -155,12 +155,19 @@ Port `page_home()` (`referensi/_tools/build.py` baris 448–551):
   `/artikel/[slug]/`; konten menyusul).
 - `/kontak/`: data dari `src/config/site.ts` (alamat, WA, email, jam) + ContactBand sudah ada.
 
-### Fase 6 — SEO & pelengkap ⬜
+### Fase 6 — SEO & pelengkap 🟡 (sitemap ✅ `17d5b3d`, sisanya ⬜)
 
-- `sitemap.xml` (port `build.py sitemap()` baris 648 — pakai foto lokal, bukan hotlink
-  pusattrainingk3.com) + `robots.txt` (konstanta `ROBOTS` baris 660) — buat via
-  endpoint/integration Astro. **Termasuk 63 URL jadwal** (keputusan #13) + halaman
-  layanan/artikel/kontak — daftar URL diambil dari route yang sama dengan build.
+- ✅ **`sitemap.xml`** — `@astrojs/sitemap` 3.7.4 (integrasi di `astro.config.mjs`),
+  filter buang `/404.html`. Hasil: **69 URL** = 1 beranda + 5 layanan + 63 jadwal.
+  Nama bawaan `sitemap-index.xml` + `sitemap-0.xml` (**`/sitemap.xml` = 404**, user pilih
+  membiarkannya). Ikut env `SITE_URL` (diuji staging).
+  ✅ **`<lastmod>`** per URL = commit HEAD, ISO-8601 UTC tanpa milidetik
+  (`scripts/fix-sitemap-lastmod.mjs` di akhir `npm run build`).
+  ⚠️ Perlu di-**rebuild saat tambah artikel** (Fase 5) agar URL baru ikut —
+  sitemap dibuat dari route build, jadi otomatis ikut begitu halaman baru di-build.
+- `robots.txt` (konstanta `ROBOTS` `build.py` baris 660) — **belum**; buat via endpoint Astro.
+  Catatan: port `sitemap()` `build.py` baris 648 tidak diperlukan lagi (foto lokal juga sudah
+  benar dengan integrasi ini).
 - JSON-LD final per halaman (artikel, kontak, home lengkap).
 - `404.astro` final (sudah ada, cocokkan dengan `page_404()` baris 631).
 - `AGENTS.md` di root (panduan konvensi project, mengikuti confinedspace).

@@ -7,14 +7,14 @@
  *   /jadwal/kelas-d/2026-06/     → kelas + bulan
  * Path di luar 63 yang dihasilkan getStaticPaths (termasuk kombinasi kosong
  * C/2026-01 & B/2026-01) tidak dibuat → 404.
+ *
+ * Susunan visual disimpan di pages/jadwal-detail.md; data per route tetap
+ * dihitung dari collection kelas dan sumber jadwal yang sama.
  */
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import BlockHead from '../../components/content/BlockHead.astro';
-import Breadcrumb from '../../components/content/Breadcrumb.astro';
-import Hero from '../../components/content/Hero.astro';
-import Scheduler from '../../components/content/Scheduler.astro';
-import ContactBand from '../../components/shared/ContactBand.astro';
+import PageBlockRenderer from '../../blocks/PageBlockRenderer.astro';
+import type { PageBlockConfig } from '../../blocks/types';
 import SiteFooter from '../../components/shared/SiteFooter.astro';
 import SiteHeader from '../../components/shared/SiteHeader.astro';
 import WaFloat from '../../components/shared/WaFloat.astro';
@@ -65,9 +65,11 @@ export async function getStaticPaths() {
 
 const { kelas, bulan } = Astro.props;
 
+const page = await getEntry('pages', 'jadwal-detail');
+if (!page) throw new Error('Template halaman jadwal (src/content/pages/jadwal-detail.md) tidak ditemukan.');
+
 const entries = await getCollection('kelas', (entry) => !entry.data.draft);
-// Simpan `entry.data`, bukan entry collection. Properti kelas (name, role, desc, dll.)
-// berada di dalam data; mengaksesnya langsung dari entry menghasilkan `undefined`.
+// Simpan entry.data karena properti program berada di dalam data.
 const byKey = new Map(entries.map((entry) => [entry.data.key as KelasKey, entry.data]));
 const cls = kelas ? byKey.get(kelas) : undefined;
 if (kelas && !cls) throw new Error(`Kelas ${kelas} tidak ada di collection`);
@@ -167,61 +169,52 @@ const facts = kelas
       { value: String(countBatches()), label: `Gelombang ${site.year}` },
     ];
 
-// ---- Block head -----------------------------------------------------------
-const blockTitle = kelas
-  ? bulan
-    ? `Gelombang ${monthText}`
-    : 'Gelombang per Bulan'
-  : `Gelombang ${monthText}`;
-const blockLede = kelas
-  ? bulan
-    ? `${list.length} gelombang ${kelasLabel} (${cls!.role}) pada ${monthText}.`
-    : `${list.length} gelombang Public Training sepanjang ${site.year}, ${nActive} di antaranya masih aktif atau akan datang.`
-  : `${list.length} gelombang Public Training pada ${monthText} — semua jenjang dan kelas.`;
+// ---- Blocks ----------------------------------------------------------------
+const sourceBlocks = page.data.blocks as unknown as PageBlockConfig[];
+const blocks = sourceBlocks.map((block) => {
+  if (block.type === 'hero') {
+    return {
+      ...block,
+      heading,
+      highlight,
+      lead,
+      breadcrumb: crumbs,
+      facts,
+      actions: block.actions.map((action) =>
+        action.label === 'Daftar Sekarang'
+          ? { ...action, href: waDaftar(ctaMsg) }
+          : action,
+      ),
+      media: { type: 'photo' as const, photo },
+    };
+  }
+
+  if (block.type === 'schedule-list') {
+    const blockTitle = kelas
+      ? bulan
+        ? `Gelombang ${monthText}`
+        : 'Gelombang per Bulan'
+      : `Gelombang ${monthText}`;
+    const blockLede = kelas
+      ? bulan
+        ? `${list.length} gelombang ${kelasLabel} (${cls!.role}) pada ${monthText}.`
+        : `${list.length} gelombang Public Training sepanjang ${site.year}, ${nActive} di antaranya masih aktif atau akan datang.`
+      : `${list.length} gelombang Public Training pada ${monthText} — semua jenjang dan kelas.`;
+
+    return { ...block, title: blockTitle, lede: blockLede, kelas, bulan };
+  }
+
+  return block;
+}) as PageBlockConfig[];
+
+// Halaman jadwal bersifat operasional, bukan artikel editorial.
+// Tidak menambahkan pubDate/updatedDate maupun datePublished/dateModified.
 ---
 
 <BaseLayout title={title} description={description} preloadImage={photo.src} jsonLd={jsonLd}>
   <SiteHeader />
   <main id="konten">
-    <Hero eyebrow="Jadwal & Pendaftaran" heading={heading} highlight={highlight} lead={lead}>
-      <Breadcrumb slot="crumbs" items={crumbs} />
-      <ul class="hero-facts" slot="facts">
-        {
-          facts.map((fact) => (
-            <li>
-              <b>{fact.value}</b>
-              {fact.label}
-            </li>
-          ))
-        }
-      </ul>
-      <div class="actions" slot="actions">
-        <a class="btn btn-black btn-lg" href={waDaftar(ctaMsg)} target="_blank" rel="noopener">
-          Daftar Sekarang
-        </a>
-        <a class="btn btn-outline btn-lg" href="/jadwal/">Semua Jadwal</a>
-      </div>
-      <figure class="hero-photo" slot="media">
-        <img
-          class="bw"
-          src={photo.src}
-          width={photo.w}
-          height={photo.h}
-          alt={photo.alt}
-          fetchpriority="high"
-          decoding="async"
-        />
-      </figure>
-    </Hero>
-
-    <div class="container">
-      <section class="block" id="jadwal" aria-labelledby="jadwal-title">
-        <BlockHead id="jadwal-title" title={blockTitle} lede={blockLede} />
-        <Scheduler kelas={kelas} bulan={bulan} />
-      </section>
-    </div>
-
-    <ContactBand />
+    <PageBlockRenderer blocks={blocks} />
   </main>
   <SiteFooter />
   <WaFloat />

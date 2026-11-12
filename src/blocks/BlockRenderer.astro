@@ -11,7 +11,12 @@ const { blocks } = Astro.props;
 function propsFor(block: BlockConfig): Record<string, unknown> {
   switch (block.type) {
     case 'reasons':
-      return { title: block.title };
+      return {
+        title: block.title,
+        lede: block.lede,
+        intro: block.intro,
+        items: block.items,
+      };
     case 'benefits':
       return { title: block.title };
     case 'faq':

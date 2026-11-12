@@ -32,6 +32,20 @@ export interface GalleryItem extends BlockImage {
   cap: string;
 }
 
+export interface ClassDetailBlockConfig {
+  type: 'class-detail';
+  name: string;
+  role: string;
+  description: string;
+  mode: string;
+  modeNote: string;
+  step: number;
+  materi: readonly string[];
+  requirement: string;
+  location: string;
+  photos: readonly [BlockImage, BlockImage, BlockImage];
+}
+
 export interface SidebarLink {
   id: string;
   label: string;
@@ -98,6 +112,7 @@ export type BlockConfig =
       chips?: boolean;
     }
   | { type: 'contact-band'; id?: string; heading?: string; kicker?: string }
-  | { type: 'section-sidebar'; ctaMsg: string; links: SidebarLink[] };
+  | { type: 'section-sidebar'; ctaMsg: string; links: SidebarLink[] }
+  | ClassDetailBlockConfig;
 
 export type BlockType = BlockConfig['type'];

@@ -111,4 +111,26 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { kelas, pages };
+/**
+ * Collection jadwal gelombang — 57 file di `src/content/schedule/`
+ * (Tahap 4, keputusan #14): satu file per gelombang, dipindah dari
+ * `src/config/jadwal.ts`. Field `start`/`end` di-quoted agar tetap string.
+ */
+const schedule = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/schedule' }),
+  schema: z.object({
+    /** Huruf jenjang: D | C | B | A */
+    class: z.enum(['D', 'C', 'B', 'A']),
+    /** Nomor gelombang, mis. "01" (dua digit). */
+    batch: z.string().regex(/^\d{2}$/, 'batch harus dua digit, mis. "01"'),
+    /** Tanggal mulai (YYYY-MM-DD). */
+    start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'start harus YYYY-MM-DD'),
+    /** Tanggal selesai (YYYY-MM-DD). */
+    end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'end harus YYYY-MM-DD'),
+    /** Label tampilan, mis. "19–21 Januari 2026". */
+    label: z.string().min(1),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { kelas, pages, schedule };

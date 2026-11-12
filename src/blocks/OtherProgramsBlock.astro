@@ -1,0 +1,47 @@
+---
+import Icon from '../components/ui/Icon.astro';
+
+interface ProgramItem {
+  key: string;
+  step: number;
+  name: string;
+  role: string;
+  href: string;
+}
+
+interface Props {
+  title?: string;
+  lede?: string;
+  items: readonly ProgramItem[];
+}
+
+const {
+  title = 'Jenjang Pelatihan Lainnya',
+  lede = 'Lanjutkan kompetensi ke jenjang berikutnya.',
+  items,
+} = Astro.props;
+---
+
+<section class="block" id="jenjang" aria-labelledby="jenjang-title">
+  <header class="block-head">
+    <h2 id="jenjang-title">{title}</h2>
+    <p>{lede}</p>
+  </header>
+  <ul class="others">
+    {
+      items.map((item) => (
+        <li>
+          <a class="other" href={item.href}>
+            <span class="prog-letter" aria-hidden="true">{item.key}</span>
+            <span>
+              <small>Jenjang {item.step}</small>
+              <strong>{item.name}</strong>
+              <em>{item.role}</em>
+            </span>
+            <Icon name="arrow-ur" size={20} />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

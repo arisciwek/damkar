@@ -2,6 +2,14 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Pertahankan fakta jumlah gelombang tetap dinamis pada hero Markdown
+
+- Commit `f6a75ff`: kontrak `HeroFact` mendukung sumber nilai dinamis `batch-count`.
+- Commit `e88ca84`: `HeroBlock` menghitung jumlah gelombang memakai `countBatches()` ketika fact memakai `dynamic: batch-count`.
+- Commit `507a149`: schema frontmatter memvalidasi nilai sumber dinamis tersebut.
+- Commit `f21b159`: fact hero beranda memakai `dynamic: batch-count`; angka fallback tetap 57 agar output saat ini tidak berubah, tetapi nilai render mengikuti data jadwal.
+- Tujuan: mencegah angka gelombang di hero menjadi stale saat data jadwal berubah.
+
 ## 13 Nov 2026 — Migrasi beranda ke Markdown + BlockRenderer
 
 - Commit `f6f3feb`: `/` mulai merender `PageBlockRenderer` dari `src/content/pages/home.md`; header, footer, floating WhatsApp, BaseLayout, JSON-LD, dan preload hero tetap dipertahankan.

@@ -1,11 +1,8 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import BlockHead from '../../components/content/BlockHead.astro';
-import Breadcrumb from '../../components/content/Breadcrumb.astro';
-import Hero from '../../components/content/Hero.astro';
-import Scheduler from '../../components/content/Scheduler.astro';
-import ContactBand from '../../components/shared/ContactBand.astro';
+import PageBlockRenderer from '../../blocks/PageBlockRenderer.astro';
+import type { PageBlockConfig } from '../../blocks/types';
 import SiteFooter from '../../components/shared/SiteFooter.astro';
 import SiteHeader from '../../components/shared/SiteHeader.astro';
 import WaFloat from '../../components/shared/WaFloat.astro';
@@ -20,14 +17,40 @@ import {
   websiteNode,
 } from '../../utils/schema';
 
-const title = `Jadwal Pelatihan Damkar ${site.year} — ${countBatches()} Gelombang Kelas D, C, B, A`;
-const description =
-  `Semua jadwal ${countBatches()} gelombang Public Training Pelatihan Damkar ${site.year} — ` +
-  'Kelas D, C, B, dan A. Pilih kelas dan bulan, lalu daftar langsung via WhatsApp.';
+const page = await getEntry('pages', 'jadwal');
+if (!page) throw new Error('Konten halaman jadwal (src/content/pages/jadwal.md) tidak ditemukan.');
+
+const totalBatches = countBatches();
+const title = page.data.title
+  .replaceAll('{{year}}', String(site.year))
+  .replaceAll('{{count}}', String(totalBatches));
+const description = (page.data.description ?? ui.meta.defaultDescription)
+  .replaceAll('{{year}}', String(site.year))
+  .replaceAll('{{count}}', String(totalBatches));
 const url = new URL('/jadwal/', Astro.site).toString();
-const photo = photos[0];
 const ctaMsg =
   'Halo tim Betracom, saya ingin mendaftar Pelatihan Damkar. Mohon info jadwal, biaya, dan persyaratannya.';
+
+const sourceBlocks = page.data.blocks as unknown as PageBlockConfig[];
+const blocks = sourceBlocks.map((block) => {
+  if (block.type !== 'hero') return block;
+
+  return {
+    ...block,
+    highlight: `${site.year}.`,
+    lead: `Semua gelombang Public Training bersertifikat Kemnaker RI dalam satu halaman — ${totalBatches} gelombang sepanjang ${site.year} untuk Kelas D, C, B, dan A. Pilih kelas dan bulan, lalu daftar via WhatsApp.`,
+    facts: block.facts.map((fact) =>
+      fact.label.startsWith('Gelombang')
+        ? { ...fact, value: String(totalBatches), label: `Gelombang ${site.year}` }
+        : fact,
+    ),
+    actions: block.actions.map((action) =>
+      action.label === 'Daftar Sekarang'
+        ? { ...action, href: waDaftar(ctaMsg) }
+        : action,
+    ),
+  };
+}) as PageBlockConfig[];
 
 // ItemList: 4 halaman jadwal per kelas (anak dari halaman ini).
 const kelasItems = (await getCollection('kelas', (entry) => !entry.data.draft))
@@ -49,58 +72,10 @@ const jsonLd = [
 ];
 ---
 
-<BaseLayout title={title} description={description} preloadImage={photo.src} jsonLd={jsonLd}>
+<BaseLayout title={title} description={description} preloadImage={photos[0].src} jsonLd={jsonLd}>
   <SiteHeader />
   <main id="konten">
-    <Hero
-      eyebrow="Jadwal & Pendaftaran"
-      heading="Jadwal Pelatihan Damkar"
-      highlight={`${site.year}.`}
-      lead={`Semua gelombang Public Training bersertifikat Kemnaker RI dalam satu halaman — ${countBatches()} gelombang sepanjang ${site.year} untuk Kelas D, C, B, dan A. Pilih kelas dan bulan, lalu daftar via WhatsApp.`}
-    >
-      <Breadcrumb
-        slot="crumbs"
-        items={[
-          { label: ui.nav.breadcrumbHome, href: '/' },
-          { label: 'Jadwal' },
-        ]}
-      />
-      <ul class="hero-facts" slot="facts">
-        <li><b>4</b>Jenjang kompetensi</li>
-        <li><b>{countBatches()}</b>Gelombang {site.year}</li>
-        <li><b>Kemnaker</b>Sertifikasi & lisensi resmi</li>
-      </ul>
-      <div class="actions" slot="actions">
-        <a class="btn btn-black btn-lg" href={waDaftar(ctaMsg)} target="_blank" rel="noopener">
-          Daftar Sekarang
-        </a>
-        <a class="btn btn-outline btn-lg" href="/layanan/">Pilih Kelas</a>
-      </div>
-      <figure class="hero-photo" slot="media">
-        <img
-          class="bw"
-          src={photo.src}
-          width={photo.w}
-          height={photo.h}
-          alt={photo.alt}
-          fetchpriority="high"
-          decoding="async"
-        />
-      </figure>
-    </Hero>
-
-    <div class="container">
-      <section class="block" id="jadwal" aria-labelledby="jadwal-title">
-        <BlockHead
-          id="jadwal-title"
-          title="Semua Gelombang Public Training"
-          lede="Temukan tanggal yang cocok. Pilih kelas dan bulan, lalu daftar langsung via WhatsApp."
-        />
-        <Scheduler />
-      </section>
-    </div>
-
-    <ContactBand />
+    <PageBlockRenderer blocks={blocks} />
   </main>
   <SiteFooter />
   <WaFloat />

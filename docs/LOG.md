@@ -9,6 +9,9 @@
   mengambil template tersebut dan mengisi nilai per kelas/bulan dari collection `kelas`
   serta helper jadwal yang sudah ada. Pola `getStaticPaths`, 63 URL, filter gelombang,
   metadata SEO, JSON-LD, dan sumber data tidak diubah.
+- Commit `cf44ee3`: adapter route memetakan props secara rekursif ke block di dalam
+  `content-container`, sehingga `kelas` dan `bulan` benar-benar diteruskan ke `Scheduler`
+  pada setiap URL turunan, bukan hanya ke block yang berada di level teratas.
 - Tidak ada file Markdown per URL yang menduplikasi data. Satu template mengendalikan
   struktur, sedangkan nilai dinamis tetap berasal dari sumber data kanonis.
 - **Kebijakan tanggal**: semua halaman jadwal bersifat operasional; tidak memiliki

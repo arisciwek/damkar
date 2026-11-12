@@ -210,3 +210,131 @@ export const scheduleIndexBlockFixture = [
   },
   { type: 'contact-band' },
 ] satisfies PageBlockConfig[];
+
+
+interface ServiceClassEntry {
+  id: string;
+  data: {
+    key: 'D' | 'C' | 'B' | 'A';
+    step: number;
+    name: string;
+    role: string;
+    desc: string;
+    mode: string;
+    modeNote: string;
+    education: string;
+    requirement: string;
+    materi: readonly string[];
+  };
+}
+
+/** Fixture halaman detail kelas dengan data entry collection yang benar-benar dipakai route. */
+export function serviceDetailBlockFixture(
+  entry: ServiceClassEntry,
+  entries: readonly ServiceClassEntry[],
+): PageBlockConfig[] {
+  const data = entry.data;
+  const key = data.key;
+  const step = (['D', 'C', 'B', 'A'] as const).indexOf(key);
+  const photo = photos[step];
+  const zigPhotos = [
+    photos[(step + 1) % photos.length],
+    photos[(step + 2) % photos.length],
+    photos[(step + 3) % photos.length],
+  ] as const;
+  const ctaMsg = `Halo tim Betracom, saya ingin mendaftar Pelatihan ${data.name}. Mohon info jadwal, biaya, dan persyaratannya.`;
+  const gelombangCount = countBatches(key);
+  const gelombangAktif = countBatches(key);
+  const others = entries.filter((other) => other.data.key !== key);
+
+  return [
+    {
+      type: 'hero',
+      eyebrow: `Jenjang ${data.step} dari 4 · Sertifikasi Kemnaker RI`,
+      heading: `Pelatihan ${data.name}`,
+      highlight: data.role,
+      lead: `${data.desc} Program ${data.mode} dengan sertifikasi Kemnaker RI bersama PT Betracom Gemilang Nusa.`,
+      breadcrumb: [
+        { label: 'Beranda', href: '/' },
+        { label: 'Program', href: '/layanan/' },
+        { label: data.name },
+      ],
+      nearest: { kelas: key, limit: 2 },
+      facts: [
+        { value: `${data.step}/4`, label: 'Jenjang' },
+        { value: String(data.materi.length), label: 'Materi' },
+        { value: String(gelombangCount), label: `Gelombang ${site.year}` },
+        { value: data.education, label: 'Pendidikan min.' },
+      ],
+      actions: [
+        {
+          label: 'Daftar Sekarang',
+          href: waDaftar(ctaMsg),
+          className: 'btn btn-black btn-lg',
+          target: '_blank',
+          rel: 'noopener',
+        },
+        {
+          label: 'Lihat Materi',
+          href: '#detail',
+          className: 'btn btn-outline btn-lg',
+        },
+      ],
+      media: { type: 'photo', photo, letter: key },
+    },
+    {
+      type: 'content-layout',
+      ctaMsg,
+      links: [
+        { id: 'manfaat', label: 'Manfaat Pelatihan', icon: 'check' },
+        { id: 'detail', label: 'Detail Program', icon: 'list' },
+        { id: 'fasilitas', label: 'Mengapa Pilih Kami', icon: 'badge' },
+        { id: 'jadwal', label: 'Jadwal & Persyaratan', icon: 'cal' },
+        { id: 'faq', label: 'FAQ', icon: 'info' },
+        { id: 'jenjang', label: 'Jenjang Lainnya', icon: 'arrow-ur' },
+      ],
+      blocks: [
+        {
+          type: 'reasons',
+          title: `Mengapa ${data.name} Penting?`,
+        },
+        {
+          type: 'class-detail',
+          name: data.name,
+          role: data.role,
+          description: data.desc,
+          mode: data.mode,
+          modeNote: data.modeNote,
+          step: data.step,
+          materi: data.materi,
+          requirement: data.requirement,
+          location: faq[3].a,
+          photos: zigPhotos,
+        },
+        { type: 'benefits' },
+        {
+          type: 'schedule-list',
+          id: 'jadwal',
+          title: `Jadwal ${data.name} ${site.year}`,
+          lede: `${gelombangCount} gelombang Public Training sepanjang ${site.year}, ${gelombangAktif} di antaranya masih aktif atau akan datang.`,
+          kelas: key,
+          chips: false,
+        },
+        { type: 'faq' },
+        {
+          type: 'other-programs',
+          title: 'Jenjang Pelatihan Lainnya',
+          lede: 'Lanjutkan kompetensi ke jenjang berikutnya.',
+          items: others.map((other) => ({
+            key: other.data.key,
+            step: other.data.step,
+            name: other.data.name,
+            role: other.data.role,
+            href: `/layanan/${other.id}/`,
+          })),
+        },
+      ],
+    },
+    { type: 'contact-band' },
+  ] satisfies PageBlockConfig[];
+}

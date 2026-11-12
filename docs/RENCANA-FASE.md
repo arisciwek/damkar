@@ -35,7 +35,7 @@ di `/www/wwwroot/damkar`.
 | 2 | Halaman `/layanan/` (listing + detail 4 kelas) + redirect 301 | ✅ Selesai | `495304b` (belum push) |
 | 3 | Jadwal: komponen Scheduler + halaman `/jadwal/` + section `#jadwal` di halaman kelas | ✅ Selesai | `dd62aa3` |
 | 4 | Beranda lengkap (port `page_home()` dari `build.py`) | ✅ Selesai | `b8c56ab` |
-| 5 | Artikel (collection + halaman) + `/kontak/` | ⬜ Belum | — |
+| 5 | Artikel (collection + halaman) + `/kontak/` | 🟡 Artikel pertama terpasang; verifikasi lokal menunggu | — |
 | 6 | SEO: sitemap, robots, JSON-LD final, 404 final, AGENTS.md | 🟡 Sitemap ✅ (`17d5b3d`), sisanya ⬜ | — |
 | 7 | Verifikasi menyeluruh + staging `.lan` | ⬜ Belum | — |
 

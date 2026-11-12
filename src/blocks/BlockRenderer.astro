@@ -1,0 +1,35 @@
+---
+import { blockRegistry } from './registry';
+import type { BlockConfig } from './types';
+
+interface Props {
+  blocks: BlockConfig[];
+}
+
+const { blocks } = Astro.props;
+
+function propsFor(block: BlockConfig): Record<string, unknown> {
+  switch (block.type) {
+    case 'reasons':
+      return { title: block.title };
+    case 'benefits':
+      return { title: block.title };
+    case 'faq':
+      return { title: block.title, lede: block.lede };
+    case 'nearest-schedule':
+      return { kelas: block.kelas, limit: block.limit };
+    case 'schedule-list':
+      return { kelas: block.kelas, bulan: block.bulan, chips: block.chips };
+    case 'program-grid':
+    case 'gallery':
+    case 'class-tabs':
+      return {};
+  }
+}
+---
+
+{blocks.map((block) => {
+  // Component Astro bertipe berbeda-beda; kontrak props sudah dinarrow oleh propsFor().
+  const Component = blockRegistry[block.type] as any;
+  return <Component {...propsFor(block)} />;
+})}

@@ -1,5 +1,23 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — Artikel pertama Damkar D
+
+- Mengambil artikel `petugas-peran-kebakaran-damkar-d.md` dari branch
+  `content/damkar-articles-and-blocks`; isi blok dipertahankan, tautan CTA
+  disesuaikan ke route layanan Damkar D yang benar.
+- Menambahkan collection `articles` dengan metadata Confined Space/konsultan-slf
+  yang relevan: ID, ULID, tipe schema, slug, tanggal editorial wajib, author,
+  kategori, tags, gambar, relasi, dan `blocks[]`.
+- Menambahkan renderer untuk section, note, comparison table, feature grid,
+  checklist, source links, FAQ, dan CTA; membuat route `/artikel/` serta
+  `/artikel/[slug]/`.
+- Menambahkan validasi tanggal editorial artikel, Open Graph article metadata,
+  JSON-LD Article/Breadcrumb, dan resolver sitemap detail artikel memakai
+  `updatedDate`.
+- **Belum diverifikasi lokal**: jalankan `npm run check && npm run build` setelah
+  pull. Homepage teaser `article-list` dan artikel lainnya tetap tahap berikutnya.
+
+
 ## 13 Nov 2026 — pubDate/updatedDate wajib di setiap entri + validator
 
 - **Keputusan user** (setelah koreksi): logika sederhana — `pubDate`/`updatedDate`

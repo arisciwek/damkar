@@ -1,5 +1,21 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — Migrasi indeks jadwal `/jadwal/` ke Markdown blocks
+
+- Commit `b8ba560`: tambah `src/content/pages/jadwal.md`; konfigurasi hero,
+  breadcrumb, facts, CTA, media, `content-container`, `schedule-list`, dan
+  `contact-band` sekarang tersimpan di frontmatter. Tidak ada body Markdown.
+- Commit `a9c617b`: route `src/pages/jadwal/index.astro` memakai
+  `PageBlockRenderer`. Jumlah gelombang, tahun, CTA WhatsApp, title, description,
+  ItemList JSON-LD, dan breadcrumb tetap dihitung/dibentuk dari sumber data yang sama.
+- Wrapper tetap `.container` tanpa sidebar; scheduler tetap komponen produksi yang sama.
+  Struktur header/footer, `main#konten`, preload gambar, dan JSON-LD dipertahankan.
+- **Pemeriksaan frontmatter**: file baru memiliki tepat dua delimiter `---`
+  (pembuka dan penutup); penutup berada setelah seluruh konfigurasi blocks.
+- **Belum diverifikasi runtime**: setelah pull jalankan `npm run check` dan
+  `npm run build`, lalu bandingkan `/jadwal/` dengan baseline serta uji filter kelas/bulan,
+  toggle jadwal lewat, summary, tautan WhatsApp, dan responsive layout.
+
 ## 13 Nov 2026 — Migrasi 4 halaman detail layanan ke Markdown blocks
 
 - Kontrak collection `pages` diperluas untuk menyimpan referensi jenjang (`kelas: D|C|B|A`)

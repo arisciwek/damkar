@@ -171,7 +171,8 @@ const facts = kelas
 
 // ---- Blocks ----------------------------------------------------------------
 const sourceBlocks = page.data.blocks as unknown as PageBlockConfig[];
-const blocks = sourceBlocks.map((block) => {
+
+function transformContentBlock(block: import('../../blocks/types').BlockConfig) {
   if (block.type === 'hero') {
     return {
       ...block,
@@ -205,6 +206,13 @@ const blocks = sourceBlocks.map((block) => {
   }
 
   return block;
+}
+
+const blocks = sourceBlocks.map((block) => {
+  if (block.type === 'content-container' || block.type === 'content-layout') {
+    return { ...block, blocks: block.blocks.map(transformContentBlock) };
+  }
+  return transformContentBlock(block as import('../../blocks/types').BlockConfig);
 }) as PageBlockConfig[];
 
 // Halaman jadwal bersifat operasional, bukan artikel editorial.

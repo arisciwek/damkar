@@ -17,6 +17,12 @@ export interface ReasonItem {
   image?: BlockImage;
 }
 
+export interface BenefitItem {
+  title: string;
+  text: string;
+  icon: import('../utils/icons').IconName;
+}
+
 export type BlockConfig =
   | {
       type: 'reasons';
@@ -25,7 +31,7 @@ export type BlockConfig =
       intro?: string;
       items?: ReasonItem[];
     }
-  | { type: 'benefits'; title?: string }
+  | { type: 'benefits'; title?: string; lede?: string; items?: BenefitItem[] }
   | { type: 'faq'; title?: string; lede?: string }
   | { type: 'program-grid' }
   | { type: 'gallery' }
@@ -33,5 +39,4 @@ export type BlockConfig =
   | { type: 'nearest-schedule'; kelas?: 'D' | 'C' | 'B' | 'A'; limit?: number }
   | { type: 'schedule-list'; kelas?: 'D' | 'C' | 'B' | 'A'; bulan?: string; chips?: boolean };
 
-/** Bentuk minimal agar renderer dapat memeriksa konfigurasi sebelum render. */
 export type BlockType = BlockConfig['type'];

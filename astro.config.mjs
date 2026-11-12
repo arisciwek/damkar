@@ -17,9 +17,10 @@ const siteUrl =
 // Kebijakan (docs/RENCANA-FASE.md "Kebijakan tanggal editorial dan lastmod teknis"):
 // - halaman editorial (punya `updatedDate` valid di frontmatter) ← updatedDate;
 // - beranda & listing selama belum punya metadata editorial ← commit file sumber;
-// - 63 route turunan jadwal ← max(`updatedDate` ?? `pubDate`) file gelombang
-//   penyumbang route (src/content/schedule/, Tahap 4) — tanggal editorial
-//   per-file, bukan commit git dan bukan tanggal template;
+// - /jadwal/ ← max(updatedDate halaman, updatedDate ?? pubDate seluruh gelombang);
+// - 62 route turunan jadwal ← max(updatedDate template, updatedDate ?? pubDate
+//   file gelombang penyumbang route); tanggal editorial schedule tetap berlaku
+//   meskipun tanggal pelaksanaan sudah lewat;
 // - fallback terakhir ← commit HEAD; tanpa git → tanpa lastmod.
 // Format: ISO-8601 UTC tanpa milidetik, mis. "2026-11-12T23:30:00Z".
 // ---------------------------------------------------------------------------
@@ -61,8 +62,9 @@ const gitLastmodCached = (files) => {
   return gitCache.get(key);
 };
 
-// Indeks file gelombang (Tahap 4: 57 file di src/content/schedule/) untuk
-// lastmod per-route — tiap route dihitung dari tanggal editorial file penyumbangnya.
+// Indeks file gelombang (57 file) untuk lastmod per-route. pubDate adalah
+// publikasi data; updatedDate mengalahkan pubDate saat data (termasuk galeri)
+// diperbarui, tanpa memedulikan apakah tanggal pelaksanaan sudah lewat.
 const scheduleFiles = (() => {
   try {
     const dir = 'src/content/schedule';
@@ -88,12 +90,20 @@ const scheduleFiles = (() => {
   }
 })();
 
-// Lastmod satu route turunan jadwal = tanggal editorial TERBARU di antara
-// file gelombang penyumbangnya:
+const maxDate = (...values) => values.filter(Boolean).sort().at(-1) ?? null;
+
+// Lastmod indeks jadwal mencerminkan template halaman dan seluruh gelombang.
 //   /jadwal/2026-01/            → bulan itu (month = start, sama dengan monthsIn)
 //   /jadwal/kelas-d/             → seluruh gelombang kelas D
 //   /jadwal/kelas-d/2026-01/     → irisan kelas + bulan
-const scheduleRouteLastmod = (pathname) => {
+const scheduleIndexLastmod = () =>
+  maxDate(
+    readUpdatedDate('src/content/pages/jadwal.md'),
+    ...scheduleFiles.map((entry) => entry.last),
+  );
+
+// Lastmod satu route turunan jadwal = tanggal editorial terbaru dari template
+// dan file gelombang penyumbangnya:
   const segs = pathname.slice('/jadwal/'.length).split('/').filter(Boolean);
   let kelas = null;
   let bulan = null;
@@ -105,7 +115,7 @@ const scheduleRouteLastmod = (pathname) => {
   const dates = scheduleFiles
     .filter((e) => (!kelas || e.cls === kelas) && (!bulan || e.month === bulan))
     .map((e) => e.last);
-  return dates.length ? dates.sort().at(-1) : null;
+  return maxDate(readUpdatedDate('src/content/pages/jadwal-detail.md'), ...dates);
 };
 
 // Aturan pathname → sumber. `editorial: true` berarti updatedDate didahulukan.
@@ -117,10 +127,9 @@ const SOURCES = [
     files: (p) => [`src/content/pages/damkar-kelas-${p.match(/damkar-kelas-([a-d])\//)[1]}.md`],
     editorial: true,
   },
-  { match: (p) => p === '/jadwal/', files: ['src/content/pages/jadwal.md'], editorial: true },
+  { match: (p) => p === '/jadwal/', lastmod: scheduleIndexLastmod },
   {
-    // 63 route turunan: max tanggal editorial (updatedDate ?? pubDate) dari
-    // file gelombang penyumbang route — unik per sumber data (Tahap 4).
+    // 62 route turunan: max tanggal editorial template + gelombang penyumbang.
     match: (p) => p.startsWith('/jadwal/'),
     lastmod: scheduleRouteLastmod,
   },

@@ -1,5 +1,26 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — Tanggal editorial halaman jadwal diterapkan
+
+- Commit `b953682`: schema collection `pages` menerima `pubDate` dan `updatedDate`
+  opsional menggunakan `z.coerce.date()`.
+- Commit `40f3472` dan `15c9e41`: tanggal editorial ditambahkan ke frontmatter
+  `jadwal.md` dan `jadwal-detail.md`. Keduanya memakai ISO 8601 UTC tanpa milidetik,
+  dengan `updatedDate` setelah `pubDate`.
+- Commit `affb27b` dan `976e159`: tanggal diteruskan ke `webpageNode()`, sehingga
+  JSON-LD halaman jadwal memuat `datePublished` dan `dateModified`.
+- Tanggal route dinamis bersumber dari satu template; karena itu semua halaman kelas,
+  bulan, dan kombinasi kelas/bulan menggunakan tanggal template yang sama. Tanggal ini
+  adalah tanggal editorial template, bukan tanggal modifikasi data gelombang per URL.
+- Commit `dca9212`: kebijakan tanggal di `RENCANA-FASE.md` diperbarui agar sesuai
+  keputusan terbaru. Catatan sebelumnya yang menyatakan halaman jadwal tidak memiliki
+  tanggal editorial sudah tidak berlaku.
+- Validasi statis dari GitHub: kedua file Markdown diawali dan diakhiri delimiter
+  frontmatter serta masing-masing memiliki tepat dua baris `---`.
+- **Menunggu verifikasi lokal**: jalankan `npm run check` dan `npm run build`;
+  periksa JSON-LD pada `/jadwal/`, `/jadwal/kelas-d/`,
+  `/jadwal/2026-11/`, dan `/jadwal/kelas-d/2026-11/`.
+
 ## 13 Nov 2026 — Migrasi 63 route turunan jadwal ke template Markdown blocks
 
 - Commit `c344c0f`: tambah `src/content/pages/jadwal-detail.md` sebagai template bersama

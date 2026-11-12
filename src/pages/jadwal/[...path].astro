@@ -30,6 +30,7 @@ import { ui } from '../../config/ui';
 import {
   breadcrumbNode,
   organizationNode,
+  scheduleEventNode,
   scheduleItemList,
   webpageNode,
   websiteNode,
@@ -136,8 +137,6 @@ const jsonLd = [
     url,
     name: title,
     description,
-    pubDate: page.data.pubDate,
-    updatedDate: page.data.updatedDate,
   }),
   breadcrumbNode(
     url,
@@ -161,6 +160,20 @@ if (kelas && !bulan) {
     ),
   );
 }
+
+
+jsonLd.push(
+  ...list.map((batch) =>
+    scheduleEventNode({
+      url,
+      kelas: batch.class,
+      batch: batch.batch,
+      start: batch.start,
+      end: batch.end,
+      label: batch.label,
+    }),
+  ),
+);
 
 // ---- Facts ----------------------------------------------------------------
 const facts = kelas

@@ -25,15 +25,15 @@ export interface Gelombang {
   end: string;
   /** Label tampilan, mis. "19–21 Januari 2026". */
   label: string;
-  /** Tanggal publikasi data gelombang — dipakai untuk sitemap. */
-  pubDate: Date;
-  /** Tanggal perubahan data terakhir — dipakai untuk sitemap. */
-  updatedDate?: Date;
 }
 
 export type StatusKey = 'open' | 'soon' | 'ongoing' | 'done';
 
 export interface Batch extends Gelombang {
+  /** Tanggal publikasi data gelombang — dipakai untuk sitemap. */
+  pubDate: Date;
+  /** Tanggal perubahan data terakhir — dipakai untuk sitemap. */
+  updatedDate?: Date;
   st: Date;
   en: Date;
   status: StatusKey;

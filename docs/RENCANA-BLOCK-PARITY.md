@@ -63,10 +63,10 @@ ada. Jangan membuat desain baru atau mengubah visual hanya agar cocok dengan abs
 | Beranda/Jadwal/Layanan | Jadwal terdekat | `nearest-schedule` | Menggunakan helper jadwal sekarang; kelak adapter collection schedule. |
 | Beranda/Jadwal/Layanan | Daftar jadwal dan navigasi bulan/kelas | `schedule-list` | URL bersih, status, toggle jadwal lewat, summary, GCal, WA, empty state, dan note tetap. |
 | Semua halaman | CTA kontak | `contact-band` | Reuse komponen shared; bukan duplikasi markup. |
-| Layanan | Hero layanan + breadcrumb + facts + CTA + foto | `service-hero` | Dapat memakai komponen Hero dan slot yang sama dengan hero generik; hindari fork markup. |
-| Layanan | Detail kelas/zigzag/materi/persyaratan | `class-detail` | Perlu inventarisasi file detail sebelum kontrak final; jangan menebak struktur. |
-| Layanan | FAQ dan jenjang terkait | `faq`, `program-grid` | Gunakan block generik dengan props, bukan implementasi duplikat. |
-| Jadwal | Hero jadwal + breadcrumb + facts + CTA | `schedule-hero` | Reuse Hero dengan konfigurasi berbeda; markup harus sama dengan route saat ini. |
+| Layanan | Hero layanan + breadcrumb + facts + CTA + foto | `hero` | Varian konfigurasi dari Hero generik; breadcrumb dan foto dikirim melalui props/slot, tanpa fork markup. |
+| Layanan | Detail kelas/zigzag/materi/persyaratan | `class-detail` | Adapter sudah dipetakan dari markup route detail; pertahankan tiga zigzag, foto, MateriList, definisi, dan urutan konten. |
+| Layanan | FAQ dan jenjang terkait | `faq`, `other-programs` | FAQ memakai block generik; kartu jenjang terkait memakai adapter tersendiri karena struktur `.others` berbeda dari grid program. |
+| Jadwal | Hero jadwal + breadcrumb + facts + CTA | `hero` | Varian konfigurasi Hero generik; route jadwal memakai breadcrumb, facts, actions, dan foto tanpa nearest. |
 | Jadwal | Scheduler | `schedule-list` | Halaman agregat, bulan, kelas, dan section kelas menggunakan props yang sesuai. |
 
 ## Struktur layout dan renderer

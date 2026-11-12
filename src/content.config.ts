@@ -129,6 +129,10 @@ const schedule = defineCollection({
     end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'end harus YYYY-MM-DD'),
     /** Label tampilan, mis. "19–21 Januari 2026". */
     label: z.string().min(1),
+    /** Waktu publikasi data gelombang ini (ISO 8601 UTC tanpa milidetik). */
+    pubDate: z.coerce.date(),
+    /** Diisi hanya saat data benar-benar diperbarui (kebijakan tanggal editorial). */
+    updatedDate: z.coerce.date().optional(),
     draft: z.boolean().default(false),
   }),
 });

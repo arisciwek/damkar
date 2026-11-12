@@ -89,9 +89,11 @@ di `/www/wwwroot/damkar`.
   `pubDate`/`updatedDate` ke `datePublished`/`dateModified` WebPage JSON-LD. Karena route
   dinamis memakai satu template, semua URL turunan template memiliki tanggal editorial yang sama;
   jangan menganggapnya sebagai waktu perubahan data gelombang per URL.
-- Sitemap `lastmod` adalah metadata teknis yang terpisah. Untuk route jadwal, nilainya
-  dihitung dari commit terakhir file data jadwal yang berkontribusi pada route tersebut;
-  bukan dengan membuat tanggal publikasi/pembaruan editorial palsu.
+- Sitemap `lastmod` adalah metadata teknis yang terpisah. Untuk 63 route jadwal,
+  nilainya = **`max(updatedDate ?? pubDate)` file gelombang penyumbang route**
+  (`src/content/schedule/`, Tahap 4) — tanggal editorial per-file di frontmatter
+  (bukan commit git, bukan tanggal template `jadwal-detail.md`). Route induk
+  (kelas/bulan) menumpuk pada nilai anaknya karena max superset = max subset.
 
 ### Tahap 1 — Tanggal editorial + lastmod per-URL 🟡 (lastmod per-URL ✅; sambungan editorial lain menunggu)
 
@@ -104,8 +106,8 @@ di `/www/wwwroot/damkar`.
    bukan commit HEAD seragam (dikerjakan 13 Nov 2026, `SOURCES` + `resolveLastmod` di config):
    - halaman editorial ← tanggal modifikasi editorial yang valid;
    - beranda & `/layanan/` listing ← waktu commit file sumber selama metadata editorial belum tersedia;
-   - route jadwal ← commit terakhir file data jadwal yang berkontribusi pada route, tanpa
-     menambah `pubDate`/`updatedDate` ke halaman jadwal.
+   - route jadwal ← **`max(updatedDate ?? pubDate)` file gelombang penyumbang**
+     (revisi Tahap 4; sebelumnya commit file data jadwal).
 4. ✅ **Gerbang**: XML tervalidasi, nilai lastmod merefleksikan sumber tiap URL, dan
    **nol perubahan HTML** (`diff` nol) — terpenuhi (70 HTML byte-identik; lastmod per grup
    sumber terverifikasi; `sitemap-0.xml` + `sitemap-index.xml` valid XML).
@@ -145,11 +147,14 @@ Tiap langkah: build + verifikasi + commit.
 - `Scheduler`, `Nearest`, `ProgramGrid`, `HeroBlock`, `getStaticPaths`, indeks, dan
   `layanan/[slug]` baca collection; pemakaian fungsi di template di-precompute di
   frontmatter. **63 URL & logika path tidak berubah**.
-- lastmod 63 URL ← commit terakhir file gelombang penyumbang route (bulan/kelas/irisan);
-  indeks `/jadwal/` tetap `updatedDate` editorial. Ini metadata sitemap teknis, bukan
-  `pubDate`/`updatedDate` dan bukan tanggal JSON-LD. Catatan: 62 route turunan kini berbagi
-  satu lastmod karena seluruh 57 file lahir dalam commit migrasi yang sama — akan unik
-  otomatis saat tiap file diubah terpisah.
+- lastmod 63 URL ← **`max(updatedDate ?? pubDate)` file gelombang penyumbang route**
+  (bulan/kelas/irisan) — tiap file schedule kini punya `pubDate`+`updatedDate` unik
+  (keputusan user: tanggal editorial per-file, bukan rekonstruksi riwayat git);
+  indeks `/jadwal/` tetap `updatedDate` `jadwal.md`. Hasil: **46 nilai unik dari
+  62 route turunan** — 46 route kelas+bulan semuanya unik; 16 route induk (4 kelas +
+  12 bulan) menumpuk pada nilai anaknya (max superset = max subset — akurat secara
+  semantik). Catatan: `updatedDate` indeks `/jadwal/` (`2026-11-13T08:15:00Z`) masih
+  masa depan hingga 13 Nov 08:15Z — build setelah waktu itu otomatis menjadi masa lalu.
 - **Gerbang terpenuhi**: diff indeks `/jadwal/` vs referensi 2777/2777 (pola lama);
   **70 HTML byte-identik** vs baseline pre-Tahap 4; sitemap valid XML, 69 URL.
   (Uji toggle "jadwal lewat" CDP — script klien tidak disentuh, output byte-identik;

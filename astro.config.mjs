@@ -17,8 +17,9 @@ const siteUrl =
 // Kebijakan (docs/RENCANA-FASE.md "Kebijakan tanggal editorial dan lastmod teknis"):
 // - halaman editorial (punya `updatedDate` valid di frontmatter) ← updatedDate;
 // - beranda & listing selama belum punya metadata editorial ← commit file sumber;
-// - 63 route turunan jadwal ← commit terakhir file gelombang penyumbang route
-//   (src/content/schedule/, Tahap 4), TANPA memakai tanggal editorial template;
+// - 63 route turunan jadwal ← max(`updatedDate` ?? `pubDate`) file gelombang
+//   penyumbang route (src/content/schedule/, Tahap 4) — tanggal editorial
+//   per-file, bukan commit git dan bukan tanggal template;
 // - fallback terakhir ← commit HEAD; tanpa git → tanpa lastmod.
 // Format: ISO-8601 UTC tanpa milidetik, mis. "2026-11-12T23:30:00Z".
 // ---------------------------------------------------------------------------
@@ -61,7 +62,7 @@ const gitLastmodCached = (files) => {
 };
 
 // Indeks file gelombang (Tahap 4: 57 file di src/content/schedule/) untuk
-// lastmod per-route — tiap route dihitung dari commit file penyumbangnya.
+// lastmod per-route — tiap route dihitung dari tanggal editorial file penyumbangnya.
 const scheduleFiles = (() => {
   try {
     const dir = 'src/content/schedule';
@@ -71,19 +72,28 @@ const scheduleFiles = (() => {
         const text = readFileSync(join(dir, f), 'utf8');
         const cls = text.match(/^class:\s*([A-D])\s*$/m)?.[1];
         const start = text.match(/^start:\s*"(\d{4}-\d{2}-\d{2})"\s*$/m)?.[1];
-        return { path: `${dir}/${f}`, cls, month: start ? start.slice(0, 7) : null };
+        // Tanggal editorial: updatedDate jika ada, kalau tidak pubDate.
+        const upd = text.match(/^updatedDate:\s*"([0-9]{4}-[0-9:-]+T[0-9:]+Z)"\s*$/m)?.[1];
+        const pub = text.match(/^pubDate:\s*"([0-9]{4}-[0-9:-]+T[0-9:]+Z)"\s*$/m)?.[1];
+        return {
+          path: `${dir}/${f}`,
+          cls,
+          month: start ? start.slice(0, 7) : null,
+          last: upd ?? pub ?? null,
+        };
       })
-      .filter((e) => e.cls && e.month);
+      .filter((e) => e.cls && e.month && e.last);
   } catch {
     return [];
   }
 })();
 
-// File gelombang penyumbang satu route turunan jadwal:
+// Lastmod satu route turunan jadwal = tanggal editorial TERBARU di antara
+// file gelombang penyumbangnya:
 //   /jadwal/2026-01/            → bulan itu (month = start, sama dengan monthsIn)
 //   /jadwal/kelas-d/             → seluruh gelombang kelas D
 //   /jadwal/kelas-d/2026-01/     → irisan kelas + bulan
-const scheduleRouteFiles = (pathname) => {
+const scheduleRouteLastmod = (pathname) => {
   const segs = pathname.slice('/jadwal/'.length).split('/').filter(Boolean);
   let kelas = null;
   let bulan = null;
@@ -92,10 +102,10 @@ const scheduleRouteFiles = (pathname) => {
     if (m) kelas = m[1].toUpperCase();
     else if (/^\d{4}-\d{2}$/.test(seg)) bulan = seg;
   }
-  const files = scheduleFiles
+  const dates = scheduleFiles
     .filter((e) => (!kelas || e.cls === kelas) && (!bulan || e.month === bulan))
-    .map((e) => e.path);
-  return files.length ? files : null;
+    .map((e) => e.last);
+  return dates.length ? dates.sort().at(-1) : null;
 };
 
 // Aturan pathname → sumber. `editorial: true` berarti updatedDate didahulukan.
@@ -109,17 +119,17 @@ const SOURCES = [
   },
   { match: (p) => p === '/jadwal/', files: ['src/content/pages/jadwal.md'], editorial: true },
   {
-    // 63 route turunan: commit terakhir file gelombang penyumbang route
-    // (Tahap 4) — bukan tanggal editorial template (kebijakan lastmod teknis).
+    // 63 route turunan: max tanggal editorial (updatedDate ?? pubDate) dari
+    // file gelombang penyumbang route — unik per sumber data (Tahap 4).
     match: (p) => p.startsWith('/jadwal/'),
-    files: scheduleRouteFiles,
-    editorial: false,
+    lastmod: scheduleRouteLastmod,
   },
 ];
 
 const resolveLastmod = (pathname) => {
   const rule = SOURCES.find((r) => r.match(pathname));
   if (!rule) return HEAD_LASTMOD;
+  if (rule.lastmod) return rule.lastmod(pathname) ?? HEAD_LASTMOD;
   const files = typeof rule.files === 'function' ? rule.files(pathname) : rule.files;
   if (!files || files.length === 0) return HEAD_LASTMOD;
   const editorial = rule.editorial ? readUpdatedDate(files[0]) : null;

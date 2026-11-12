@@ -1,5 +1,31 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — Lastmod 63 route ← tanggal editorial per-file gelombang
+
+- **Permintaan**: 62 route turunan jadwal harus punya `lastmod` unik (sebelumnya
+  kembar semua — seluruh 57 file lahir di satu commit migrasi `eeecc5a`).
+- **Keputusan user**: tanggal editorial di frontmatter tiap file gelombang
+  (bukan rekonstruksi riwayat git / bukan split commit).
+- 57 file `src/content/schedule/` diberi `pubDate` wajib (`2026-11-12T20:07:00Z` →
+  `20:16:20Z`, step 10 detik, urutan entri data) + `updatedDate` sesi edit nyata
+  (`21:59:53Z` → `22:04:33Z`, step 5 detik) — unik per file, semua di masa lalu,
+  format ISO 8601 UTC tanpa milidetik sesuai kebijakan tanggal.
+- Schema `schedule`: `pubDate: z.coerce.date()` wajib, `updatedDate` opsional.
+- `astro.config.mjs`: lastmod 63 route ← **`max(updatedDate ?? pubDate)` file
+  penyumbang** (`scheduleRouteLastmod`), bukan `git log`. Indeks `/jadwal/` tetap
+  `updatedDate` `jadwal.md`.
+- **Temuan (bug regex)**: pola `[\dT:]+` tidak mencakup karakter `-` → tanggal
+  `2026-11-12T…` tidak cocok → `scheduleFiles` kosong → semua route jatuh ke
+  `HEAD_LASTMOD` tanpa error. Fix: `[0-9]{4}-[0-9:-]+T[0-9:]+Z`.
+- **Gerbang lulus**: check+build lolos; **0 selisih** lastmod vs expected per route;
+  **46 nilai unik dari 62 route turunan** (46 route kelas+bulan unik; 16 route induk
+  menumpuk pada nilai anaknya — max superset = max subset); halaman non-jadwal tidak
+  berubah; **70 HTML byte-identik** vs baseline; sitemap valid XML, 69 URL.
+- **Catatan**: `<lastmod>` indeks `/jadwal/` = `2026-11-13T08:15:00Z` (tanggal
+  editorial Anda) — **masa depan** hingga 13 Nov 08:15Z. Sudah ada sejak Tahap 1
+  (lastmod indeks ← updatedDate), bukan regresi unit ini; build setelah waktu
+  tersebut otomatis menjadi masa lalu. Menunggu keputusan apakah digeser.
+
 ## 13 Nov 2026 — Tanggal editorial halaman jadwal diterapkan
 
 - Commit `b953682`: schema collection `pages` menerima `pubDate` dan `updatedDate`

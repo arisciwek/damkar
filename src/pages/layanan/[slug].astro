@@ -35,6 +35,9 @@ if (!page) throw new Error(`Markdown blocks untuk halaman ${entry.id} tidak dite
 
 const data = entry.data;
 const key = data.key as KelasKey;
+if (page.data.kelas !== key) {
+  throw new Error(`Referensi kelas pada ${entry.id} tidak cocok dengan collection kelas ${key}.`);
+}
 const step = (['D', 'C', 'B', 'A'] as KelasKey[]).indexOf(key);
 const photo = photos[step];
 const url = new URL(`/layanan/${entry.id}/`, Astro.site).toString();

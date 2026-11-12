@@ -103,7 +103,8 @@ const scheduleIndexLastmod = () =>
   );
 
 // Lastmod satu route turunan jadwal = tanggal editorial terbaru dari template
-// dan file gelombang penyumbangnya:
+// dan file gelombang penyumbangnya.
+const scheduleRouteLastmod = (pathname) => {
   const segs = pathname.slice('/jadwal/'.length).split('/').filter(Boolean);
   let kelas = null;
   let bulan = null;

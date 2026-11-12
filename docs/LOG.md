@@ -2,6 +2,13 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — nr-class lebar & nr-date sempit (commit `8bc3d5e`)
+
+- Permintaan user: kolom `nr-date` (tanggal) disempitkan agar `nr-class` (nama+role) lebih lebar.
+- `global.css` `.nearest-list li`: `grid-template-columns1.25fr/1fr/auto` → `.9fr/1.5fr/auto`.
+- Hasil: "Damkar Kelas D Petugas Pemadam" muat1 baris (sebelumnya wrap). Tanggal panjang
+  ("30 November–2 Desember 2026") tetap terbaca (wrap alami). Layout mobile tidak berubah.
+
 ## 12 Nov 2026 — "Jadwal terdekat" (nr-class): tambah role (commit `d519571`)
 
 - Permintaan user: `<span class="nr-class">Damkar Kelas A</span>` → `…Damkar Kelas A Ahli K3`.

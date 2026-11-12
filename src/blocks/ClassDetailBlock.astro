@@ -1,0 +1,103 @@
+---
+import MateriList from '../components/content/MateriList.astro';
+import type { BlockImage } from './types';
+
+interface Props {
+  name: string;
+  role: string;
+  description: string;
+  mode: string;
+  modeNote: string;
+  step: number;
+  materi: readonly string[];
+  requirement: string;
+  photos: readonly [BlockImage, BlockImage, BlockImage];
+}
+
+const {
+  name,
+  role,
+  description,
+  mode,
+  modeNote,
+  step,
+  materi,
+  requirement,
+  photos,
+} = Astro.props;
+---
+
+<section class="block" id="detail" aria-labelledby="detail-title">
+  <header class="block-head">
+    <h2 id="detail-title">Detail Program {name}</h2>
+    <p>Peran, materi, dan persyaratan peserta.</p>
+  </header>
+  <div class="zigzag">
+    <article class="zig">
+      <img
+        class="bw"
+        src={photos[0].src}
+        width={photos[0].w}
+        height={photos[0].h}
+        alt={photos[0].alt}
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="zig-body">
+        <h3>Peran &amp; Fokus</h3>
+        <p>
+          <strong>{role}.</strong> {description}
+        </p>
+        <dl class="dl">
+          <div>
+            <dt>Metode</dt>
+            <dd>{mode} · {modeNote}</dd>
+          </div>
+          <div>
+            <dt>Jenjang</dt>
+            <dd>Jenjang {step} dari 4 (Kelas D, C, B, A)</dd>
+          </div>
+        </dl>
+      </div>
+    </article>
+    <article class="zig">
+      <img
+        class="bw"
+        src={photos[1].src}
+        width={photos[1].w}
+        height={photos[1].h}
+        alt={photos[1].alt}
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="zig-body">
+        <h3>Materi Pelatihan ({materi.length} Materi)</h3>
+        <MateriList items={[...materi]} limit={7} />
+      </div>
+    </article>
+    <article class="zig">
+      <img
+        class="bw"
+        src={photos[2].src}
+        width={photos[2].w}
+        height={photos[2].h}
+        alt={photos[2].alt}
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="zig-body">
+        <h3>Persyaratan &amp; Lokasi</h3>
+        <dl class="dl">
+          <div>
+            <dt>Persyaratan peserta</dt>
+            <dd>{requirement}</dd>
+          </div>
+          <div>
+            <dt>Dokumen</dt>
+            <dd>Pas foto, KTP, dan surat keterangan sehat.</dd>
+          </div>
+        </dl>
+      </div>
+    </article>
+  </div>
+</section>

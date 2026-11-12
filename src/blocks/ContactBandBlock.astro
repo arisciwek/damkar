@@ -1,0 +1,13 @@
+---
+import ContactBand from '../components/shared/ContactBand.astro';
+
+interface Props {
+  id?: string;
+  heading?: string;
+  kicker?: string;
+}
+
+const { id, heading, kicker } = Astro.props;
+---
+
+<ContactBand id={id} heading={heading} kicker={kicker} />

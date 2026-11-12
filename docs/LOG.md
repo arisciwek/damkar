@@ -2,12 +2,26 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
-## 12 Nov 2026 — Keputusan: jadwal tanpa URL per gelombang
+## 12 Nov 2026 — Revisi: jadwal pakai clean URL per kelas & per bulan
 
-- User memilih **ikuti referensi**: 57 gelombang tidak punya URL sendiri.
-  Struktur URL jadwal = `/jadwal/` + `#jadwal` per kelas + deep link `?kelas=&bulan=`
-  (ditangani `main.js` baris ~300). Tidak ada penambahan 57 halaman/sitemap/JSON-LD Event
-  per gelombang. Dicatat sebagai Keputusan #13 di `RENCANA-FASE.md`.
+- Keputusan #13 **direvisi** setelah diskusi: awalnya ikuti referensi (query param),
+  user memilih **clean URL** demi SEO:
+  - `/jadwal/` + `/jadwal/kelas-d/` (4) + `/jadwal/kelas-d/2026-06/` (**46 URL**).
+  - Data: 57 gelombang, 46 kombinasi terisi; **C/2026-01 & B/2026-01 kosong → tidak dibuat**.
+  - Distribusi per kelas: D=23, C=11, B=11, A=12.
+  - Rata-rata isi 1,2 gelombang/halaman (maks 3) — user tetap memilih opsi ini
+    setelah thin content / doorway risk dijelaskan.
+  - **Chip kelas & strip bulan = tautan** (`<a>`), bukan filter in-page → navigasi
+    tanpa JS, semua URL bisa di-crawl; toggle "jadwal lewat" tetap JS.
+  - Deep link `?kelas=&bulan=` **dihapus** dari rencana (sudah jadi URL bersih).
+  - Sitemap jadwal: 1 + 4 + 46 = 51 URL; canonical per halaman ke dirinya sendiri.
+- Detail implementasi ada di `RENCANA-FASE.md` → Fase 3.
+
+## 12 Nov 2026 — Keputusan (lama): jadwal tanpa URL per gelombang
+
+- ~~User memilih **ikuti referensi**~~ → **direvisi** lihat entri di atas.
+  Yang masih berlaku: **tiap gelombang tetap tidak punya URL sendiri** (kartu dalam
+  halaman). Dicatat sebagai Keputusan #13 di `RENCANA-FASE.md` (sudah diperbarui).
 
 ## 12 Nov 2026 — Fase 2 selesai: halaman /layanan + redirect 301
 

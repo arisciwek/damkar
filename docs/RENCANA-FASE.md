@@ -87,21 +87,34 @@ referensi identik (title/desc/h1/facts/zigzag/materi/sidebar); tanpa anchor rusa
 
 Data sudah siap (`src/config/jadwal.ts`). Yang dikerjakan:
 
-1. **Komponen `Scheduler`** — port perilaku dari `referensi/assets/js/main.js` (baris 147–326):
-   - chips filter kelas (Semua / D / C / B / A), pilih bulan (strip `.months` + count per bulan),
-     toggle "Tampilkan jadwal yang sudah lewat", summary live (`aria-live`), empty state.
-   - kartu gelombang: badge status, tanggal, kelas, tombol **WA daftar** + **GCal**
-     (`gcalLink` baris 156), status `open/soon/ongoing/done`.
-   - deep link: `?kelas=D&bulan=2026-12` atau `#jadwal-d` → auto scroll.
-   - **Beda dengan referensi**: status sudah dihitung saat build (`jadwal.ts`), jadi script
-     klien hanya untuk filter/toggle — tidak perlu `fetch(site.json)` (data build-time).
-2. **Halaman `/jadwal/`** — nav & footer sudah menautkan ke sini (sekarang masih 404).
+1. **Struktur route** (keputusan #13 — clean URL):
+   ```
+   src/pages/jadwal/index.astro              → /jadwal/              (57 gelombang)
+   src/pages/jadwal/[kelas]/index.astro      → /jadwal/kelas-d/      (4 URL)
+   src/pages/jadwal/[kelas]/[bulan].astro    → /jadwal/kelas-d/2026-06/  (46 URL)
+   ```
+   - `[kelas]` divalidasi (D/C/B/A), `[bulan]` divalidasi `YYYY-MM` + wajib ada
+     gelombangnya → selain itu 404. Data di-generate saat build dari `jadwal.ts`
+     (`getStaticPaths`), jadi tak ada fetch client-side.
+   - Empty combo (C/2026-01, B/2026-01) tidak dibuat → 404.
+2. **Komponen `Scheduler`** — port perilaku dari `referensi/assets/js/main.js` (baris 147–326):
+   - **Chip kelas & strip bulan = tautan** ke URL bersih (bukan filter in-page);
+     jumlah per bulan/kelas di-render saat build.
+   - Toggle "Tampilkan jadwal yang sudah lewat" tetap JS (state lokal, tak mengubah URL),
+     summary live (`aria-live`), empty state.
+   - Kartu gelombang: badge status, tanggal, kelas, tombol **WA daftar** + **GCal**
+     (`gcalLink` baris 156), status `open/soon/ongoing/done` (dihitung saat build).
+   - Deep link `?kelas=&bulan=` **tidak dipakai** (sudah jadi URL bersih).
 3. **Section `#jadwal` di tiap halaman kelas** (`/layanan/[slug]/`) + tambah link sidebar
    **"Jadwal & Persyaratan"** → jadi **6 anchor** seperti referensi
    (urutan referensi `build.py` baris 590: manfaat, detail, fasilitas, **jadwal**, faq, jenjang).
    Sekarang baru 5 (manfaat, detail, fasilitas, faq, jenjang).
-4. Judul section: `Jadwal {nama kelas} 2026` + sub `{n} gelombang ... {m} di antaranya masih
+   Judul: `Jadwal {nama kelas} 2026` + sub `{n} gelombang ... {m} di antaranya masih
    aktif atau akan datang` (dari `build.py` `page_class()` baris 611–614).
+4. **JSON-LD** tiap halaman jadwal: `CollectionPage`/`ItemList` + BreadcrumbList
+   (Beranda → Jadwal → Kelas → Bulan). Sitemap: 51 URL jadwal.
+5. **Halaman `/jadwal/` juga jadi tujuan** nav header, footer, 404, dan tombol
+   "Lihat Jadwal" di beranda (sekarang masih 404).
 
 ### Fase 4 — Beranda ⬜
 
@@ -127,7 +140,8 @@ Port `page_home()` (`referensi/_tools/build.py` baris 448–551):
 
 - `sitemap.xml` (port `build.py sitemap()` baris 648 — pakai foto lokal, bukan hotlink
   pusattrainingk3.com) + `robots.txt` (konstanta `ROBOTS` baris 660) — buat via
-  endpoint/integration Astro.
+  endpoint/integration Astro. **Termasuk 51 URL jadwal** (keputusan #13) + halaman
+  layanan/artikel/kontak — daftar URL diambil dari route yang sama dengan build.
 - JSON-LD final per halaman (artikel, kontak, home lengkap).
 - `404.astro` final (sudah ada, cocokkan dengan `page_404()` baris 631).
 - `AGENTS.md` di root (panduan konvensi project, mengikuti confinedspace).
@@ -163,10 +177,19 @@ Port `page_home()` (`referensi/_tools/build.py` baris 448–551):
     2 item (Beranda + nama kelas) persis referensi.
 11. **Collection `artikel`**: sistem dulu, konten menyusul; `/kontak` fase pertama.
 12. **`trailingSlash: 'always'`** + `build.format: 'directory'`.
-13. **Jadwal TANPA URL per gelombang** (keputusan user, 12 Nov 2026) — ikuti referensi:
-    hanya `/jadwal/` (semua gelombang) + `#jadwal` per halaman kelas + deep link filter
-    `?kelas=D&bulan=2026-12` / `#jadwal-d`. Tiap gelombang = kartu dalam halaman,
-    bukan halaman sendiri → sitemap & navigasi tetap kecil.
+13. **URL jadwal: clean URL per kelas & per bulan** (keputusan user, 12 Nov 2026 — revisi):
+    ```
+    /jadwal/                     ← semua 57 gelombang
+    /jadwal/kelas-d/             ← 4 URL per kelas (D=23, C=11, B=11, A=12)
+    /jadwal/kelas-d/2026-06/     ← 46 URL (hanya kombinasi terisi; C/2026-01 &
+                                    B/2026-01 kosong → tidak dibuat / 404)
+    ```
+    - **Tidak ada URL per gelombang** — tiap gelombang tetap kartu dalam halaman.
+    - **Chip kelas & strip bulan = tautan** (`<a>` menuju URL bersih), bukan filter
+      in-page. Navigasi jalan tanpa JS & bisa di-crawl; toggle "tampilkan jadwal
+      lewat" tetap JS. Karena itu deep link `?kelas=&bulan=` **tidak dipakai**.
+    - Sitemap jadwal: 1 + 4 + 46 = **51 URL**. Tiap halaman canonical ke dirinya sendiri.
+    - `#jadwal` di `/layanan/[slug]/` tetap ada (section dalam halaman kelas).
 
 ## Peta file penting
 

@@ -122,6 +122,11 @@ const scheduleRouteLastmod = (pathname) => {
 // Aturan pathname → sumber. `editorial: true` berarti updatedDate didahulukan.
 const SOURCES = [
   { match: (p) => p === '/', files: ['src/content/pages/home.md'], editorial: true },
+  {
+    match: (p) => /^\/artikel\/[^/]+\/$/.test(p),
+    files: (p) => [`src/content/articles/${p.split('/')[2]}.md`],
+    editorial: true,
+  },
   { match: (p) => p === '/layanan/', files: ['src/content/pages/layanan.md'], editorial: true },
   {
     match: (p) => /^\/layanan\/damkar-kelas-[a-d]\/$/.test(p),

@@ -34,6 +34,8 @@ function propsFor(block: BlockConfig): Record<string, unknown> {
         bulan: block.bulan,
         chips: block.chips,
       };
+    case 'contact-band':
+      return { id: block.id, heading: block.heading, kicker: block.kicker };
   }
 }
 ---

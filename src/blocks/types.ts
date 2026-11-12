@@ -125,3 +125,22 @@ export type BlockConfig =
   | { type: 'other-programs'; title?: string; lede?: string; items: readonly OtherProgramItem[] };
 
 export type BlockType = BlockConfig['type'];
+
+
+/**
+ * Struktur layout halaman. Ini bukan block konten yang dapat dipindah bebas:
+ * wrapper harus mengikuti DOM halaman asal agar grid dan sidebar tetap identik.
+ */
+export interface ContentLayoutBlock {
+  type: 'content-layout';
+  ctaMsg: string;
+  links: SidebarLink[];
+  blocks: BlockConfig[];
+}
+
+export interface ContentContainerBlock {
+  type: 'content-container';
+  blocks: BlockConfig[];
+}
+
+export type PageBlockConfig = BlockConfig | ContentLayoutBlock | ContentContainerBlock;

@@ -2,6 +2,27 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Tahap 0 Design Parity Blocks (implementasi awal, verifikasi pending)
+
+- Revisi rencana: `docs/RENCANA-FASE.md` menambahkan Tahap 0 sebelum migrasi halaman;
+  rincian peta section, urutan commit, dan gerbang parity ada di
+  `docs/RENCANA-BLOCK-PARITY.md`.
+- Eksekusi langsung di `main`, tanpa mengubah atau mengganti route produksi yang sudah ada.
+  Commit dibuat kecil dan berurutan.
+- Fondasi: `src/blocks/types.ts`, `registry.ts`, `BlockRenderer.astro`, dan
+  `PageBlockRenderer.astro` (wrapper layout sidebar/container mengikuti struktur halaman).
+- Adapter dibuat untuk Hero, reasons, benefits, FAQ, gallery, program-grid, class-tabs,
+  nearest-schedule, schedule-list, contact-band, class-detail, dan other-programs.
+  Komponen lama menerima props konfigurasi dengan default data produksi agar pemakaian
+  halaman saat ini tetap memakai markup yang sama.
+- Fixture berbasis data nyata dibuat untuk beranda, listing layanan, indeks jadwal, dan
+  detail kelas: `src/blocks/fixtures.ts`.
+- **Belum dinyatakan lolos parity**: runtime project belum menjalankan `npm run check`,
+  `npm run build`, DOM diff, screenshot, atau uji browser. Tidak ada halaman yang dimigrasikan.
+  Lanjutkan verifikasi sebelum menambah adapter lain atau memulai migrasi.
+- Commit utama: `c44aa71` (dokumen parity), `9e714c5` (revisi rencana), lalu rangkaian
+  commit `src/blocks/*` dan adapter komponen setelahnya.
+
 ## 13 Nov 2026 — Keputusan arsitektur: pola konsultan-slf + lastmod per-URL (rencana, belum ada kode)
 
 - Lanjutan diskusi arsitektur; analisis `../konsultan-slf` & `../confinedspace`: semua

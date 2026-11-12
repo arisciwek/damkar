@@ -24,6 +24,27 @@
   
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Pull migrasi 4 detail ke blocks: build gagal → fix frontmatter tak tertutup
+
+- Pull **19 commit** (`4d6c4ff..257e0a3`): 4 halaman detail (`damkar-kelas-{d,c,b,a}.md`)
+  dimigrasi ke Markdown blocks + block `referensi-kelas`/`other-programs` di schema,
+  lalu rangkaian fix: posisi contact-band per kelas, metadata SEO diselaraskan dengan data
+  program, validasi referensi kelas, docs.
+- `npm run check` **gagal** di sync: `[InvalidContentEntryDataError] pages → damkar-kelas-a`
+  — `type` bukan `"page"`, `slug/title/blocks` **Required** (data = `{}`).
+- **Akar**: ke-4 file **tidak punya penutup `---`** (hanya 1 delimiter, pembuka) → parser
+  menganggap tak ada frontmatter → data kosong. `home.md` & `layanan.md` punya 2 delimiter
+  (benar).
+- **Fix**: tambah `---` penutup di akhir ke-4 file (konten seluruhnya di frontmatter,
+  tanpa body — pola sama dengan `layanan.md`). Validasi ulang `yaml.safe_load` → OK,
+  keys lengkap (`type, slug, kelas, title, description, draft, blocks`), 3 block per file.
+- **Verifikasi setelah fix**: check + build lolos (70 halaman); **4 detail vs referensi:
+  token & jumlah baris diff persis sama dengan sebelum migrasi** (d 1802/32, c 1316/26,
+  b 1351/30, a 1399/32 — selisih hanya kategori lama: breadcrumb #10, role nr-class &
+  month-title, selisih tanggal); beranda 3892/3892 (126 baris, tak berubah); listing
+  **IDENTIK 610** vs baseline; `<title>` + `meta description` ke-4 halaman **SAMA** dengan
+  referensi (membuktikan fix SEO `257e0a3` dll. jalan); sitemap 69 URL + lastmod normal.
+
 ## 13 Nov 2026 — Pull migrasi listing /layanan/: build gagal → fix YAML (`layanan.md`)
 
 - Pull **4 commit** (`3a0661c..9712b44`): frontmatter block halaman layanan (`c0370e7`),

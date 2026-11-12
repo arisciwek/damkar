@@ -61,6 +61,25 @@
 - `HeroBlock` menggunakan komponen `Hero` yang sama. Source/props beranda **cocok**;
   ini belum dianggap DOM parity karena hasil render belum dibandingkan.
 
+### Rincian source parity — section beranda (13 Nov 2026)
+
+| Section asal di `index.astro` | Konfigurasi fixture | Hasil perbandingan source |
+| --- | --- | --- |
+| `ReasonsBlock` | `reasons` | Judul, lede, intro, item dan fallback foto memakai nilai/config yang sama. |
+| `ProgramGrid` | `program-grid` | Judul dan lede fixture sama dengan default komponen; data kelas tetap diambil dari collection. |
+| `DetailTabs` | `class-tabs` | Judul dan lede fixture sama dengan default komponen; collection dan script tabs tetap berasal dari komponen yang sama. |
+| `BenefitsBlock` | `benefits` | Judul, lede, item dan ikon berasal dari `config/blocks` yang sama. |
+| `GalleryBlock` | `gallery` | Judul, lede dan empat foto/caption sama dengan default komponen. |
+| `BlockHead` + `Scheduler` dalam section `#jadwal` | `schedule-list` | ID section/heading, judul, lede, dan default Scheduler (semua kelas/bulan, chips aktif) cocok. |
+| `FaqBlock` | `faq` | Judul, lede, dan empat pasangan tanya-jawab berasal dari config yang sama. |
+| `ContactBand` | `contact-band` | Adapter meneruskan props opsional sebagai undefined; default ID, heading, kicker dan konten tetap dari komponen yang sama. |
+| `.container.layout` + `Sidebar` + `.content` | `content-layout` | Urutan wrapper, Sidebar, link anchor, dan container konten sama. |
+
+Kesimpulan source review beranda: konfigurasi fixture saat ini menyalin nilai yang
+dipakai route lama dan adapter mereuse komponen asal. Tidak ditemukan perbedaan props
+yang disengaja pada section-section di atas. Ini masih **source-level equivalence**,
+bukan klaim hasil DOM browser telah dibandingkan.
+
 ## Pemeriksaan yang masih wajib
 
 ### DOM

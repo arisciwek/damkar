@@ -1,4 +1,5 @@
 import BenefitsBlock from '../components/content/BenefitsBlock.astro';
+import ClassDetailBlock from './ClassDetailBlock.astro';
 import DetailTabs from '../components/content/DetailTabs.astro';
 import FaqBlock from '../components/content/FaqBlock.astro';
 import GalleryBlock from '../components/content/GalleryBlock.astro';
@@ -19,6 +20,7 @@ import type { BlockType } from './types';
  */
 export const blockRegistry = {
   hero: HeroBlock,
+  'class-detail': ClassDetailBlock,
   reasons: ReasonsBlock,
   'section-sidebar': Sidebar,
   benefits: BenefitsBlock,

@@ -2,6 +2,14 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — month-title grup bulan: tambah role (commit `f2d2272`)
+
+- Permintaan user: `<h3 class="month-title">Jadwal Damkar Kelas D November 2026</h3>`
+  → `…Jadwal Damkar Kelas D Petugas Pemadam November 2026`.
+- Sumber: `groups[].title` di `Scheduler.astro` (memakai `name` collection, bukan `kelasLabel`).
+- Berlaku untuk 46 halaman kelas+bulan; halaman tanpa kelas (`/`, `/jadwal/`, `/jadwal/bulan/`)
+  judulnya tetap `Jadwal <bulan> <tahun>` — tidak berubah.
+
 ## 12 Nov 2026 — Lead & lede jadwal kelas: tambah role (commit `560a505`)
 
 - Permintaan user: paragraf "3 gelombang Kelas D pada November 2026…" juga menyebut role.

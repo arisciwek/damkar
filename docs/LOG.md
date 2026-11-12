@@ -2,6 +2,14 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Source parity hero beranda (tanpa perubahan route)
+
+- Membandingkan `src/pages/index.astro`, `homeBlockFixture`, `HeroBlock.astro`, dan komponen `Hero.astro`.
+- Props hero (eyebrow, heading, highlight, lead), nearest (limit 3), facts, actions, serta media slider cocok antara pemakaian langsung dan adapter.
+- Adapter tetap memakai komponen `Hero` dan `HeroSlider` yang sama; tidak ada perubahan markup atau style produksi.
+- Status: **source/props cocok**. DOM output belum dibandingkan; kolom DOM dan browser tetap pending.
+- Commit: `09d4947` (`docs: catat source parity hero beranda`).
+
 ## 13 Nov 2026 — Diff DOM seluruh route layanan/jadwal/beranda (tanpa perubahan kode)
 
 - `npm run build` lolos (70 halaman) di `486c1a2`, working tree bersih; **tidak ada commit

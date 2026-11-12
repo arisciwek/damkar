@@ -1,0 +1,36 @@
+---
+import Sidebar from '../components/content/Sidebar.astro';
+import BlockRenderer from './BlockRenderer.astro';
+import type { PageBlockConfig } from './types';
+
+interface Props {
+  blocks: PageBlockConfig[];
+}
+
+const { blocks } = Astro.props;
+---
+
+{
+  blocks.map((block) => {
+    if (block.type === 'content-layout') {
+      return (
+        <div class="container layout">
+          <Sidebar ctaMsg={block.ctaMsg} links={block.links} />
+          <div class="content">
+            <BlockRenderer blocks={block.blocks} />
+          </div>
+        </div>
+      );
+    }
+
+    if (block.type === 'content-container') {
+      return (
+        <div class="container">
+          <BlockRenderer blocks={block.blocks} />
+        </div>
+      );
+    }
+
+    return <BlockRenderer blocks={[block]} />;
+  })
+}

@@ -2,6 +2,14 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — "Jadwal terdekat" (nr-class): tambah role (commit `d519571`)
+
+- Permintaan user: `<span class="nr-class">Damkar Kelas A</span>` → `…Damkar Kelas A Ahli K3`.
+- Sumber: `Nearest.astro` (`name = ${info.name} ${info.role}`).
+- Berlaku di beranda + `/layanan/` (listing & detail) — komponen sama.
+- **Divergensi disengaja**: ini mengubah teks sidebar "Jadwal terdekat" yang pada diff Fase 2
+  IDENTIK dengan referensi; sekarang sedikit berbeda demi konsistensi role di seluruh situs.
+
 ## 12 Nov 2026 — month-title grup bulan: tambah role (commit `f2d2272`)
 
 - Permintaan user: `<h3 class="month-title">Jadwal Damkar Kelas D November 2026</h3>`

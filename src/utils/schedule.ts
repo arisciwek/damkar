@@ -25,6 +25,10 @@ export interface Gelombang {
   end: string;
   /** Label tampilan, mis. "19–21 Januari 2026". */
   label: string;
+  /** Tanggal publikasi data gelombang — dipakai untuk sitemap. */
+  pubDate: Date;
+  /** Tanggal perubahan data terakhir — dipakai untuk sitemap. */
+  updatedDate?: Date;
 }
 
 export type StatusKey = 'open' | 'soon' | 'ongoing' | 'done';
@@ -79,6 +83,8 @@ export async function getBatches(): Promise<Batch[]> {
         start: g.start,
         end: g.end,
         label: g.label,
+        pubDate: g.pubDate,
+        updatedDate: g.updatedDate,
         st,
         en,
         status,

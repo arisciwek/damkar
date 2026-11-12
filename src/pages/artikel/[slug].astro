@@ -1,0 +1,120 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleBlockRenderer from '../../blocks/ArticleBlockRenderer.astro';
+import SiteFooter from '../../components/shared/SiteFooter.astro';
+import SiteHeader from '../../components/shared/SiteHeader.astro';
+import WaFloat from '../../components/shared/WaFloat.astro';
+import { absolute, breadcrumbNode, organizationNode, websiteNode, webpageNode } from '../../utils/schema';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('articles', (entry) => !entry.data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const article = entry.data;
+const url = new URL(`/artikel/${article.slug}/`, Astro.site).toString();
+const published = article.pubDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+const updated = article.updatedDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+const author = {
+  '@type': article.author.type,
+  name: article.author.name,
+  ...(article.author.url ? { url: article.author.url } : {}),
+};
+const articleNode = {
+  '@type': article.schemaType,
+  '@id': `${url}#article`,
+  mainEntityOfPage: { '@id': `${url}#webpage` },
+  headline: article.title,
+  description: article.description,
+  image: article.featuredImage ? absolute(article.featuredImage) : undefined,
+  datePublished: article.pubDate.toISOString(),
+  dateModified: article.updatedDate.toISOString(),
+  author,
+  publisher: { '@id': `${new URL('/', Astro.site).toString().replace(/\/$/, '')}#organization` },
+  articleSection: article.category,
+  keywords: article.tags,
+  inLanguage: 'id-ID',
+};
+const jsonLd = [
+  organizationNode(),
+  websiteNode(),
+  webpageNode({ url, name: article.title, description: article.description, extra: { mainEntity: { '@id': `${url}#article` }, breadcrumb: { '@id': `${url}#breadcrumb` } } }),
+  breadcrumbNode(url, [
+    { name: 'Beranda', url: new URL('/', Astro.site).toString() },
+    { name: 'Artikel', url: new URL('/artikel/', Astro.site).toString() },
+    { name: article.title, url },
+  ]),
+  articleNode,
+];
+---
+
+<BaseLayout
+  title={article.title}
+  description={article.description}
+  canonical={url}
+  image={article.featuredImage}
+  imageAlt={article.featuredImageAlt ?? article.title}
+  ogType="article"
+  publishedTime={article.pubDate}
+  modifiedTime={article.updatedDate}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+  <main id="konten" class="article-page">
+    <div class="container article-page__container">
+      <nav class="article-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Beranda</a><span aria-hidden="true">/</span>
+        <a href="/artikel/">Artikel</a><span aria-hidden="true">/</span>
+        <span aria-current="page">{article.title}</span>
+      </nav>
+      <article class="article-document">
+        <header class="article-header">
+          <p class="article-header__category">{article.category}</p>
+          <h1>{article.title}</h1>
+          <p class="article-header__description">{article.description}</p>
+          <div class="article-meta">
+            <span>{article.author.name}</span>
+            <time datetime={article.pubDate.toISOString()}>{published}</time>
+            {article.updatedDate > article.pubDate && <span>Diperbarui {updated}</span>}
+          </div>
+          {article.featuredImage && (
+            <figure class="article-featured-image">
+              <img src={article.featuredImage} alt={article.featuredImageAlt ?? article.title} width="1200" height="800" fetchpriority="high" />
+            </figure>
+          )}
+        </header>
+        <ArticleBlockRenderer blocks={article.blocks} />
+        <footer class="article-footer">
+          <p class="article-footer__label">Topik artikel</p>
+          <ul class="article-tags">{article.tags.map((tag: string) => <li>{tag}</li>)}</ul>
+          <a class="article-footer__back" href="/artikel/">← Kembali ke semua artikel</a>
+        </footer>
+      </article>
+    </div>
+  </main>
+  <SiteFooter />
+  <WaFloat />
+</BaseLayout>
+
+<style>
+.article-page{padding:2rem 0 4rem}
+.article-page__container{max-width:920px}
+.article-breadcrumb{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;margin:0 0 1.6rem;color:var(--mute,#666);font-size:.82rem;line-height:1.6}
+.article-breadcrumb a{color:var(--black,#dc1e1e);text-decoration:none}
+.article-breadcrumb [aria-current="page"]{overflow-wrap:anywhere}
+.article-document{max-width:780px;margin-inline:auto}
+.article-header{margin-bottom:2rem}
+.article-header__category{margin:0 0 .7rem;color:var(--black,#dc1e1e);font-size:.78rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.article-header h1{margin:0;font-size:clamp(2rem,4.5vw,3.1rem);line-height:1.16;letter-spacing:-.035em;color:var(--ink,#111)}
+.article-header__description{margin:1rem 0;color:var(--mute,#555);font-size:1.08rem;line-height:1.75}
+.article-meta{display:flex;flex-wrap:wrap;gap:.45rem 1rem;padding:1rem 0;border-top:1px solid var(--line,#eee);border-bottom:1px solid var(--line,#eee);font-size:.82rem;color:var(--mute,#666)}
+.article-featured-image{margin:1.5rem 0 0;overflow:hidden;border-radius:var(--r-lg,16px);background:var(--soft,#fff2f1)}
+.article-featured-image img{display:block;width:100%;height:auto;max-height:480px;object-fit:cover}
+.article-footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--line,#eee)}
+.article-footer__label{font-size:.8rem;font-weight:700;color:var(--mute,#666)}
+.article-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin:0;padding:0;list-style:none}
+.article-tags li{padding:.35rem .65rem;border-radius:999px;background:var(--soft,#fff2f1);font-size:.78rem;color:var(--text,#333)}
+.article-footer__back{display:inline-block;margin-top:1.5rem;color:var(--black,#dc1e1e);font-weight:600;text-decoration:none}
+</style>

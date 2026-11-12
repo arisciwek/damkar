@@ -2,19 +2,29 @@
 import { faq, blockCopy } from '../../config/blocks';
 import BlockHead from './BlockHead.astro';
 
+interface FaqItem {
+  q: string;
+  a: string;
+}
+
 interface Props {
   title?: string;
   lede?: string;
+  items?: FaqItem[];
 }
 
-const { title = blockCopy.faqTitle, lede = blockCopy.faqLede } = Astro.props;
+const {
+  title = blockCopy.faqTitle,
+  lede = blockCopy.faqLede,
+  items = faq,
+} = Astro.props;
 ---
 
 <section class="block" id="faq" aria-labelledby="faq-title">
   <BlockHead id="faq-title" title={title} lede={lede} />
   <div class="faq-list">
     {
-      faq.map((item, index) => (
+      items.map((item, index) => (
         <details class="faq-item" open={index === 0}>
           <summary>
             <h3>{item.q}</h3>

@@ -5,10 +5,10 @@ type: article
 schemaType: Article
 slug: petugas-peran-kebakaran-damkar-d
 title: "Apa Itu Petugas Peran Kebakaran (Damkar D)? Tugas, Kompetensi, dan Pelatihannya"
-description: "Kenali tugas Petugas Peran Kebakaran atau Damkar D di tempat kerja, kompetensi pemadaman awal, peran dalam evakuasi, serta materi pelatihan berdasarkan KEP.186/MEN/1999."
+description: "Petugas peran kebakaran adalah pekerja yang ditunjuk perusahaan untuk menjalankan tugas tambahan dalam pencegahan dan penanggulangan kebakaran di unit kerjanya."
 draft: false
 pubDate: '2026-11-12T11:30:00Z'
-updatedDate: '2026-11-12T11:30:00Z'
+updatedDate: '2026-11-12T23:36:36Z'
 author:
   name: Tim Pelatihan Damkar Betracom
   type: Organization
@@ -32,6 +32,8 @@ blocks:
     content:
       - type: p
         text: Petugas peran kebakaran adalah pekerja yang ditunjuk perusahaan untuk menjalankan tugas tambahan dalam pencegahan dan penanggulangan kebakaran di unit kerjanya. Perannya bukan menggantikan petugas pemadam kebakaran profesional, melainkan menjadi bagian dari organisasi tanggap darurat perusahaan yang mengenali bahaya, melakukan tindakan awal sesuai kemampuan, dan membantu proses evakuasi.
+      - type: p
+        text: Kenali tugas Petugas Peran Kebakaran atau Damkar D di tempat kerja, kompetensi pemadaman awal, peran dalam evakuasi, serta materi pelatihan berdasarkan KEP.186/MEN/1999.
       - type: h3
         text: Pengertian Petugas Peran Kebakaran
       - type: p

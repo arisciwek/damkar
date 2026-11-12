@@ -1,7 +1,8 @@
 # Rencana & Status Fase
 
 > Dokumen hidup. **Update setiap satu fase selesai** (status, commit, catatan).
-> Terakhir diperbarui: **12 Nov 2026 — Fix jadwal di-merge (`d56c401`)**; tag `checkpoint/fase-4`.
+> Terakhir diperbarui: **13 Nov 2026 — Keputusan arsitektur md+blocks (pola konsultan-slf)
+> + rencana tahapan** (keputusan **#14**); tag `checkpoint/sitemap`.
 > Merge branch remote bertahap sesuai kebutuhan fase.
 
 ## Ikhtisar
@@ -13,8 +14,11 @@ di `/www/wwwroot/damkar`.
   config terpusat, validasi saat build (`astro check` + Zod schema).
 - **Visual/style** memakai `referensi/assets/css/style.css` apa adanya — hasil render
   identik dengan referensi. Tanpa Tailwind, tanpa MDX.
-- **Data hybrid**: 4 kelas → content collection MD; org/faq/benefits/reasons → `src/config/`;
-  57 gelombang jadwal → 1 file data terpusat (`src/config/jadwal.ts`).
+- **Data hybrid** *(asal, Fase 1)*: 4 kelas → content collection MD; org/faq/benefits/reasons
+  → `src/config/`; 57 gelombang jadwal → 1 file data terpusat (`src/config/jadwal.ts`).
+  → **Direvisi 13 Nov 2026 (keputusan #14)**: arah penuh ke pola konsultan-slf — halaman
+  landas & artikel → md + `blocks[]`, jadwal → collection `schedule` md. Lihat
+  **Rencana tahapan lanjutan** di bawah.
 - **JSON-LD dirender saat build** (bukan runtime JS); foto lokal di `public/images/` (bukan hotlink).
 - **Hosting**: Vercel nanti; domain custom `.lan` sedang disiapkan user → build/preview lokal,
   `SITE_URL` via env.
@@ -35,6 +39,90 @@ di `/www/wwwroot/damkar`.
 | 7 | Verifikasi menyeluruh + staging `.lan` | ⬜ Belum | — |
 
 \* Fase 0 (scaffold) dikerjakan bersamaan dengan Fase 1 dalam satu commit.
+
+**Eksekusi selanjutnya** mengikuti **Rencana tahapan lanjutan** di bawah: Tahap 1–4 =
+perubahan arsitektur baru (di luar tabel), Fase 5 = Tahap 5, Fase 6 = Tahap 6, Fase 7 = Tahap 7.
+
+---
+
+## Rencana tahapan lanjutan (diputuskan 13 Nov 2026)
+
+> Alasan & keputusan lengkap: **#14** + `docs/LOG.md` (entri 13 Nov 2026). Tiap tahap punya
+> **gerbang verifikasi** — jangan lanjut ke tahap berikut sebelum gerbang lolos. Jika sesi
+> berhenti, lanjutkan dari tahap bertanda ⬜.
+
+### Tahap 1 — Tanggal + lastmod per-URL ⬜ (tidak mengubah HTML)
+
+1. `pubDate`/`updatedDate` **wajib** di schema collection `kelas`; isi frontmatter 4 md
+   (nilai draf dari git, user koreksi nilainya).
+2. Sambungkan ke `webpageNode()` + `BaseLayout` → `datePublished`/`dateModified` JSON-LD
+   4 halaman detail layanan.
+3. Ganti `serialize` di `astro.config.mjs`: peta **URL → lastmod** dibangun saat build,
+   bukan commit HEAD seragam:
+   - detail layanan ← frontmatter kelas;
+   - beranda & `/layanan/` listing ← **interim**: waktu commit file sumbernya (masih `.astro`;
+     frontmatter baru ada setelah Tahap 3);
+   - 63 URL jadwal ← **interim**: commit `jadwal.ts` (diganti final di Tahap 4).
+4. **Gerbang**: XML tervalidasi, lastmod **bervariasi** antar URL, **nol perubahan HTML**
+   (`diff` nol).
+
+### Tahap 2 — Fondasi md+blocks ⬜ (belum migrasi halaman apa pun)
+
+1. Collection `pages`: `pubDate`/`updatedDate` wajib, `slug`, `draft`, `canonical`,
+   `noindex`, `blocks[]`.
+2. `BlockRenderer.astro` + registry — daftar block **disusun dari komponen
+   `src/components/content/` yang sudah ada** (hero, scheduler, nearest, benefits, reasons,
+   faq, gallery, program-grid, detail-tabs, materi, sidebar, contact-band, ...), bukan
+   menyalin 27 block konsultan-slf sekaligus.
+3. **Gerbang**: `npm run check` + build lolos; halaman lama tidak tersentuh → diff IDENTIK aman.
+
+### Tahap 3 — Migrasi halaman bertahap ⬜ (urutan murah → mahal)
+
+Tiap langkah: build + verifikasi + commit.
+
+| # | Halaman | Alat verifikasi |
+| --- | --- | --- |
+| 1 | `404.astro` → `404.md` | visual |
+| 2 | `/layanan/` listing → md | screenshot |
+| 3 | 4 detail kelas → blok di md | screenshot + uji tab/keyboard |
+| 4 | **beranda terakhir** (3892 token IDENTIK) | `/tmp/opencode/diff-home.py` |
+
+- `src/config/blocks.ts` pindah ke frontmatter `home.md` di langkah 4. Setelah langkah 2 & 4,
+  listing & beranda punya `updatedDate` → **ganti lastmod interim Tahap 1** (beranda final:
+  `max(updatedDate artikel yang tampil, updatedDate home.md)` — lihat #14, berlaku setelah Tahap 5).
+
+### Tahap 4 — Jadwal → collection `schedule` md ⬜ ("mahal sepadan dengan hasil" — #14)
+
+- 57 gelombang → file md di `src/content/schedule/` (pola confinedspace); helper status
+  (`statusOf/upcoming/active/nextLabel/...`) pindah ke `src/utils/schedule.ts`;
+  `src/config/jadwal.ts` diretire. Field `role` ikut frontmatter.
+- `Scheduler`, `Nearest`, dan `getStaticPaths` baca collection; **63 URL & logika path tidak
+  berubah**.
+- lastmod 63 URL ← frontmatter: halaman bulan/kelas = `max(updatedDate)` gelombang di dalamnya
+  (pola confinedspace untuk `/jadwal/`).
+- **Gerbang**: `/tmp/opencode/diff-jadwal.py` diulang (IDENTIK) + uji toggle "jadwal lewat" CDP.
+- Boleh ditukar urutan dengan Tahap 5 (artikel) — keduanya independen.
+
+### Tahap 5 — Fase 5: artikel + kontak ⬜ (≡ Fase 5)
+
+1. Collection `artikel` **blocks persis konsultan-slf** (`pubDate`/`updatedDate`/`category`/
+   `tags`/`draft`/`blocks[]`) → `/artikel/` + `/artikel/[slug]/`; `/kontak/` → `kontak.md`.
+2. Section **artikel terbaru di beranda** (`article-list`, `mode: latest`, limit 3).
+3. lastmod beranda = `max(updatedDate artikel yang tampil, updatedDate home.md)` (#14).
+4. Merge 3 branch remote: `docs/research-kompetitor-pelatihan-damkar` (12 outline SEO),
+   `content/damkar-articles-and-blocks`, `assets/ilustrasi-12-artikel-damkar`.
+5. **Gerbang**: build ulang → URL artikel ikut sitemap; diff beranda (section baru =
+   divergensi disengaja — catat di `LOG.md`).
+
+### Tahap 6 — Sisa Fase 6 ⬜
+
+`robots.txt` (konstanta `ROBOTS` `build.py:660`) via endpoint Astro; JSON-LD final;
+`404.astro` final (`page_404()` baris 631); `AGENTS.md`.
+
+### Tahap 7 — Verifikasi akhir + staging ⬜ (≡ Fase 7)
+
+Diff semua halaman vs referensi; `SITE_URL=http://<domain>.lan npm run build`; uji redirect
+301; push.
 
 ---
 
@@ -149,7 +237,7 @@ Port `page_home()` (`referensi/_tools/build.py` baris 448–551):
   (`/tmp/opencode/diff-home.py`); JS slider/tabs/materi teruji headless Chrome + CDP;
   JSON-LD home 5 node valid; alt foto hydrant disamakan dengan referensi.
 
-### Fase 5 — Artikel + Kontak ⬜
+### Fase 5 — Artikel + Kontak ⬜ *(pengerjaan: **Tahap 5** di atas — artikel = blocks, #14)*
 
 - Collection `artikel` (**sistem dulu**: schema + halaman list `/artikel/` + detail
   `/artikel/[slug]/`; konten menyusul).
@@ -189,6 +277,7 @@ Port `page_home()` (`referensi/_tools/build.py` baris 448–551):
 2. **Gaya**: `style.css` referensi apa adanya — tanpa Tailwind, tanpa MDX, tanpa komponen UI kit.
 3. **Data hybrid**: kelas → MD collection; org/faq/benefits/reasons → `src/config/`;
    jadwal → `src/config/jadwal.ts` (satu-satunya sumber jadwal).
+   **⚠️ Direvisi 13 Nov 2026 (→ #14)**: jadwal akan pindah ke collection `schedule` md.
 4. **JSON-LD build-time** via `src/utils/schema.ts`, bukan runtime JS.
 5. **Foto lokal** `public/images/` — tidak hotlink ke pusattrainingk3.com.
 6. **`site.url` ikut env `SITE_URL`** (`astro.config.mjs`) — canonical, OG, JSON-LD, sitemap
@@ -224,6 +313,24 @@ Port `page_home()` (`referensi/_tools/build.py` baris 448–551):
     - Sitemap jadwal: 1 + 12 + 4 + 46 = **63 URL**. Tiap halaman canonical ke dirinya sendiri.
     - `#jadwal` di `/layanan/[slug]/` tetap ada (section dalam halaman kelas,
       tanpa chips — persis referensi).
+14. **Arah arsitektur konten = pola konsultan-slf penuh** (13 Nov 2026, keputusan user —
+    rincian eksekusi di **Rencana tahapan lanjutan** di atas):
+    - **Halaman landas** (beranda, `/layanan/`, `/kontak/`, 404) → `src/content/pages/*.md`
+      + `blocks[]` + `BlockRenderer` — mengganti hardcode `.astro` & `src/config/blocks.ts`.
+    - **Artikel Fase 5 = blocks** — ikuti konsultan-slf **persis** (menggantikan rekomendasi
+      hibrida md-biasa); 12 artikel ditulis sebagai YAML per-paragraf.
+    - **Jadwal 57 gelombang → collection `schedule` md** ala confinedspace — user: *"jika
+      hasil terbaik adalah collection schedule.md; kita pakai itu. mahal sepadan dengan
+      hasil."*; `src/config/jadwal.ts` diretire di Tahap 4.
+    - **`lastmod` sitemap per-URL dari `updatedDate`** — **tidak seragam**; implementasi
+      commit HEAD (`752e99a`) diganti di Tahap 1: halaman ← frontmatter; 63 URL jadwal ←
+      `max(updatedDate)` gelombangnya; **beranda ← `max(updatedDate artikel yang tampil,
+      updatedDate home.md)`** (pola confinedspace). Alasan: Google memakai lastmod hanya
+      bila akurat per-halaman; lastmod seragam lama-lama diabaikan. Section artikel terbaru
+      di beranda (`article-list`, limit 3) membuat beranda "ikut segar" tiap artikel baru.
+    - **`site.ts`/`ui.ts` tetap di `src/config/`** (konfigurasi, bukan konten).
+    - **Verifikasi IDENTIK tetap wajib tiap tahap** — markup ditentukan komponen, bukan
+      sumber datanya; alat diff (`diff-home.py`, `diff-jadwal.py`) diulang tiap migrasi.
 
 ## Peta file penting
 

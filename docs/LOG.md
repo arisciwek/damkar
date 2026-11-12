@@ -2,6 +2,27 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Keputusan arsitektur: pola konsultan-slf + lastmod per-URL (rencana, belum ada kode)
+
+- Lanjutan diskusi arsitektur; analisis `../konsultan-slf` & `../confinedspace`: semua
+  halaman = md + `blocks[]` + `BlockRenderer`; **artikel pun blocks** (18 artikel kslf =
+  2158 baris YAML, tanpa `<Content />`); sitemap mereka endpoint `.ts` dengan **lastmod
+  per-URL dari frontmatter** (confinedspace bahkan `max(updatedDate)` utk halaman hub jadwal).
+- **Poin kunci**: section "artikel terbaru" di beranda tetap SSG (data-driven **saat build**,
+  bukan request-time). Google suka homepage segar **hanya bila lastmod akurat per-halaman** —
+  lastmod seragam (commit HEAD, `752e99a`) lama-lama akan diabaikan Google.
+- **Keputusan user (3)**:
+  1. **Urutan tahapan disetujui** → ditulis lengkap di `docs/RENCANA-FASE.md`
+     (bagian **"Rencana tahapan lanjutan"**, Tahap 1–7) supaya sesi lain bisa lanjut.
+  2. **Jadwal → collection `schedule` md** (pola confinedspace): *"jika hasil terbaik adalah
+     collection schedule.md; kita pakai itu. mahal sepadan dengan hasil."*
+  3. **Artikel Fase 5 → blocks, ikuti konsultan-slf persis** (menggantikan rekomendasi
+     hibrida md-biasa dari sesi sebelumnya).
+- Konsekuensi tercatat: keputusan #3 lama (jadwal = `jadwal.ts`) ditandai **direvisi oleh #14**;
+  lastmod commit-HEAD diganti per-URL mulai Tahap 1 (interim: commit file sumber utk beranda/
+  listing & `jadwal.ts` sampai halaman jadi md).
+- **Belum ada kode yang diubah** — murni perencanaan. Tag `checkpoint/sitemap` = titik aman.
+
 ## 12 Nov 2026 — Sitemap + `<lastmod>` (commit `17d5b3d`, `752e99a`)
 
 - `@astrojs/sitemap` 3.7.4 di `astro.config.mjs`, filter buang `/404.html`.

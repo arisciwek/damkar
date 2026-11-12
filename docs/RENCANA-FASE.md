@@ -1,8 +1,9 @@
 # Rencana & Status Fase
 
 > Dokumen hidup. **Update setiap satu fase selesai** (status, commit, catatan).
-> Terakhir diperbarui: **13 Nov 2026 — Keputusan arsitektur md+blocks (pola konsultan-slf)
-> + rencana tahapan** (keputusan **#14**); tag `checkpoint/sitemap`.
+> Terakhir diperbarui: **13 Nov 2026 — Tahap 0 (Design Parity Blocks) dieksekusi;
+> verifikasi runtime check/build + diff beranda lolos (`4713cad`)** — parity visual &
+> interaksi masih pending. Sebelumnya: keputusan arsitektur **#14**; tag `checkpoint/sitemap`.
 > Merge branch remote bertahap sesuai kebutuhan fase.
 
 ## Ikhtisar
@@ -67,6 +68,10 @@ di `/www/wwwroot/damkar`.
 - **Gerbang**: check + build lolos; route lama tidak berubah; setiap block punya tipe,
   registry entry, implementasi, fixture nyata, dan catatan parity. Rincian urutan commit
   dan peta section → block ada di `docs/RENCANA-BLOCK-PARITY.md`.
+- **Progres 13 Nov**: kontrak + registry + renderer + 12 adapter + fixtures sudah di `main`;
+  `check`/`build` **lolos** (fix `4713cad` — ambient `*.astro`); diff beranda nol perubahan
+  di luar divergensi role. **Sisa**: diff layanan & jadwal, DOM diff per-block, uji interaksi,
+  checklist parity per block → detail di `RENCANA-BLOCK-PARITY.md` (bagian Status).
 
 ### Tahap 1 — Tanggal + lastmod per-URL ⬜ (tidak mengubah HTML)
 

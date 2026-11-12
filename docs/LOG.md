@@ -2,6 +2,26 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 13 Nov 2026 — Verifikasi runtime Tahap 0: check/build lolos (fix `4713cad`)
+
+- `git pull` (19 file, `3eb515a..8b05643`): 3 dokumen (termasuk baru
+  `RENCANA-BLOCK-PARITY.md`) + folder `src/blocks/` (kontrak, registry, renderer, 12 adapter,
+  fixtures) + 6 komponen `content/` dimodifikasi.
+- `npm run check` **gagal** pertama: `TS2307 Cannot find module '*.astro'` di 12 baris
+  `src/blocks/registry.ts` — file `.ts` **pertama** project yang mengimpor `.astro`;
+  `astro/client` hanya mendeklarasikan modul gambar (png/svg/...), bukan `*.astro`.
+  Kedua proyek referensi (konsultan-slf, confinedspace) memakai `src/components/modules.d.ts`
+  sendiri → damkar ikut pola sama (commit `4713cad`).
+- Setelah fix: `npm run check` + `npm run build` **lolos** (70 halaman, sitemap + lastmod
+  normal) → menutup poin "check/build belum dijalankan" di `RENCANA-BLOCK-PARITY.md`.
+- Diff beranda (`referensi/index.html` vs `dist/index.html`): **hanya divergensi role**
+  yang disengaja (`d519571`, `fbb9fb4`) — 6 komponen ter-pull tidak mengubah output;
+  route lama tetap dirender halaman `.astro`.
+- **Masih pending (parity Tahap 0)**: diff layanan & jadwal, DOM diff per-block, screenshot,
+  uji interaksi (slider, tabs/keyboard, show-more, scrollspy, toggle jadwal lewat),
+  checklist parity per block. Status lengkap → `RENCANA-BLOCK-PARITY.md` bagian Status.
+- `4713cad` sudah push; `main` sinkron, working tree bersih.
+
 ## 13 Nov 2026 — Tahap 0 Design Parity Blocks (implementasi awal, verifikasi pending)
 
 - Revisi rencana: `docs/RENCANA-FASE.md` menambahkan Tahap 0 sebelum migrasi halaman;

@@ -126,10 +126,27 @@ tetap mengikuti tahap masing-masing di `docs/RENCANA-FASE.md`, setelah parity bl
 - Fixture nyata untuk beranda, listing layanan, indeks jadwal, dan factory fixture detail
   layanan berdasarkan entry collection `kelas`: `src/blocks/fixtures.ts`.
 
+### Sudah diverifikasi (13 Nov 2026 — sesi runtime, commit `4713cad`)
+
+- ✅ `npm run check` — **lolos** setelah perbaikan `src/components/modules.d.ts`
+  (ambient `declare module '*.astro'`): `registry.ts` adalah file `.ts` pertama di project
+  yang mengimpor `.astro`, dan `astro/client` hanya mendeklarasikan modul gambar.
+  Kedua proyek referensi memakai `modules.d.ts` sendiri — damkar ikut pola yang sama.
+- ✅ `npm run build` — **lolos**, 70 halaman, sitemap + lastmod normal.
+- ✅ Route lama tetap dirender halaman `.astro` — diff kanonis `<main>` beranda
+  (`referensi/index.html` vs `dist/index.html`): **hanya divergensi role yang disengaja**
+  (`d519571`, `fbb9fb4`); 6 komponen yang dimodifikasi di pull tidak mengubah output.
+  (Halaman layanan & jadwal belum di-diff pada sesi ini.)
+
 ### Belum dianggap lolos
 
-- `npm run check` dan `npm run build` belum dijalankan pada runtime project.
-- DOM diff, screenshot, serta uji browser untuk slider, tabs/keyboard, show-more,
-  scrollspy, dan toggle jadwal lewat masih harus dijalankan.
-- Karena itu, katalog ini berstatus **implementasi awal — verifikasi parity pending**.
+- Diff halaman layanan (listing + 4 detail) dan jadwal (`diff-jadwal.py`) terhadap build
+  sebelum pull.
+- DOM diff per-block terhadap section asal: tag, urutan, atribut, ID, class, ARIA,
+  data-attribute, link, teks.
+- Screenshot serta uji browser untuk slider, tabs/keyboard, show-more, scrollspy, dan
+  toggle jadwal lewat.
+- Checklist parity per block (tipe, registry entry, fixture nyata, catatan parity).
+- Karena itu, katalog ini berstatus **implementasi awal — verifikasi parity sebagian
+  (check/build + beranda lolos; parity visual & interaksi pending)**.
   Jangan mulai migrasi halaman sebelum gerbang verifikasi pada dokumen ini lolos.

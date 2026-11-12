@@ -2,8 +2,8 @@
 type: page
 slug: damkar-kelas-d
 kelas: D
-title: Pelatihan Petugas Pemadam Kemnaker RI | Jadwal 2026
-description: Pelatihan Petugas Pemadam (Petugas Pemadam) sertifikasi Kemnaker RI. Informasi metode, materi, persyaratan, dan jadwal pelatihan tahun 2026.
+title: Pelatihan Damkar Kelas D Kemnaker RI | Jadwal 2026
+description: "Pelatihan Damkar Kelas D (Petugas Pemadam) sertifikasi Kemnaker RI. Informasi metode, materi, persyaratan, dan jadwal pelatihan tahun 2026."
 draft: false
 blocks:
   - type: hero

@@ -82,7 +82,7 @@ export const photos = [
     w: 960,
     h: 1280,
     cap: 'Simulasi hydrant',
-    alt: 'Peserta Pelatihan Damkar berlatih memadamkan kebakaran dengan hydrant',
+    alt: 'Simulasi pemadaman kebakaran menggunakan hydrant pada Pelatihan Damkar',
   },
 ] as const;
 

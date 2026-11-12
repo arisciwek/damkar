@@ -1,0 +1,34 @@
+---
+/**
+ * Section #pengalaman beranda — port gallery_block() build.py (baris 339–347):
+ * 4 foto dengan caption.
+ */
+import { photos } from '../../config/site';
+import BlockHead from './BlockHead.astro';
+---
+
+<section class="block" id="pengalaman" aria-labelledby="pengalaman-title">
+  <BlockHead
+    id="pengalaman-title"
+    title="Belajar Teori, Latihan di Lapangan"
+    lede="Peserta mempelajari teori lalu mempraktikkannya langsung dengan perlengkapan pemadam kebakaran."
+  />
+  <div class="gallery">
+    {
+      photos.map((photo) => (
+        <figure>
+          <img
+            class="bw"
+            src={photo.src}
+            width={photo.w}
+            height={photo.h}
+            alt={photo.alt}
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>{photo.cap}</figcaption>
+        </figure>
+      ))
+    }
+  </div>
+</section>

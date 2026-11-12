@@ -1,0 +1,84 @@
+---
+/**
+ * Slider foto hero beranda — port #heroSlider di build.py (page_home, baris
+ * 453–464) + initSlider di referensi/assets/js/main.js (baris 87–107):
+ * auto-slide 6500ms, jeda saat hover/focus, hormati prefers-reduced-motion.
+ */
+import { photos } from '../../config/site';
+import Icon from '../ui/Icon.astro';
+
+const slides = photos.slice(0, 2);
+---
+
+<div class="hero-photo" id="heroSlider">
+  {
+    slides.map((photo, index) => (
+      <img
+        class:list={['hero-slide', 'bw', { 'is-active': index === 0 }]}
+        src={photo.src}
+        width={photo.w}
+        height={photo.h}
+        alt={photo.alt}
+        fetchpriority={index === 0 ? 'high' : 'low'}
+        aria-hidden={index === 0 ? undefined : 'true'}
+        decoding="async"
+      />
+    ))
+  }
+  <p class="hero-caption"><span>Fire safety</span>Ready. Trained. Responsive.</p>
+  <div class="slider-nav">
+    <button type="button" data-slide-prev aria-label="Foto sebelumnya">
+      <Icon name="chev-l" size={18} />
+    </button>
+    <span data-slide-count aria-live="polite">1 / {slides.length}</span>
+    <button type="button" data-slide-next aria-label="Foto berikutnya">
+      <Icon name="chev-r" size={18} />
+    </button>
+  </div>
+</div>
+
+<script>
+  // Port initSlider (main.js): indeks aktif, panah kiri/kanan, auto-slide.
+  const slider = document.getElementById('heroSlider');
+  if (slider) {
+    const slides = Array.from(slider.querySelectorAll<HTMLElement>('.hero-slide'));
+    const count = slider.querySelector<HTMLElement>('[data-slide-count]');
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let index = 0;
+    let timer: ReturnType<typeof setInterval> | null = null;
+
+    const show = (n: number) => {
+      index = (n + slides.length) % slides.length;
+      slides.forEach((slide, k) => {
+        slide.classList.toggle('is-active', k === index);
+        if (k === index) slide.removeAttribute('aria-hidden');
+        else slide.setAttribute('aria-hidden', 'true');
+      });
+      if (count) count.textContent = `${index + 1} / ${slides.length}`;
+    };
+    const stop = () => {
+      if (timer) clearInterval(timer);
+      timer = null;
+    };
+    const start = () => {
+      stop();
+      if (!still && slides.length > 1) timer = setInterval(() => show(index + 1), 6500);
+    };
+
+    slider
+      .querySelector<HTMLButtonElement>('[data-slide-prev]')
+      ?.addEventListener('click', () => {
+        show(index - 1);
+        start();
+      });
+    slider
+      .querySelector<HTMLButtonElement>('[data-slide-next]')
+      ?.addEventListener('click', () => {
+        show(index + 1);
+        start();
+      });
+    (['mouseenter', 'focusin'] as const).forEach((event) => slider.addEventListener(event, stop));
+    (['mouseleave', 'focusout'] as const).forEach((event) => slider.addEventListener(event, start));
+    start();
+  }
+</script>

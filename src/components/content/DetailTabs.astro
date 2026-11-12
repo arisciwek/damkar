@@ -1,0 +1,122 @@
+---
+/**
+ * Section #detail beranda: tab pilih kelas + panel detail/materi — port
+ * page_home() build.py baris 473–507 dan initTabs main.js (baris 109–130).
+ * Tanpa JS: keempat panel tampil (progressive enhancement via class "js").
+ */
+import { getCollection } from 'astro:content';
+import BlockHead from './BlockHead.astro';
+import Icon from '../ui/Icon.astro';
+import MateriList from './MateriList.astro';
+
+const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const slugOf = (key: string) => key.toLowerCase();
+---
+
+<section class="block" id="detail" aria-labelledby="detail-title">
+  <BlockHead
+    id="detail-title"
+    title="Detail Program & Materi"
+    lede="Materi yang relevan dengan pekerjaan. Pilih kelas untuk melihat materinya."
+  />
+  <div class="tablist" role="tablist" aria-label="Pilih kelas">
+    {
+      kelas.map((entry, index) => (
+        <button
+          class="tab"
+          type="button"
+          role="tab"
+          id={`tab-${slugOf(entry.data.key)}`}
+          aria-controls={`panel-${slugOf(entry.data.key)}`}
+          aria-selected={index === 0 ? 'true' : 'false'}
+          tabindex={index === 0 ? undefined : -1}
+        >
+          Kelas {entry.data.key}
+        </button>
+      ))
+    }
+  </div>
+  {
+    kelas.map((entry, index) => {
+      const { key, name, role, desc, mode, modeNote, requirement, materi } = entry.data;
+      const id = slugOf(key);
+      return (
+        <div
+          class:list={['tabpanel', { 'is-active': index === 0 }]}
+          role="tabpanel"
+          id={`panel-${id}`}
+          aria-labelledby={`tab-${id}`}
+        >
+          <div class="detail-card">
+            <div>
+              <h3>
+                {name} <span>{role}</span>
+              </h3>
+              <p>{desc}</p>
+              <dl class="dl">
+                <div>
+                  <dt>Metode</dt>
+                  <dd>
+                    {mode} · {modeNote}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Persyaratan</dt>
+                  <dd>{requirement}</dd>
+                </div>
+                <div>
+                  <dt>Jumlah materi</dt>
+                  <dd>{materi.length} materi</dd>
+                </div>
+              </dl>
+              <a class="link" href={`/layanan/${entry.id}/`}>
+                Detail &amp; jadwal {name} <Icon name="arrow" size={16} />
+              </a>
+            </div>
+            <div>
+              <h4>Materi pelatihan</h4>
+              <MateriList items={[...materi]} limit={6} />
+            </div>
+          </div>
+        </div>
+      );
+    })
+  }
+</section>
+
+<script>
+  // Port initTabs (main.js): klik + panah/Home/End, aktifkan panel terkait.
+  const tablist = document.querySelector<HTMLElement>('[role="tablist"]');
+  if (tablist) {
+    const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const activate = (tab: HTMLButtonElement, focus = false) => {
+      tabs.forEach((item) => {
+        const on = item === tab;
+        item.setAttribute('aria-selected', String(on));
+        item.tabIndex = on ? 0 : -1;
+        const panel = document.getElementById(item.getAttribute('aria-controls') ?? '');
+        panel?.classList.toggle('is-active', on);
+        if (panel) panel.hidden = !on;
+      });
+      if (focus) tab.focus();
+    };
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activate(tab));
+      tab.addEventListener('keydown', (event) => {
+        const keys: Record<string, number> = {
+          ArrowRight: index + 1,
+          ArrowLeft: index - 1,
+          Home: 0,
+          End: tabs.length - 1,
+        };
+        if (event.key in keys) {
+          event.preventDefault();
+          activate(tabs[(keys[event.key] + tabs.length) % tabs.length], true);
+        }
+      });
+    });
+    activate(tabs.find((tab) => tab.getAttribute('aria-selected') === 'true') ?? tabs[0]);
+  }
+</script>

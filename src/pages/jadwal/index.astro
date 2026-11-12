@@ -63,7 +63,13 @@ const kelasItems = (await getCollection('kelas', (entry) => !entry.data.draft))
 const jsonLd = [
   organizationNode(),
   websiteNode(),
-  webpageNode({ url, name: title, description }),
+  webpageNode({
+    url,
+    name: title,
+    description,
+    pubDate: page.data.pubDate,
+    updatedDate: page.data.updatedDate,
+  }),
   breadcrumbNode(url, [
     { name: ui.nav.breadcrumbHome, url: new URL('/', Astro.site).toString() },
     { name: 'Jadwal', url },

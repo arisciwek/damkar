@@ -32,11 +32,6 @@ export interface GalleryItem extends BlockImage {
   cap: string;
 }
 
-export interface HeadingProps {
-  title?: string;
-  lede?: string;
-}
-
 export type BlockConfig =
   | {
       type: 'reasons';
@@ -51,6 +46,14 @@ export type BlockConfig =
   | { type: 'program-grid'; title?: string; lede?: string }
   | { type: 'class-tabs'; title?: string; lede?: string }
   | { type: 'nearest-schedule'; kelas?: 'D' | 'C' | 'B' | 'A'; limit?: number }
-  | { type: 'schedule-list'; kelas?: 'D' | 'C' | 'B' | 'A'; bulan?: string; chips?: boolean };
+  | {
+      type: 'schedule-list';
+      id?: string;
+      title: string;
+      lede?: string;
+      kelas?: 'D' | 'C' | 'B' | 'A';
+      bulan?: string;
+      chips?: boolean;
+    };
 
 export type BlockType = BlockConfig['type'];

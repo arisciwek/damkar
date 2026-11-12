@@ -132,7 +132,13 @@ if (bulan) crumbs.push({ label: monthText });
 const jsonLd = [
   organizationNode(),
   websiteNode(),
-  webpageNode({ url, name: title, description }),
+  webpageNode({
+    url,
+    name: title,
+    description,
+    pubDate: page.data.pubDate,
+    updatedDate: page.data.updatedDate,
+  }),
   breadcrumbNode(
     url,
     crumbs.map((crumb) => ({
@@ -215,8 +221,6 @@ const blocks = sourceBlocks.map((block) => {
   return transformContentBlock(block as import('../../blocks/types').BlockConfig);
 }) as PageBlockConfig[];
 
-// Halaman jadwal bersifat operasional, bukan artikel editorial.
-// Tidak menambahkan pubDate/updatedDate maupun datePublished/dateModified.
 ---
 
 <BaseLayout title={title} description={description} preloadImage={photo.src} jsonLd={jsonLd}>

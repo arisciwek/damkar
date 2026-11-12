@@ -23,6 +23,11 @@ export interface BenefitItem {
   icon: import('../utils/icons').IconName;
 }
 
+export interface FaqItem {
+  q: string;
+  a: string;
+}
+
 export type BlockConfig =
   | {
       type: 'reasons';
@@ -32,7 +37,7 @@ export type BlockConfig =
       items?: ReasonItem[];
     }
   | { type: 'benefits'; title?: string; lede?: string; items?: BenefitItem[] }
-  | { type: 'faq'; title?: string; lede?: string }
+  | { type: 'faq'; title?: string; lede?: string; items?: FaqItem[] }
   | { type: 'program-grid' }
   | { type: 'gallery' }
   | { type: 'class-tabs' }

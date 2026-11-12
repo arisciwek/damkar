@@ -22,6 +22,8 @@ function propsFor(block: BlockConfig): Record<string, unknown> {
         actions: block.actions,
         media: block.media,
       };
+    case 'other-programs':
+      return { title: block.title, lede: block.lede, items: block.items };
     case 'class-detail':
       return {
         name: block.name,

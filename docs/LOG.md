@@ -2,6 +2,22 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — Merge fix jadwal: "Jadwal undefined" (merge `d56c401`)
+
+- **Tag**: `checkpoint/fase-4` (annotated) di `b6c51a0` — penanda main sebelum merge branch remote.
+- **Bug**: `/jadwal/kelas-d/` & `/jadwal/kelas-d/2026-11/` (dst.) menampilkan "Jadwal undefined".
+  Akar: `byKey` di `src/pages/jadwal/[...path].astro` memetakan ke *entry*, bukan `entry.data`
+  → `cls.name`/`cls.desc`/`cls.step`/`cls.role` = `undefined`.
+- **Branch remote di-merge**: `fix/jadwal-kelas-d-undefined` (`19f8931`, base `733f6d0`) → merge
+  `d56c401` tanpa konflik. Isi: `byKey` → `entry.data`, label kelas jadi `Kelas ${kelas}`
+  ("Jadwal Kelas D 2026", bukan "Jadwal Damkar Kelas D 2026").
+- **Verifikasi**: `npm run check` + `build` lolos (70 halaman); `grep undefined` di seluruh
+  `dist/` = **0**; H1/lead/facts/breadcrumb terisi benar (mis. `Jenjang 1 — Petugas Pemadam`);
+  preview 4321 menyajikan judul baru untuk 5 URL jadwal yang dicek.
+- **Merge bertahap**: sisa branch remote (`content/damkar-articles-and-blocks`,
+  `assets/ilustrasi-12-artikel-damkar`, `docs/research-kompetitor-pelatihan-damkar`)
+  menyusul sesuai kebutuhan fase — jangan digabung sekaligus.
+
 ## 12 Nov 2026 — Fase 4 selesai: beranda (commit `b8c56ab`)
 
 - Port `page_home()` (`build.py` 448–551) ke `src/pages/index.astro` + komponen baru:

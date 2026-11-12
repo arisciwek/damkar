@@ -1,7 +1,8 @@
 # Rencana & Status Fase
 
 > Dokumen hidup. **Update setiap satu fase selesai** (status, commit, catatan).
-> Terakhir diperbarui: **12 Nov 2026 — Fase 4 selesai**.
+> Terakhir diperbarui: **12 Nov 2026 — Fix jadwal di-merge (`d56c401`)**; tag `checkpoint/fase-4`.
+> Merge branch remote bertahap sesuai kebutuhan fase.
 
 ## Ikhtisar
 

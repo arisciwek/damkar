@@ -2,6 +2,16 @@
 
 Catatan kronologis per sesi/fase. Tambah entri baru di **atas** garis "Entri baru".
 
+## 12 Nov 2026 — batch-title kartu gelombang: tambah role (commit `fbb9fb4`)
+
+- Pertanyaan user: role di `<a>Damkar Kelas A</a> <span>Gelombang 11</span>` → di mana?
+- **Keputusan**: di dalam `<a>` ("Damkar Kelas A Ahli K3"), bukan di `<span>`. Alasan: `<span>`
+  bergaya abu (`--mute`) → jadinya "Ahli K3 Gelombang 11" yang ambigu. Juga konsisten `nr-class`.
+- Hanya tampil bila `showClass` (beranda `#jadwal`, `/jadwal/`, `/jadwal/bulan/`); halaman
+  kelas+bulan tetap "Gelombang NN" (kelasnya sudah disebut di judul grup).
+- **Belum disentuh**: `<a>Damkar Kelas A</a>` di ProgramGrid (kartu Program beranda) — di luar
+  scope permintaan ini; kandidat revisi konsistensi berikutnya.
+
 ## 12 Nov 2026 — nr-class lebar & nr-date sempit (commit `8bc3d5e`)
 
 - Permintaan user: kolom `nr-date` (tanggal) disempitkan agar `nr-class` (nama+role) lebih lebar.

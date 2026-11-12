@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import { organization, site } from '../../config/site';
+import { ui } from '../../config/ui';
+
+const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="/">
+        <img src={ui.brand.logo} width="40" height="40" alt={ui.brand.logoAlt} loading="lazy" />
+        <span class="brand-text"><strong>{ui.brand.name}</strong><span>{ui.brand.suffix}</span></span>
+      </a>
+      <p>{organization.description}</p>
+    </div>
+
+    <nav aria-label={ui.footer.programLabel}>
+      <p class="footer-title">{ui.footer.programTitle}</p>
+      <ul>
+        {kelas.map((entry) => (
+          <li><a href={`/layanan/${entry.id}/`}>Pelatihan {entry.data.name}</a></li>
+        ))}
+        <li><a href="/jadwal/">Jadwal {site.year}</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label={ui.footer.navLabel}>
+      <p class="footer-title">{ui.footer.navTitle}</p>
+      <ul>
+        {ui.footer.links.map((link) => (
+          <li><a href={link.href}>{link.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div>
+      <p class="footer-title">{ui.footer.contactTitle}</p>
+      <ul>
+        {organization.phones.map((phone) => (
+          <li><a href={`tel:${phone.tel}`}>{phone.display}</a></li>
+        ))}
+        <li><a href={`mailto:${organization.email}`}>{organization.email}</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© {site.year} {organization.name}</span>
+    <span>{ui.footer.tagline}</span>
+  </div>
+</footer>

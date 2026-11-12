@@ -1,0 +1,120 @@
+---
+import { getCollection } from 'astro:content';
+import { ui } from '../../config/ui';
+
+const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<header class="site-header" id="header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label={ui.brand.homeLabel}>
+      <img src={ui.brand.logo} width="40" height="40" alt={ui.brand.logoAlt} />
+      <span class="brand-text"><strong>{ui.brand.name}</strong><span>{ui.brand.suffix}</span></span>
+    </a>
+
+    <nav class="site-nav" id="site-nav" aria-label={ui.nav.mainAriaLabel}>
+      <ul class="nav-list">
+        <li class="has-menu">
+          <button
+            class="nav-menu-btn"
+            type="button"
+            aria-expanded="false"
+            aria-controls="menu-program"
+          >
+            {ui.nav.programButton}
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <ul class="mega" id="menu-program">
+            {
+              kelas.map((entry) => (
+                <li>
+                  <a href={`/layanan/${entry.id}/`}>
+                    <span class="mm-letter" aria-hidden="true">{entry.data.key}</span>
+                    <span>
+                      <strong>{entry.data.name}</strong>
+                      <small>{entry.data.role} · {entry.data.mode}</small>
+                    </span>
+                  </a>
+                </li>
+              ))
+            }
+            {
+              ui.nav.programLinks.map((link) => (
+                <li class="mega-all">
+                  <a href={link.href}>
+                    {link.label}
+                    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </li>
+        {
+          ui.nav.items.map((item) => (
+            <li>
+              <a href={item.href} aria-current={Astro.url.pathname === item.href ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a class="btn btn-black btn-sm" href={ui.nav.cta.href} target="_blank" rel="noopener">{ui.nav.cta.label}</a>
+    </nav>
+
+    <button
+      class="nav-toggle"
+      type="button"
+      aria-controls="site-nav"
+      aria-expanded="false"
+      aria-label={ui.nav.toggleAriaLabel.open}
+    >
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<script>
+  const header = document.getElementById('header');
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 4);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const menuBtn = document.querySelector<HTMLButtonElement>('.nav-menu-btn');
+  const mega = document.getElementById('menu-program');
+  if (menuBtn && mega) {
+    const setMenu = (open: boolean) => menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      setMenu(menuBtn.getAttribute('aria-expanded') !== 'true');
+    });
+    document.addEventListener('click', (event) => {
+      if (!mega.contains(event.target as Node)) setMenu(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setMenu(false);
+    });
+  }
+
+  const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const nav = document.getElementById('site-nav');
+  if (toggle && nav) {
+    const setOpen = (open: boolean) => {
+      nav.classList.toggle('is-open', open);
+      document.body.classList.toggle('nav-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute(
+        'aria-label',
+        open ? 'Tutup menu' : 'Buka menu',
+      );
+    };
+    toggle.addEventListener('click', () => setOpen(!nav.classList.contains('is-open')));
+    nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    });
+  }
+</script>

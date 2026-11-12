@@ -1,0 +1,28 @@
+{
+  "name": "damkar",
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "astro dev",
+    "check": "astro sync && tsc --noEmit",
+    "build": "npm run check && astro build",
+    "preview": "astro preview"
+  },
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "overrides": {
+    "astro": "7.4.0",
+    "@astrojs/compiler-binding": "0.5.2",
+    "vite": "8.3.4",
+    "rolldown": "1.2.14",
+    "@rolldown/binding-linux-x64-gnu": "1.2.14"
+  },
+  "dependencies": {
+    "@esbuild/linux-x64": "^0.28.2",
+    "@rollup/rollup-linux-x64-gnu": "^4.68.2",
+    "astro": "7.4.0",
+    "sharp": "^0.34.5",
+    "typescript": "^7.0.2"
+  }
+}

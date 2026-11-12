@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactBand from '../components/shared/ContactBand.astro';
+import SiteFooter from '../components/shared/SiteFooter.astro';
+import SiteHeader from '../components/shared/SiteHeader.astro';
+import WaFloat from '../components/shared/WaFloat.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../config/site';
+import { ui } from '../config/ui';
+
+const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<BaseLayout
+  title={`Halaman tidak ditemukan | ${site.name}`}
+  description={ui.notFound.description}
+  noindex
+  jsonLd={[]}
+>
+  <SiteHeader />
+  <main id="konten" class="notfound">
+    <div class="container">
+      <p class="eyebrow">Error 404</p>
+      <h1>{ui.notFound.title}</h1>
+      <p class="hero-lead">Halaman yang Anda cari mungkin sudah dipindahkan. Lanjutkan ke halaman berikut:</p>
+      <ul class="nf-links">
+        {kelas.map((entry) => (
+          <li>
+            <a href={`/layanan/${entry.id}/`}>
+              <span class="prog-letter">{entry.data.key}</span>
+              Pelatihan {entry.data.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div class="actions">
+        <a class="btn btn-black btn-lg" href="/">Kembali ke beranda</a>
+        <a class="btn btn-outline btn-lg" href="/jadwal/">Lihat jadwal {site.year}</a>
+      </div>
+    </div>
+  </main>
+  <ContactBand />
+  <SiteFooter />
+  <WaFloat />
+</BaseLayout>

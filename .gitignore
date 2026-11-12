@@ -150,3 +150,6 @@ vite.config.ts.timestamp-*
 
 # Referensi
 referensi/
+
+# Foto mentah: hasil konversi sudah ada di public/images (di-commit)
+/images/

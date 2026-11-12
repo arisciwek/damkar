@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactBand from '../components/shared/ContactBand.astro';
+import SiteFooter from '../components/shared/SiteFooter.astro';
+import SiteHeader from '../components/shared/SiteHeader.astro';
+import WaFloat from '../components/shared/WaFloat.astro';
+import { ui } from '../config/ui';
+import {
+  organizationNode,
+  serializeJsonLd,
+  websiteNode,
+  webpageNode,
+} from '../utils/schema';
+
+const jsonLd = [organizationNode(), websiteNode()];
+// Pratinjau Fase 1: kerangka halaman + hero. Section lengkap menyusul di Fase 4.
+const page = webpageNode({
+  url: new URL('/', Astro.site).toString(),
+  name: ui.meta.defaultTitle,
+  description: ui.meta.defaultDescription,
+  extra: { about: { '@id': jsonLd[0]['@id'] }, mainEntity: { '@id': `${new URL('/', Astro.site)}#program` } },
+});
+jsonLd.push(page);
+---
+
+<BaseLayout jsonLd={jsonLd}>
+  <SiteHeader />
+  <main id="konten">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Sertifikasi Kemnaker RI</p>
+            <h1 id="hero-title">
+              Pelatihan Damkar Kelas D, C, B & A
+              <span>Kompetensi untuk keselamatan.</span>
+            </h1>
+            <p class="hero-lead">
+              Pelatihan Pemadam Kebakaran Kelas D, C, B & A untuk membangun kompetensi
+              pencegahan, penanggulangan, dan evaluasi sistem proteksi kebakaran di tempat kerja.
+            </p>
+            <ul class="hero-facts">
+              <li><b>4</b>Jenjang kompetensi</li>
+              <li><b>Kemnaker</b>Sertifikasi & lisensi resmi</li>
+            </ul>
+            <div class="actions">
+              <a class="btn btn-black btn-lg" href={ui.nav.cta.href} target="_blank" rel="noopener">Daftar Sekarang</a>
+              <a class="btn btn-outline btn-lg" href="/jadwal/">Lihat Jadwal</a>
+            </div>
+          </div>
+          <div class="hero-media">
+            <figure class="hero-photo">
+              <img
+                class="bw"
+                src="/images/damkar-pemadaman-tradisional.webp"
+                width="1200"
+                height="1600"
+                alt="Peserta Pelatihan Damkar Kemnaker RI saat praktik pemadaman api"
+                fetchpriority="high"
+                decoding="async"
+              />
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+    <ContactBand />
+  </main>
+  <SiteFooter />
+  <WaFloat />
+</BaseLayout>

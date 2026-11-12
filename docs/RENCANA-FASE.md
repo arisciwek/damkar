@@ -147,15 +147,18 @@ Tiap langkah: build + verifikasi + commit.
 - `Scheduler`, `Nearest`, `ProgramGrid`, `HeroBlock`, `getStaticPaths`, indeks, dan
   `layanan/[slug]` baca collection; pemakaian fungsi di template di-precompute di
   frontmatter. **63 URL & logika path tidak berubah**.
-- lastmod 63 URL ← **`max(updatedDate ?? pubDate)` file gelombang penyumbang route**
-  (bulan/kelas/irisan) — tiap file schedule kini punya `pubDate`+`updatedDate` unik
-  (keputusan user: tanggal editorial per-file, bukan rekonstruksi riwayat git);
-  indeks `/jadwal/` tetap `updatedDate` `jadwal.md`. Hasil: **46 nilai unik dari
-  62 route turunan** — 46 route kelas+bulan semuanya unik; 16 route induk (4 kelas +
-  12 bulan) menumpuk pada nilai anaknya (max superset = max subset — akurat secara
-  semantik). Tanggal editorial `jadwal.md`/`jadwal-detail.md` digeser ke waktu lampau
-  (waktu commit nyata saat tanggal di-set, keputusan user) → **0 lastmod/JSON-LD
-  masa depan**; 63 HTML jadwal berubah murni pada 4 string tanggal JSON-LD.
+- `pubDate`/`updatedDate` pada setiap file schedule adalah **metadata editorial untuk
+  sitemap**, bukan tanggal pelaksanaan. `pubDate` mencatat publikasi data gelombang;
+  `updatedDate` diperbarui setiap kali data gelombang berubah, termasuk penambahan
+  galeri/foto peserta setelah pelatihan selesai. `updatedDate` mengalahkan `pubDate`
+  untuk `<lastmod>` tanpa memeriksa apakah tanggal pelaksanaan sudah lewat.
+- JSON-LD `Event` menggunakan **`start` dan `end` pelaksanaan** dari collection;
+  tidak memakai `pubDate`/`updatedDate` sebagai tanggal event atau tanggal WebPage.
+  `/jadwal/` memuat Event seluruh gelombang; route turunan memuat Event sesuai filter.
+- Sitemap: `/jadwal/` = max tanggal editorial halaman + seluruh gelombang; route
+  turunan = max tanggal editorial template `jadwal-detail.md` + gelombang penyumbang.
+  Perubahan data event lampau tetap memperbarui lastmod. Parent route mengambil
+  nilai maksimum dari seluruh cakupannya.
 - **Gerbang terpenuhi**: diff indeks `/jadwal/` vs referensi 2777/2777 (pola lama);
   **70 HTML byte-identik** vs baseline pre-Tahap 4; sitemap valid XML, 69 URL.
   (Uji toggle "jadwal lewat" CDP — script klien tidak disentuh, output byte-identik;

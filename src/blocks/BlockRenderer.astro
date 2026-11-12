@@ -26,7 +26,14 @@ function propsFor(block: BlockConfig): Record<string, unknown> {
     case 'nearest-schedule':
       return { kelas: block.kelas, limit: block.limit };
     case 'schedule-list':
-      return { kelas: block.kelas, bulan: block.bulan, chips: block.chips };
+      return {
+        id: block.id,
+        title: block.title,
+        lede: block.lede,
+        kelas: block.kelas,
+        bulan: block.bulan,
+        chips: block.chips,
+      };
   }
 }
 ---

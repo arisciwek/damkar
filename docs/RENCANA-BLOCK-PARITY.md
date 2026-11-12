@@ -4,6 +4,13 @@
 > Tahap ini dikerjakan sebelum migrasi halaman ke Markdown. Semua pekerjaan langsung di
 > branch `main`, dengan commit kecil dan berurutan agar mudah ditinjau atau di-revert.
 
+## Checklist per block
+
+Rincian source review dan status DOM/browser setiap block dicatat di
+[`docs/BLOCK-PARITY-CHECKLIST.md`](./BLOCK-PARITY-CHECKLIST.md). Checklist membedakan
+inspeksi source dari pembuktian hasil render; tanda source diperiksa tidak boleh dianggap
+sebagai parity runtime.
+
 ## Tujuan
 
 Membentuk katalog block yang merepresentasikan section nyata pada tiga area yang sudah
@@ -137,6 +144,15 @@ tetap mengikuti tahap masing-masing di `docs/RENCANA-FASE.md`, setelah parity bl
   (`referensi/index.html` vs `dist/index.html`): **hanya divergensi role yang disengaja**
   (`d519571`, `fbb9fb4`); 6 komponen yang dimodifikasi di pull tidak mengubah output.
   (Halaman layanan & jadwal belum di-diff pada sesi ini.)
+
+### Hasil inspeksi source-level (13 Nov 2026)
+
+- Membandingkan adapter dengan komponen asal untuk hero, reasons, program-grid,
+  class-tabs, benefits, gallery, schedule-list, FAQ, nearest-schedule, class-detail,
+  other-programs, contact-band, serta wrapper content-layout/content-container.
+- Struktur komponen asal direuse; adapter tidak membuat ulang komponen interaksi inti.
+- Catatan rinci per block dan route pembanding: `docs/BLOCK-PARITY-CHECKLIST.md`.
+- Hasil ini hanya inspeksi source. Belum ada klaim DOM, visual, atau browser parity.
 
 ### Belum dianggap lolos
 

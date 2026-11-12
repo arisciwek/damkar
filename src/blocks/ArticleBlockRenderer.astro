@@ -1,0 +1,199 @@
+---
+import { waDaftar } from '../config/site';
+
+interface Props {
+  blocks: Array<Record<string, any>>;
+}
+
+const { blocks } = Astro.props;
+
+function blockError(component: string): never {
+  throw new Error(`Article block tidak didukung: ${component}`);
+}
+---
+
+<div class="article-blocks">
+  {blocks.map((block) => {
+    if (block.component === 'section') {
+      return (
+        <section id={block.id} class="article-section-block" aria-labelledby={`${block.id}-heading`}>
+          <h2 id={`${block.id}-heading`} class="article-section-block__heading">{block.heading}</h2>
+          <div class="article-section-block__body">
+            {block.content.map((item: any) => {
+              if (item.type === 'p') return <p>{item.text}</p>;
+              if (item.type === 'h3') return <h3>{item.text}</h3>;
+              if (item.type === 'h4') return <h4>{item.text}</h4>;
+              if (item.type === 'list' && item.ordered) return <ol>{item.items.map((entry: string) => <li>{entry}</li>)}</ol>;
+              if (item.type === 'list') return <ul>{item.items.map((entry: string) => <li>{entry}</li>)}</ul>;
+              return blockError(`section content: ${item.type}`);
+            })}
+          </div>
+        </section>
+      );
+    }
+    if (block.component === 'note') {
+      return (
+        <aside id={block.id} class:list={['article-note-block', `article-note-block--${block.variant ?? 'info'}']} role="note">
+          {block.title && <h2 class="article-note-block__title">{block.title}</h2>}
+          <p class="article-note-block__text">{block.text}</p>
+        </aside>
+      );
+    }
+    if (block.component === 'comparison-table') {
+      return (
+        <section id={block.id} class="article-comparison" aria-labelledby={`${block.id}-title`}>
+          <h2 id={`${block.id}-title`} class="article-comparison__title">{block.title}</h2>
+          {block.intro && <p class="article-comparison__intro">{block.intro}</p>}
+          <div class="article-comparison__scroll" tabindex="0" role="region" aria-label={`Tabel: ${block.title}`}>
+            <table class="article-comparison__table">
+              <thead><tr>{block.headers.map((head: string) => <th scope="col">{head}</th>)}</tr></thead>
+              <tbody>{block.rows.map((row: string[]) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody>
+            </table>
+          </div>
+          {block.note && <p class="article-comparison__note">{block.note}</p>}
+        </section>
+      );
+    }
+    if (block.component === 'feature-card-grid') {
+      return (
+        <section id={block.id} class="article-feature-grid" aria-labelledby={`${block.id}-title`}>
+          <h2 id={`${block.id}-title`}>{block.title}</h2>
+          <div class:list={['article-feature-grid__items', `article-feature-grid__items--${block.columns ?? 3}`]}>
+            {block.items.map((item: any, index: number) => (
+              <article class="article-feature-card">
+                <span class="article-feature-card__index">{String(index + 1).padStart(2, '0')}</span>
+                <h3>{item.title}</h3>
+                {item.description && <p>{item.description}</p>}
+                {item.points && <ul>{item.points.map((point: string) => <li>{point}</li>)}</ul>}
+              </article>
+            ))}
+          </div>
+        </section>
+      );
+    }
+    if (block.component === 'checklist-card') {
+      return (
+        <section id={block.id} class="article-checklist" aria-labelledby={`${block.id}-title`}>
+          <header class="article-checklist__header">
+            <h2 id={`${block.id}-title`}>{block.title}</h2>
+            {block.description && <p>{block.description}</p>}
+          </header>
+          <ul class="article-checklist__list">
+            {block.items.map((item: any) => (
+              <li class="article-checklist__item">
+                <span class="article-checklist__mark" aria-hidden="true">✓</span>
+                <span><strong>{item.label}</strong>{item.detail && <small>{item.detail}</small>}</span>
+                {item.required && <em>Perlu dikonfirmasi</em>}
+              </li>
+            ))}
+          </ul>
+          {block.note && <p class="article-checklist__note">{block.note}</p>}
+        </section>
+      );
+    }
+    if (block.component === 'source-links') {
+      return (
+        <section id={block.id} class="article-sources" aria-labelledby={`${block.id}-title`}>
+          <h2 id={`${block.id}-title`}>{block.title}</h2>
+          {block.intro && <p class="article-sources__intro">{block.intro}</p>}
+          <ul class="article-sources__list">
+            {block.items.map((item: any) => (
+              <li>
+                <a href={item.url} target="_blank" rel="noopener noreferrer">{item.label}<span aria-hidden="true">↗</span></a>
+                {item.description && <p>{item.description}</p>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
+    }
+    if (block.component === 'faq') {
+      return (
+        <section id={block.id} class="article-faq" aria-labelledby={`${block.id}-title`}>
+          <h2 id={`${block.id}-title`}>{block.heading}</h2>
+          <div class="article-faq__list">
+            {block.items.map((item: any) => (
+              <details class="article-faq__item">
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      );
+    }
+    if (block.component === 'cta') {
+      const message = `Halo, saya ingin konsultasi mengenai ${block.heading ?? 'Pelatihan Damkar'}.`;
+      return (
+        <aside id={block.id} class="article-cta-block">
+          <div class="article-cta-block__copy">
+            {block.heading && <h2>{block.heading}</h2>}
+            <p>{block.message}</p>
+          </div>
+          <div class="article-cta-block__actions">
+            <a class="btn btn-white" href={waDaftar(message)} target="_blank" rel="noopener noreferrer">{block.button ?? 'Konsultasi via WhatsApp'}</a>
+            {block.serviceHref && <a class="article-cta-block__link" href={block.serviceHref}>{block.serviceLabel ?? 'Lihat layanan'}</a>}
+          </div>
+        </aside>
+      );
+    }
+    return blockError(block.component);
+  })}
+</div>
+
+<style>
+.article-blocks{min-width:0;color:var(--text,#1a1a1a)}
+.article-section-block{margin-block:2.25rem}
+.article-section-block__heading{font-size:clamp(1.35rem,2.4vw,1.8rem);margin:0 0 1rem;color:var(--ink,#111);line-height:1.3}
+.article-section-block__body p{margin:0 0 1rem;color:var(--text,#1a1a1a);line-height:1.8}
+.article-section-block__body h3{font-size:1.15rem;margin:1.5rem 0 .55rem;line-height:1.4}
+.article-section-block__body h4{font-size:1rem;margin:1.1rem 0 .4rem;line-height:1.4}
+.article-section-block__body ul,.article-section-block__body ol{padding-left:1.35rem;margin:.5rem 0 1.2rem;list-style:disc}
+.article-section-block__body ol{list-style:decimal}
+.article-section-block__body li{padding-left:.25rem;margin:.35rem 0}
+.article-note-block{margin:1.75rem 0;padding:1.15rem 1.3rem;border:1px solid var(--line-2,#e8c3c0);border-left:4px solid var(--black,#dc1e1e);border-radius:var(--r,12px);background:var(--soft,#fff2f1)}
+.article-note-block__title{margin:0 0 .35rem;font-size:1rem}
+.article-note-block__text{margin:0;line-height:1.75}
+.article-note-block--success{border-left-color:#27834b;background:#f0faf3}
+.article-note-block--warning{border-left-color:#c27b12;background:#fff8e9}
+.article-note-block--danger{border-left-color:#b42318;background:#fff1f0}
+.article-comparison,.article-feature-grid,.article-checklist,.article-sources,.article-faq{margin:2rem 0}
+.article-comparison__title,.article-feature-grid>h2,.article-checklist__header h2,.article-sources h2,.article-faq>h2{font-size:1.3rem;margin:0 0 .7rem;line-height:1.35}
+.article-comparison__intro,.article-comparison__note,.article-checklist__header p,.article-checklist__note,.article-sources__intro,.article-sources__list p,.article-faq__item p{color:var(--mute,#3f3a3a);line-height:1.7}
+.article-comparison__scroll{overflow-x:auto;border:1px solid var(--line,#f3dedc);border-radius:var(--r,12px)}
+.article-comparison__table{width:100%;border-collapse:collapse;min-width:520px;font-size:.9rem}
+.article-comparison__table th{background:var(--soft,#fff2f1);text-align:left;font-weight:600}
+.article-comparison__table th,.article-comparison__table td{padding:.8rem 1rem;border-bottom:1px solid var(--line,#f3dedc);vertical-align:top}
+.article-comparison__table tbody tr:last-child td{border-bottom:0}
+.article-comparison__note,.article-checklist__note{font-size:.85rem;margin:.7rem 0 0}
+.article-feature-grid__items{display:grid;gap:1rem}
+.article-feature-grid__items--2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.article-feature-grid__items--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.article-feature-card{padding:1.1rem;border:1px solid var(--line,#f3dedc);border-radius:var(--r-lg,16px);background:#fff}
+.article-feature-card__index{color:var(--black,#dc1e1e);font-size:.78rem;font-weight:700}
+.article-feature-card h3{margin:.35rem 0 .5rem;font-size:1.05rem}
+.article-feature-card p,.article-feature-card li{font-size:.88rem;color:var(--mute,#3f3a3a)}
+.article-feature-card ul{padding-left:1.1rem;list-style:disc}
+.article-feature-card li{margin:.3rem 0}
+.article-checklist{padding:1.35rem;border:1px solid var(--line,#f3dedc);border-radius:var(--r-lg,16px);background:#fff}
+.article-checklist__list{display:grid;gap:.8rem;margin:1rem 0 0;padding:0;list-style:none}
+.article-checklist__item{display:grid;grid-template-columns:26px 1fr auto;gap:.7rem;align-items:start}
+.article-checklist__mark{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--soft,#fff2f1);color:var(--black,#dc1e1e);font-weight:700}
+.article-checklist__item small{display:block;color:var(--mute,#3f3a3a);font-size:.86rem;line-height:1.6}
+.article-checklist__item em{font-size:.72rem;color:#9a5b0b;font-style:normal}
+.article-sources{padding:1.2rem;border:1px solid var(--line,#f3dedc);border-radius:var(--r-lg,16px);background:#fff}
+.article-sources__list{display:grid;gap:.8rem;margin:1rem 0 0;padding:0;list-style:none}
+.article-sources__list a{display:flex;justify-content:space-between;gap:1rem;color:var(--black,#dc1e1e);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.article-sources__list p{margin:.2rem 0 0;font-size:.85rem}
+.article-faq__list{border-top:1px solid var(--line,#f3dedc)}
+.article-faq__item{padding:1rem 0;border-bottom:1px solid var(--line,#f3dedc)}
+.article-faq__item summary{font-weight:600;cursor:pointer}
+.article-faq__item p{margin:.65rem 0 0}
+.article-cta-block{display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:center;margin:2.5rem 0;padding:1.5rem;border-radius:var(--r-lg,16px);background:var(--black,#dc1e1e);color:#fff}
+.article-cta-block h2{color:#fff;font-size:1.3rem;margin:0 0 .4rem}
+.article-cta-block p{margin:0;color:#fff;line-height:1.7}
+.article-cta-block__actions{display:grid;justify-items:start;gap:.65rem}
+.article-cta-block__link{color:#fff;font-size:.85rem;text-underline-offset:3px}
+@media(max-width:720px){.article-feature-grid__items--2,.article-feature-grid__items--3{grid-template-columns:1fr}.article-cta-block{grid-template-columns:1fr}}
+@media(max-width:520px){.article-checklist__item{grid-template-columns:26px 1fr}.article-checklist__item em{grid-column:2}}
+</style>

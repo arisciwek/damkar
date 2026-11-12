@@ -1,23 +1,14 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Icon from '../../components/ui/Icon.astro';
-import BenefitsBlock from '../../components/content/BenefitsBlock.astro';
-import Breadcrumb from '../../components/content/Breadcrumb.astro';
-import FaqBlock from '../../components/content/FaqBlock.astro';
-import Hero from '../../components/content/Hero.astro';
-import MateriList from '../../components/content/MateriList.astro';
-import Nearest from '../../components/content/Nearest.astro';
-import ReasonsBlock from '../../components/content/ReasonsBlock.astro';
-import Scheduler from '../../components/content/Scheduler.astro';
-import Sidebar from '../../components/content/Sidebar.astro';
-import ContactBand from '../../components/shared/ContactBand.astro';
+import PageBlockRenderer from '../../blocks/PageBlockRenderer.astro';
+import type { PageBlockConfig } from '../../blocks/types';
 import SiteFooter from '../../components/shared/SiteFooter.astro';
 import SiteHeader from '../../components/shared/SiteHeader.astro';
 import WaFloat from '../../components/shared/WaFloat.astro';
 import { faq } from '../../config/blocks';
 import { active, batches, countBatches, type KelasKey } from '../../config/jadwal';
-import { organization, photos, site, waDaftar } from '../../config/site';
+import { organization, photos, site } from '../../config/site';
 import { ui } from '../../config/ui';
 import {
   breadcrumbNode,
@@ -39,25 +30,98 @@ export async function getStaticPaths() {
 }
 
 const { entry, entries } = Astro.props;
+const page = await getEntry('pages', entry.id);
+if (!page) throw new Error(`Markdown blocks untuk halaman ${entry.id} tidak ditemukan.`);
+
 const data = entry.data;
 const key = data.key as KelasKey;
-const step = (['D', 'C', 'B', 'A'] as KelasKey[]).indexOf(key); // 0..3 → urutan foto
+const step = (['D', 'C', 'B', 'A'] as KelasKey[]).indexOf(key);
 const photo = photos[step];
 const url = new URL(`/layanan/${entry.id}/`, Astro.site).toString();
-
-const title = `Pelatihan ${data.name} Kemnaker RI | Jadwal ${site.year}`;
-const description = `Pelatihan ${data.name} (${data.role}) sertifikasi Kemnaker RI. ${data.mode}, pendidikan minimal ${data.education}, ${data.materi.length} materi. Cek jadwal ${site.year} di sini.`;
+const title = page.data.title;
+const description = page.data.description ?? `Pelatihan ${data.name} (${data.role}) sertifikasi Kemnaker RI. ${data.mode}, pendidikan minimal ${data.education}, ${data.materi.length} materi. Cek jadwal ${site.year} di sini.`;
 const ctaMsg = `Halo tim Betracom, saya ingin mendaftar Pelatihan ${data.name}. Mohon info jadwal, biaya, dan persyaratannya.`;
-
 const gelombangCount = countBatches(key);
 const gelombangAktif = active(key).length;
-const others = entries.filter((other) => other.data.key !== key);
 const lokasi = faq[3].a;
-
-// Foto zigzag detail: pola (indeks + 1..3) % 4, sama dengan referensi.
 const zigPhotos = [photos[(step + 1) % 4], photos[(step + 2) % 4], photos[(step + 3) % 4]];
 
-/** Gelombang untuk CourseInstance di JSON-LD (hanya field yang dibutuhkan schema). */
+const blocks = page.data.blocks.map((pageBlock: any) => {
+  if (pageBlock.type !== 'content-layout') {
+    if (pageBlock.type === 'hero') {
+      return {
+        ...pageBlock,
+        heading: `Pelatihan ${data.name}`,
+        highlight: data.role,
+        lead: `${data.desc} Program ${data.mode} dengan sertifikasi Kemnaker RI bersama ${organization.name}.`,
+        breadcrumb: [
+          { label: ui.nav.breadcrumbHome, href: '/' },
+          { label: 'Program', href: '/layanan/' },
+          { label: data.name },
+        ],
+        nearest: { kelas: key, limit: 2 },
+        facts: pageBlock.facts.map((fact: any) => ({
+          ...fact,
+          dynamic: undefined,
+          value: fact.label === 'Materi' ? String(data.materi.length)
+            : fact.label.startsWith('Gelombang') ? String(gelombangCount)
+            : fact.label.startsWith('Pendidikan') ? data.education
+            : fact.value,
+        })),
+        actions: pageBlock.actions.map((action: any) =>
+          action.label === 'Daftar Sekarang'
+            ? { ...action, href: `https://wa.me/6282268066126?text=${encodeURIComponent(ctaMsg)}` }
+            : action,
+        ),
+        media: { type: 'photo', photo, letter: key },
+      };
+    }
+    if (pageBlock.type === 'contact-band') return pageBlock;
+    return pageBlock;
+  }
+
+  return {
+    ...pageBlock,
+    ctaMsg,
+    blocks: pageBlock.blocks.map((block: any) => {
+      if (block.type === 'reasons') return { ...block, title: `Mengapa ${data.name} Penting?` };
+      if (block.type === 'class-detail') return {
+        type: 'class-detail',
+        name: data.name,
+        role: data.role,
+        description: data.desc,
+        mode: data.mode,
+        modeNote: data.modeNote,
+        step: data.step,
+        materi: [...data.materi],
+        requirement: data.requirement,
+        location: lokasi,
+        photos: zigPhotos,
+      };
+      if (block.type === 'schedule-list') return {
+        ...block,
+        title: `Jadwal ${data.name} ${site.year}`,
+        lede: `${gelombangCount} gelombang Public Training sepanjang ${site.year}, ${gelombangAktif} di antaranya masih aktif atau akan datang.`,
+        kelas: key,
+        chips: false,
+      };
+      if (block.type === 'other-programs') return {
+        ...block,
+        items: entries
+          .filter((other: any) => other.data.key !== key)
+          .map((other: any) => ({
+            key: other.data.key,
+            step: other.data.step,
+            name: other.data.name,
+            role: other.data.role,
+            href: `/layanan/${other.id}/`,
+          })),
+      };
+      return block;
+    }),
+  };
+}) as PageBlockConfig[];
+
 const scheduleForSchema = batches
   .filter((batch) => batch.class === key)
   .map((batch) => ({
@@ -93,10 +157,7 @@ const jsonLd = [
     materi: [...data.materi],
     schedule: scheduleForSchema,
   }),
-  faqPageNode(
-    url,
-    faq.map((item) => ({ q: item.q, a: item.a })),
-  ),
+  faqPageNode(url, faq.map((item) => ({ q: item.q, a: item.a }))),
 ];
 ---
 
@@ -110,183 +171,7 @@ const jsonLd = [
 >
   <SiteHeader />
   <main id="konten">
-    <Hero
-      eyebrow={`Jenjang ${data.step} dari 4 · Sertifikasi Kemnaker RI`}
-      heading={`Pelatihan ${data.name}`}
-      highlight={data.role}
-      lead={`${data.desc} Program ${data.mode} dengan sertifikasi Kemnaker RI bersama ${organization.name}.`}
-    >
-      <Breadcrumb
-        slot="crumbs"
-        items={[
-          { label: ui.nav.breadcrumbHome, href: '/' },
-          { label: 'Program', href: '/layanan/' },
-          { label: data.name },
-        ]}
-      />
-      <Nearest slot="near" kelas={key} limit={2} />
-      <ul class="hero-facts" slot="facts">
-        <li><b>{data.step}/4</b>Jenjang</li>
-        <li><b>{data.materi.length}</b>Materi</li>
-        <li><b>{gelombangCount}</b>Gelombang {site.year}</li>
-        <li><b>{data.education}</b>Pendidikan min.</li>
-      </ul>
-      <div class="actions" slot="actions">
-        <a class="btn btn-black btn-lg" href={waDaftar(ctaMsg)} target="_blank" rel="noopener">
-          Daftar Sekarang
-        </a>
-        <a class="btn btn-outline btn-lg" href="#detail">Lihat Materi</a>
-      </div>
-      <figure class="hero-photo" slot="media">
-        <img
-          class="bw"
-          src={photo.src}
-          width={photo.w}
-          height={photo.h}
-          alt={photo.alt}
-          fetchpriority="high"
-          decoding="async"
-        />
-        <span class="hero-letter" aria-hidden="true">{key}</span>
-      </figure>
-    </Hero>
-
-    <div class="container layout">
-      <Sidebar
-        ctaMsg={ctaMsg}
-        links={[
-          { id: 'manfaat', label: 'Manfaat Pelatihan', icon: 'check' },
-          { id: 'detail', label: 'Detail Program', icon: 'list' },
-          { id: 'fasilitas', label: 'Mengapa Pilih Kami', icon: 'badge' },
-          { id: 'jadwal', label: 'Jadwal & Persyaratan', icon: 'cal' },
-          { id: 'faq', label: 'FAQ', icon: 'info' },
-          { id: 'jenjang', label: 'Jenjang Lainnya', icon: 'arrow-ur' },
-        ]}
-      />
-      <div class="content">
-        <ReasonsBlock title={`Mengapa ${data.name} Penting?`} />
-
-        <section class="block" id="detail" aria-labelledby="detail-title">
-          <header class="block-head">
-            <h2 id="detail-title">Detail Program {data.name}</h2>
-            <p>Peran, materi, dan persyaratan peserta.</p>
-          </header>
-          <div class="zigzag">
-            <article class="zig">
-              <img
-                class="bw"
-                src={zigPhotos[0].src}
-                width={zigPhotos[0].w}
-                height={zigPhotos[0].h}
-                alt={zigPhotos[0].alt}
-                loading="lazy"
-                decoding="async"
-              />
-              <div class="zig-body">
-                <h3>Peran &amp; Fokus</h3>
-                <p>
-                  <strong>{data.role}.</strong> {data.desc}
-                </p>
-                <dl class="dl">
-                  <div>
-                    <dt>Metode</dt>
-                    <dd>{data.mode} · {data.modeNote}</dd>
-                  </div>
-                  <div>
-                    <dt>Jenjang</dt>
-                    <dd>Jenjang {data.step} dari 4 (Kelas D, C, B, A)</dd>
-                  </div>
-                </dl>
-              </div>
-            </article>
-            <article class="zig">
-              <img
-                class="bw"
-                src={zigPhotos[1].src}
-                width={zigPhotos[1].w}
-                height={zigPhotos[1].h}
-                alt={zigPhotos[1].alt}
-                loading="lazy"
-                decoding="async"
-              />
-              <div class="zig-body">
-                <h3>Materi Pelatihan ({data.materi.length} Materi)</h3>
-                <MateriList items={[...data.materi]} limit={7} />
-              </div>
-            </article>
-            <article class="zig">
-              <img
-                class="bw"
-                src={zigPhotos[2].src}
-                width={zigPhotos[2].w}
-                height={zigPhotos[2].h}
-                alt={zigPhotos[2].alt}
-                loading="lazy"
-                decoding="async"
-              />
-              <div class="zig-body">
-                <h3>Persyaratan &amp; Lokasi</h3>
-                <dl class="dl">
-                  <div>
-                    <dt>Persyaratan peserta</dt>
-                    <dd>{data.requirement}</dd>
-                  </div>
-                  <div>
-                    <dt>Dokumen</dt>
-                    <dd>Pas foto, KTP, dan surat keterangan sehat.</dd>
-                  </div>
-                  <div>
-                    <dt>Lokasi</dt>
-                    <dd>{lokasi}</dd>
-                  </div>
-                </dl>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <BenefitsBlock />
-
-        <section class="block" id="jadwal" aria-labelledby="jadwal-title">
-          <header class="block-head">
-            <h2 id="jadwal-title">Jadwal {data.name} {site.year}</h2>
-            <p>
-              {gelombangCount} gelombang Public Training sepanjang {site.year}, {gelombangAktif} di
-              antaranya masih aktif atau akan datang.
-            </p>
-          </header>
-          <Scheduler kelas={key} chips={false} />
-        </section>
-
-        <FaqBlock />
-
-        <section class="block" id="jenjang" aria-labelledby="jenjang-title">
-          <header class="block-head">
-            <h2 id="jenjang-title">Jenjang Pelatihan Lainnya</h2>
-            <p>Lanjutkan kompetensi ke jenjang berikutnya.</p>
-          </header>
-          <ul class="others">
-            {
-              others.map((other) => (
-                <li>
-                  <a class="other" href={`/layanan/${other.id}/`}>
-                    <span class="prog-letter" aria-hidden="true">{other.data.key}</span>
-                    <span>
-                      <small>Jenjang {other.data.step}</small>
-                      <strong>{other.data.name}</strong>
-                      <em>{other.data.role}</em>
-                    </span>
-                    <Icon name="arrow-ur" size={20} />
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </section>
-      </div>
-    </div>
-
-    <ContactBand />
+    <PageBlockRenderer blocks={blocks} />
   </main>
   <SiteFooter />
   <WaFloat />

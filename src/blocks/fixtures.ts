@@ -7,7 +7,7 @@
 import { benefits, blockCopy, faq, reasons } from '../config/blocks';
 import { countBatches } from '../config/jadwal';
 import { photos, site, waDaftar } from '../config/site';
-import type { BlockConfig } from './types';
+import type { PageBlockConfig } from './types';
 
 const homeHeroMessage = 'Halo saya ingin konsultasi Pelatihan Damkar.';
 const registrationMessage =
@@ -43,7 +43,7 @@ export const homeBlockFixture = [
     media: { type: 'slider' },
   },
   {
-    type: 'section-sidebar',
+    type: 'content-layout',
     ctaMsg: 'Halo saya ingin mendaftar Pelatihan Damkar.',
     links: [
       { id: 'manfaat', label: 'Manfaat Pelatihan', icon: 'check' },
@@ -54,50 +54,52 @@ export const homeBlockFixture = [
       { id: 'jadwal', label: 'Jadwal & Persyaratan', icon: 'cal' },
       { id: 'faq', label: 'FAQ', icon: 'info' },
     ],
-  },
-  {
-    type: 'reasons',
-    title: 'Mengapa Pelatihan Damkar Penting?',
-    lede: blockCopy.reasonsLede,
-    intro: blockCopy.reasonsIntro,
-    items: reasons.map((item) => ({ ...item })),
-  },
-  {
-    type: 'program-grid',
-    title: 'Pilih Jenjang Sesuai Kebutuhan',
-    lede: 'Program berjenjang dari Petugas Pemadam hingga Ahli K3 Pemadam Kebakaran.',
-  },
-  {
-    type: 'class-tabs',
-    title: 'Detail Program & Materi',
-    lede: 'Materi yang relevan dengan pekerjaan. Pilih kelas untuk melihat materinya.',
-  },
-  {
-    type: 'benefits',
-    title: blockCopy.benefitsTitle,
-    lede: blockCopy.benefitsLede,
-    items: benefits.map((item) => ({ ...item })),
-  },
-  {
-    type: 'gallery',
-    title: blockCopy.mediaTitle,
-    lede: blockCopy.mediaLede,
-    items: photos.map((photo) => ({ ...photo })),
-  },
-  {
-    type: 'schedule-list',
-    id: 'jadwal',
-    title: `Jadwal Pelatihan Damkar ${site.year}`,
-    lede: 'Temukan tanggal yang cocok. Pilih kelas dan bulan, lalu daftar langsung via WhatsApp.',
-  },
-  {
-    type: 'faq',
-    title: blockCopy.faqTitle,
-    lede: blockCopy.faqLede,
-    items: faq.map((item) => ({ ...item })),
+    blocks: [
+      {
+        type: 'reasons',
+        title: 'Mengapa Pelatihan Damkar Penting?',
+        lede: blockCopy.reasonsLede,
+        intro: blockCopy.reasonsIntro,
+        items: reasons.map((item) => ({ ...item })),
+      },
+      {
+        type: 'program-grid',
+        title: 'Pilih Jenjang Sesuai Kebutuhan',
+        lede: 'Program berjenjang dari Petugas Pemadam hingga Ahli K3 Pemadam Kebakaran.',
+      },
+      {
+        type: 'class-tabs',
+        title: 'Detail Program & Materi',
+        lede: 'Materi yang relevan dengan pekerjaan. Pilih kelas untuk melihat materinya.',
+      },
+      {
+        type: 'benefits',
+        title: blockCopy.benefitsTitle,
+        lede: blockCopy.benefitsLede,
+        items: benefits.map((item) => ({ ...item })),
+      },
+      {
+        type: 'gallery',
+        title: blockCopy.mediaTitle,
+        lede: blockCopy.mediaLede,
+        items: photos.map((photo) => ({ ...photo })),
+      },
+      {
+        type: 'schedule-list',
+        id: 'jadwal',
+        title: `Jadwal Pelatihan Damkar ${site.year}`,
+        lede: 'Temukan tanggal yang cocok. Pilih kelas dan bulan, lalu daftar langsung via WhatsApp.',
+      },
+      {
+        type: 'faq',
+        title: blockCopy.faqTitle,
+        lede: blockCopy.faqLede,
+        items: faq.map((item) => ({ ...item })),
+      },
+    ],
   },
   { type: 'contact-band' },
-] satisfies BlockConfig[];
+] satisfies PageBlockConfig[];
 
 export const serviceListingBlockFixture = [
   {
@@ -133,24 +135,35 @@ export const serviceListingBlockFixture = [
     media: { type: 'photo', photo: photos[0] },
   },
   {
-    type: 'program-grid',
-    title: 'Pilih Jenjang Sesuai Kebutuhan',
-    lede: 'Program berjenjang dari Petugas Pemadam hingga Ahli K3 Pemadam Kebakaran.',
-  },
-  {
-    type: 'benefits',
-    title: blockCopy.benefitsTitle,
-    lede: blockCopy.benefitsLede,
-    items: benefits.map((item) => ({ ...item })),
-  },
-  {
-    type: 'faq',
-    title: blockCopy.faqTitle,
-    lede: blockCopy.faqLede,
-    items: faq.map((item) => ({ ...item })),
+    type: 'content-layout',
+    ctaMsg: registrationMessage,
+    links: [
+      { id: 'program', label: 'Program Pelatihan', icon: 'list' },
+      { id: 'fasilitas', label: 'Mengapa Pilih Kami', icon: 'badge' },
+      { id: 'faq', label: 'FAQ', icon: 'info' },
+    ],
+    blocks: [
+      {
+        type: 'program-grid',
+        title: 'Pilih Jenjang Sesuai Kebutuhan',
+        lede: 'Program berjenjang dari Petugas Pemadam hingga Ahli K3 Pemadam Kebakaran.',
+      },
+      {
+        type: 'benefits',
+        title: blockCopy.benefitsTitle,
+        lede: blockCopy.benefitsLede,
+        items: benefits.map((item) => ({ ...item })),
+      },
+      {
+        type: 'faq',
+        title: blockCopy.faqTitle,
+        lede: blockCopy.faqLede,
+        items: faq.map((item) => ({ ...item })),
+      },
+    ],
   },
   { type: 'contact-band' },
-] satisfies BlockConfig[];
+] satisfies PageBlockConfig[];
 
 export const scheduleIndexBlockFixture = [
   {
@@ -185,10 +198,15 @@ export const scheduleIndexBlockFixture = [
     media: { type: 'photo', photo: photos[0] },
   },
   {
-    type: 'schedule-list',
-    id: 'jadwal',
-    title: 'Semua Gelombang Public Training',
-    lede: 'Temukan tanggal yang cocok. Pilih kelas dan bulan, lalu daftar langsung via WhatsApp.',
+    type: 'content-container',
+    blocks: [
+      {
+        type: 'schedule-list',
+        id: 'jadwal',
+        title: 'Semua Gelombang Public Training',
+        lede: 'Temukan tanggal yang cocok. Pilih kelas dan bulan, lalu daftar langsung via WhatsApp.',
+      },
+    ],
   },
   { type: 'contact-band' },
-] satisfies BlockConfig[];
+] satisfies PageBlockConfig[];

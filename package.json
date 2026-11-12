@@ -19,6 +19,7 @@
     "@rolldown/binding-linux-x64-gnu": "1.2.14"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
     "@esbuild/linux-x64": "^0.28.2",
     "@rollup/rollup-linux-x64-gnu": "^4.68.2",
     "astro": "7.4.0",

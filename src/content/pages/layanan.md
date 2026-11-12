@@ -19,7 +19,7 @@ blocks:
     facts:
       - value: "4"
         label: Jenjang kompetensi
-      - value: "0"
+      - value: "57"
         dynamic: batch-count
         label: Gelombang 2026
       - value: Kemnaker

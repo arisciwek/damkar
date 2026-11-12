@@ -54,6 +54,7 @@ export type BlockConfig =
       kelas?: 'D' | 'C' | 'B' | 'A';
       bulan?: string;
       chips?: boolean;
-    };
+    }
+  | { type: 'contact-band'; id?: string; heading?: string; kicker?: string };
 
 export type BlockType = BlockConfig['type'];

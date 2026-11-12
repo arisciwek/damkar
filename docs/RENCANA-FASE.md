@@ -75,14 +75,19 @@ di `/www/wwwroot/damkar`.
 
 ### Kebijakan tanggal editorial dan lastmod teknis (keputusan 13 Nov 2026)
 
-- `pubDate` dan `updatedDate` adalah metadata editorial, bukan tanggal pembuatan file.
-  Gunakan hanya pada konten editorial yang memang memiliki riwayat publikasi.
+- `pubDate` dan `updatedDate` adalah metadata entri, bukan tanggal pembuatan file.
+  **WAJIB di setiap node** — setiap page (termasuk home), setiap content, setiap
+  artikel, setiap schedule — karena fungsinya jelas: data entri → `<lastmod>` sitemap.
+  Aturan lengkap tercatat di **`AGENTS.md`** dan dijalankan validator
+  `scripts/validate-editorial-dates.mjs` (dipanggil `npm run check`) + Zod schema
+  wajib (`pubDate`/`updatedDate` tanpa `.optional()`).
 - Format wajib: ISO 8601 UTC tanpa milisecond, misalnya
   `2026-11-13T08:15:23Z`. Jika beberapa dokumen diterbitkan pada hari yang sama,
   `pubDate` harus memiliki menit/detik yang berbeda dan mencerminkan urutan publikasi;
-  jangan mengisi semua dokumen dengan `T00:00:00Z`.
-- `updatedDate` hanya diisi ketika konten benar-benar mengalami pembaruan editorial
-  setelah publikasi. Jika belum pernah diperbarui, field dihilangkan.
+  jangan mengisi semua dokumen dengan `T00:00:00Z`; `updatedDate` ≥ `pubDate`;
+  tidak boleh di masa depan.
+- `updatedDate` selalu diisi — mencerminkan waktu perubahan data terakhir,
+  termasuk edit setelah tanggal pelaksanaan lewat (mis. galeri peserta).
 - Route `/jadwal/` — **kebijakan 13 Nov 2026 (revisi)**: informasi jadwal dan JSON-LD
   `Event` memakai **tanggal pelaksanaan** (`start`/`end` collection `schedule`);
   `pubDate`/`updatedDate` **hanya untuk `<lastmod>` sitemap** dan tidak lagi diteruskan
@@ -99,9 +104,10 @@ di `/www/wwwroot/damkar`.
 
 ### Tahap 1 — Tanggal editorial + lastmod per-URL 🟡 (lastmod per-URL ✅; sambungan editorial lain menunggu)
 
-1. `pubDate`/`updatedDate` pada collection `kelas` hanya untuk 4 halaman detail layanan
-   jika keputusan editorialnya memang dipertahankan; nilai UTC tanpa milisecond dan
-   unik sampai detik, dikonfirmasi sebelum rilis. ⬜
+1. ✅ `pubDate`/`updatedDate` kini **wajib di semua entri** (keputusan 13 Nov 2026):
+   4 halaman detail (`damkar-kelas-*.md`) sudah terisi — `pubDate` = commit pertama
+   halaman, `updatedDate` = perubahan data terakhir. Koleksi `kelas` (data program
+   teknis) tidak memerlukan field ini. Divalidasi schema Zod + validator build. ✅
 2. Tanggal editorial halaman jadwal **tidak lagi** diteruskan ke
    `datePublished`/`dateModified` WebPage JSON-LD (kebijakan revisi: `pubDate`/
    `updatedDate` = sitemap saja; informasi jadwal & Event = tanggal pelaksanaan).

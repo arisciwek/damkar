@@ -4,6 +4,8 @@ slug: damkar-kelas-b
 kelas: B
 title: Pelatihan Damkar Kelas B Kemnaker RI | Jadwal 2026
 description: "Pelatihan Damkar Kelas B (Ketua Regu) sertifikasi Kemnaker RI. Informasi metode, materi, persyaratan, dan jadwal pelatihan tahun 2026."
+pubDate: 2026-11-12T18:58:39Z
+updatedDate: 2026-11-12T23:04:18Z
 draft: false
 blocks:
   - type: hero

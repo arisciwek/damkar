@@ -1,5 +1,30 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — pubDate/updatedDate wajib di setiap entri + validator
+
+- **Keputusan user** (setelah koreksi): logika sederhana — `pubDate`/`updatedDate`
+  di **setiap** node (home, layanan, detail, jadwal, artikel, schedule) = data entri
+  → **sitemap `<lastmod>`**; `start`/`end` schedule = tanggal pelaksanaan →
+  **JSON-LD Event**. Jangan dicampur, jangan dirumitkan.
+- **Isi 6 file pages** yang belum punya field:
+  - `pubDate` = commit pertama halaman (riwayat nyata): home `18:30:35Z`,
+    layanan `18:50:08Z`, kelas A–D `18:58:38–41Z` (detik disusun A→D agar unik
+    sesuai kebijakan — satu commit untuk keempatnya);
+  - `updatedDate` = sesi edit nyata `23:03:48Z–23:04:38Z` (step 10s, unik, lampau).
+- **Validator** (catatan kebijakan dijalankan otomatis):
+  - `scripts/validate-editorial-dates.mjs` baru — cek semua `pages/` + `schedule/`
+    punya `pubDate`+`updatedDate` format UTC ketat (`YYYY-MM-DDTHH:MM:SSZ`);
+    gagal → `npm run check`/`build` gagal. Disambungkan ke `package.json` `check`;
+  - Zod `content.config.ts`: `pubDate`/`updatedDate` **wajib** (tanpa `.optional()`)
+    di collection `pages` **dan** `schedule` (`updatedDate` schedule tadinya opsional).
+- **`AGENTS.md` baru** — kebijakan tanggal (2 hal terpisah) + aturan kerja repo
+  (jangan ubah data sebelum paham, satu commit per unit, gerbang verifikasi).
+- **Docs**: `RENCANA-FASE` — paragraf kebijakan (field wajib di setiap entri;
+  `updatedDate` selalu diisi), Tahap 1 poin 1 ditandai ✅.
+- **Gerbang**: check (dengan validator) + build lolos; 70 HTML diharapkan identik
+  (field baru tak dipakai render); lastmod 6 halaman pindah dari jalur git ke
+  `updatedDate` editorial (nilai = perubahan nyata hari ini).
+
 ## 13 Nov 2026 — Kebijakan tanggal: pelaksanaan untuk jadwal/Event, pubDate/updatedDate untuk sitemap
 
 - **Keputusan user**: tanggal **pelaksanaan** (`start`/`end`) untuk informasi jadwal &

@@ -3,6 +3,8 @@ type: page
 slug: layanan
 title: Layanan Pelatihan Damkar Kelas D, C, B, A | Sertifikasi Kemnaker RI
 description: "Empat jenjang layanan Pelatihan Damkar bersertifikat Kemnaker RI: Kelas D, C, B, dan A. Bandingkan metode, materi, dan persyaratan sebelum mendaftar via WhatsApp."
+pubDate: 2026-11-12T18:50:08Z
+updatedDate: 2026-11-12T23:03:58Z
 draft: false
 blocks:
   - type: hero

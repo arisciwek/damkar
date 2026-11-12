@@ -104,8 +104,9 @@ const pages = defineCollection({
     kelas: z.enum(['D', 'C', 'B', 'A']).optional(),
     title: z.string().min(1),
     description: z.string().optional(),
-    pubDate: z.coerce.date().optional(),
-    updatedDate: z.coerce.date().optional(),
+    /** Wajib di setiap page — "data entri" yang berujung ke <lastmod> sitemap. */
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date(),
     draft: z.boolean().default(false),
     blocks: z.array(pageBlock).min(1),
   }),
@@ -130,9 +131,9 @@ const schedule = defineCollection({
     /** Label tampilan, mis. "19–21 Januari 2026". */
     label: z.string().min(1),
     /** Waktu publikasi data gelombang ini (ISO 8601 UTC tanpa milidetik). */
+    /** Wajib di setiap entri — "data entri" yang berujung ke <lastmod> sitemap. */
     pubDate: z.coerce.date(),
-    /** Diisi hanya saat data benar-benar diperbarui (kebijakan tanggal editorial). */
-    updatedDate: z.coerce.date().optional(),
+    updatedDate: z.coerce.date(),
     draft: z.boolean().default(false),
   }),
 });

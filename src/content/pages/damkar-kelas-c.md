@@ -4,6 +4,8 @@ slug: damkar-kelas-c
 kelas: C
 title: Pelatihan Damkar Kelas C Kemnaker RI | Jadwal 2026
 description: "Pelatihan Damkar Kelas C (Petugas Madya) sertifikasi Kemnaker RI. Informasi metode, materi, persyaratan, dan jadwal pelatihan tahun 2026."
+pubDate: 2026-11-12T18:58:40Z
+updatedDate: 2026-11-12T23:04:28Z
 draft: false
 blocks:
   - type: hero

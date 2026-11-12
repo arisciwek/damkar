@@ -193,11 +193,11 @@ export function scheduleEventNode(input: {
   end: string;
   label: string;
 }): JsonLd {
-  const id = `${input.url}#event-${input.kelas.toLowerCase()}-${input.batch}`;
+  const id = `${site.url}/jadwal/#event-${input.kelas.toLowerCase()}-${input.batch}`;
   return {
     '@type': 'Event',
     '@id': id,
-    url: input.url,
+    url: id,
     name: `Pelatihan Damkar ${input.kelas} — Gelombang ${input.batch}`,
     description: `Public Training Pelatihan Damkar ${input.kelas}, ${input.label}.`,
     startDate: input.start,

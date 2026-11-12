@@ -197,7 +197,7 @@ export function scheduleEventNode(input: {
   return {
     '@type': 'Event',
     '@id': id,
-    url: id,
+    url: input.url,
     name: `Pelatihan Damkar ${input.kelas} — Gelombang ${input.batch}`,
     description: `Public Training Pelatihan Damkar ${input.kelas}, ${input.label}.`,
     startDate: input.start,

@@ -1,6 +1,6 @@
 ---
 id: 6
-ulid: 01K9Z8Y7X6W5V4T3S2R0Q9P8MU
+ulid: 01K9Z8Y7X6W5V4T3S2R0Q9P8MV
 type: article
 schemaType: Article
 slug: materi-pelatihan-damkar-c
@@ -21,7 +21,7 @@ tags:
   - APAR dan hydrant
   - simulasi tanggap darurat
 featuredImage: /images/articles/04-apa-itu-regu-penanggulangan-kebakaran-damkar-c.webp
-featuredImageAlt: "Ilustrasi regu penanggulangan kebakaran dalam materi pelatihan Damkar C"
+featuredImageAlt: "Materi Pelatihan Damkar C: Kompetensi Teknis Anggota Regu Penanggulangan Kebakaran"
 relatedServices: [3]
 relatedArticles: [4, 5]
 blocks:

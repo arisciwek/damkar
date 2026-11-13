@@ -20,7 +20,7 @@ tags:
   - Ahli K3 Spesialis Penanggulangan Kebakaran
   - persyaratan peserta Damkar A
   - dokumen pelatihan ahli kebakaran
-featuredImage: /images/articles/11-syarat-pelatihan-ahli-k3-spesialis-penanggulangan-kebakaran-damkar-a.svg
+featuredImage: /images/articles/11-syarat-pelatihan-ahli-k3-spesialis-penanggulangan-kebakaran-damkar-a.webp
 featuredImageAlt: "Syarat Pelatihan Damkar A: Kualifikasi Ahli K3 Spesialis Penanggulangan Kebakaran"
 relatedServices: [1]
 relatedArticles: [10, 12]

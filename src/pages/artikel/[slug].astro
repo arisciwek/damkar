@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArticleBlockRenderer from '../../blocks/ArticleBlockRenderer.astro';
+import Hero from '../../components/content/Hero.astro';
 import SiteFooter from '../../components/shared/SiteFooter.astro';
 import SiteHeader from '../../components/shared/SiteHeader.astro';
 import WaFloat from '../../components/shared/WaFloat.astro';
@@ -32,14 +33,12 @@ const articleNode = {
   datePublished: article.pubDate.toISOString(),
   dateModified: article.updatedDate.toISOString(),
   author,
-  publisher: { '@id': `${new URL('/', Astro.site).toString().replace(/\/$/, '')}#organization` },
+  publisher: { '@id': `${new URL('/', Astro.site).toString().replace(/\\/$/, '')}#organization` },
   articleSection: article.category,
   keywords: article.tags,
   inLanguage: 'id-ID',
 };
-// Paragraf pertama artikel = item `type: p` pertama pada blok section pertama.
-// Ditampilkan sebagai lead <p class="description"> setelah h1 dan TIDAK diulang
-// di badan (sumber tetap blocks[] — bukan meta description, bukan field baru).
+// P1 tetap berasal dari blocks[]: ditampilkan pada hero dan tidak diulang di badan.
 let lead: string | null = null;
 let bodyBlocks = article.blocks;
 const firstSection = article.blocks.find((b) => b.component === 'section');
@@ -81,28 +80,33 @@ const jsonLd = [
 >
   <SiteHeader />
   <main id="konten" class="article-page">
-    <div class="container article-page__container">
-      <nav class="article-breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Beranda</a><span aria-hidden="true">/</span>
-        <a href="/artikel/">Artikel</a><span aria-hidden="true">/</span>
+    <Hero eyebrow={article.category} heading={article.title} lead={lead ?? article.description}>
+      <nav slot="crumbs" class="article-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Beranda</a><span aria-hidden="true">›</span>
+        <a href="/artikel/">Artikel</a><span aria-hidden="true">›</span>
         <span aria-current="page">{article.title}</span>
       </nav>
+      <div slot="near" class="article-hero-meta">
+        <span>{article.author.name}</span>
+        <time datetime={article.pubDate.toISOString()}>{published}</time>
+        {article.updatedDate > article.pubDate && <span>Diperbarui {updated}</span>}
+      </div>
+      {article.featuredImage && (
+        <figure slot="media" class="hero-photo article-hero-photo">
+          <img
+            src={article.featuredImage}
+            width="1184"
+            height="1066"
+            alt={article.featuredImageAlt ?? article.title}
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      )}
+    </Hero>
+
+    <div class="container article-page__container">
       <article class="article-document">
-        <header class="article-header">
-          <p class="article-header__category">{article.category}</p>
-          <h1>{article.title}</h1>
-          {lead && <p class="description">{lead}</p>}
-          <div class="article-meta">
-            <span>{article.author.name}</span>
-            <time datetime={article.pubDate.toISOString()}>{published}</time>
-            {article.updatedDate > article.pubDate && <span>Diperbarui {updated}</span>}
-          </div>
-          {article.featuredImage && (
-            <figure class="article-featured-image">
-              <img src={article.featuredImage} alt={article.featuredImageAlt ?? article.title} width="1184" height="1066" fetchpriority="high" />
-            </figure>
-          )}
-        </header>
         <ArticleBlockRenderer blocks={bodyBlocks} />
         <footer class="article-footer">
           <p class="article-footer__label">Topik artikel</p>
@@ -117,22 +121,19 @@ const jsonLd = [
 </BaseLayout>
 
 <style>
-.article-page{padding:2rem 0 4rem}
-.article-page__container{max-width:920px}
+.article-page{padding-bottom:4rem}
 .article-breadcrumb{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;margin:0 0 1.6rem;color:var(--mute,#666);font-size:.82rem;line-height:1.6}
 .article-breadcrumb a{color:var(--black,#dc1e1e);text-decoration:none}
 .article-breadcrumb [aria-current="page"]{overflow-wrap:anywhere}
+.article-hero-meta{display:flex;flex-wrap:wrap;gap:.45rem 1rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--line,#eee);font-size:.82rem;color:var(--mute,#666)}
+.article-hero-photo{overflow:hidden;border-radius:var(--r-lg,16px);background:var(--soft,#fff2f1)}
+.article-hero-photo img{display:block;width:100%;height:100%;max-height:532px;aspect-ratio:1.11;object-fit:cover}
+.article-page__container{max-width:920px}
 .article-document{max-width:780px;margin-inline:auto}
-.article-header{margin-bottom:2rem}
-.article-header__category{margin:0 0 .7rem;color:var(--black,#dc1e1e);font-size:.78rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
-.article-header h1{margin:0;font-size:clamp(2rem,4.5vw,3.1rem);line-height:1.16;letter-spacing:-.035em;color:var(--ink,#111)}
-.article-header .description{margin:1rem 0;color:var(--mute,#555);font-size:1.08rem;line-height:1.75}
-.article-meta{display:flex;flex-wrap:wrap;gap:.45rem 1rem;padding:1rem 0;border-top:1px solid var(--line,#eee);border-bottom:1px solid var(--line,#eee);font-size:.82rem;color:var(--mute,#666)}
-.article-featured-image{margin:1.5rem 0 0;overflow:hidden;border-radius:var(--r-lg,16px);background:var(--soft,#fff2f1)}
-.article-featured-image img{display:block;width:100%;height:auto;max-height:480px;object-fit:cover}
 .article-footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--line,#eee)}
 .article-footer__label{font-size:.8rem;font-weight:700;color:var(--mute,#666)}
 .article-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin:0;padding:0;list-style:none}
 .article-tags li{padding:.35rem .65rem;border-radius:999px;background:var(--soft,#fff2f1);font-size:.78rem;color:var(--text,#333)}
 .article-footer__back{display:inline-block;margin-top:1.5rem;color:var(--black,#dc1e1e);font-weight:600;text-decoration:none}
+@media(max-width:767px){.article-hero-meta{margin-top:1rem}.article-hero-photo img{max-height:420px}}
 </style>

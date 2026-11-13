@@ -7,8 +7,8 @@ slug: materi-pelatihan-damkar-d
 title: "Materi Pelatihan Damkar D: APAR, Deteksi Bahaya, dan Tindakan Awal Kebakaran"
 description: "Materi dasar kebakaran membantu peserta memahami bagaimana api dapat muncul, faktor yang membuat pembakaran terus berlangsung, serta kondisi yang dapat mempercepat penyebaran api. Pengetahuan tersebut menjadi landasan untuk mengenali bahaya di tempat kerja dan menentukan kapan tindakan awal masih dapat dilakukan dengan aman."
 draft: false
-pubDate: '2026-11-13T04:12:00Z'
-updatedDate: '2026-11-13T04:12:00Z'
+pubDate: '2026-11-12T21:12:00Z'
+updatedDate: '2026-11-12T21:12:00Z'
 author:
   name: Tim Pelatihan Damkar Betracom
   type: Organization
@@ -21,7 +21,7 @@ tags:
   - deteksi bahaya kebakaran
   - tindakan awal kebakaran
   - evakuasi kebakaran
-featuredImage: /images/articles/03-materi-pelatihan-damkar-d.svg
+featuredImage: /images/articles/03-materi-pelatihan-damkar-d.webp
 featuredImageAlt: "Materi Pelatihan Damkar D: APAR, Deteksi Bahaya, dan Tindakan Awal Kebakaran"
 relatedServices: [4]
 relatedArticles: [1, 2]

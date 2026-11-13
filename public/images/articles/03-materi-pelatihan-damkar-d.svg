@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="592" height="533" viewBox="0 0 592 533" role="img" aria-labelledby="title desc">
+<title id="title">Materi APAR</title>
+<desc id="desc">Materi APAR: tangan memegang alat pemadam mengarah ke api latihan</desc>
+<defs><linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFFDF8"/><stop offset="1" stop-color="#F2EBDD"/></linearGradient></defs><rect width="592" height="533" rx="34" fill="#F7F3EA"/><circle cx="520" cy="60" r="82" fill="#E9E2D4" opacity=".55"/><circle cx="58" cy="475" r="92" fill="#E9E2D4" opacity=".45"/>
+<path d="M92 423h408" stroke="#D5C4AD" stroke-width="5" stroke-linecap="round"/>
+<path d="M392 145c-30 42-48 64-48 94a48 48 0 0 0 96 0c0-30-18-52-48-94Z" fill="#F97316"/>
+<path d="M392 191c-14 20-22 31-22 48a22 22 0 0 0 44 0c0-17-8-28-22-48Z" fill="#FBBF24"/>
+<rect x="112" y="206" width="82" height="157" rx="24" fill="#D94B3E"/>
+<rect x="132" y="181" width="42" height="33" rx="8" fill="#A9322A"/>
+<path d="M153 181v-29q0-18 18-18h22" fill="none" stroke="#A9322A" stroke-width="9" stroke-linecap="round"/>
+<path d="M112 250h82" stroke="#FCE9D5" stroke-width="12"/>
+<path d="M153 363v28" stroke="#A9322A" stroke-width="10"/>
+<path d="M194 276q58-45 118-5" fill="none" stroke="#78A7B0" stroke-width="12" stroke-linecap="round" stroke-dasharray="5 16"/>
+<path d="M294 263l30 8-18 24" fill="none" stroke="#78A7B0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="250" cy="120" r="45" fill="#FDE7C8"/><path d="M228 121h44m-22-22v44" stroke="#E87936" stroke-width="8" stroke-linecap="round"/>
+<path d="M330 390h112" stroke="#6B8790" stroke-width="7" stroke-linecap="round"/>
+
+</svg>

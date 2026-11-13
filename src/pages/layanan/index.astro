@@ -63,8 +63,17 @@ const jsonLd = [
 <BaseLayout title={title} description={description} preloadImage={photos[0].src} jsonLd={jsonLd}>
   <SiteHeader />
   <main id="konten">
-    <PageBlockRenderer blocks={blocks} />
-    <LatestArticlesSection offset={3} limit={3} />
+    {blocks.map((block, i) => {
+      if (block.type === 'contact-band') {
+        return (
+          <>
+            <LatestArticlesSection offset={3} limit={3} />
+            <PageBlockRenderer blocks={[block]} />
+          </>
+        );
+      }
+      return <PageBlockRenderer blocks={[block]} />;
+    })}
   </main>
   <SiteFooter />
   <WaFloat />

@@ -37,6 +37,24 @@ const articleNode = {
   keywords: article.tags,
   inLanguage: 'id-ID',
 };
+// Paragraf pertama artikel = item `type: p` pertama pada blok section pertama.
+// Ditampilkan sebagai lead <p class="description"> setelah h1 dan TIDAK diulang
+// di badan (sumber tetap blocks[] — bukan meta description, bukan field baru).
+let lead: string | null = null;
+let bodyBlocks = article.blocks;
+const firstSection = article.blocks.find((b) => b.component === 'section');
+if (firstSection?.component === 'section') {
+  const firstP = firstSection.content.find((c) => c.type === 'p');
+  if (firstP?.type === 'p') {
+    lead = firstP.text;
+    bodyBlocks = article.blocks.map((b) =>
+      b === firstSection && b.component === 'section'
+        ? { ...b, content: b.content.filter((c) => c !== firstP) }
+        : b,
+    );
+  }
+}
+
 const jsonLd = [
   organizationNode(),
   websiteNode(),
@@ -73,6 +91,7 @@ const jsonLd = [
         <header class="article-header">
           <p class="article-header__category">{article.category}</p>
           <h1>{article.title}</h1>
+          {lead && <p class="description">{lead}</p>}
           <div class="article-meta">
             <span>{article.author.name}</span>
             <time datetime={article.pubDate.toISOString()}>{published}</time>
@@ -84,7 +103,7 @@ const jsonLd = [
             </figure>
           )}
         </header>
-        <ArticleBlockRenderer blocks={article.blocks} />
+        <ArticleBlockRenderer blocks={bodyBlocks} />
         <footer class="article-footer">
           <p class="article-footer__label">Topik artikel</p>
           <ul class="article-tags">{article.tags.map((tag: string) => <li>{tag}</li>)}</ul>
@@ -107,6 +126,7 @@ const jsonLd = [
 .article-header{margin-bottom:2rem}
 .article-header__category{margin:0 0 .7rem;color:var(--black,#dc1e1e);font-size:.78rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
 .article-header h1{margin:0;font-size:clamp(2rem,4.5vw,3.1rem);line-height:1.16;letter-spacing:-.035em;color:var(--ink,#111)}
+.article-header .description{margin:1rem 0;color:var(--mute,#555);font-size:1.08rem;line-height:1.75}
 .article-meta{display:flex;flex-wrap:wrap;gap:.45rem 1rem;padding:1rem 0;border-top:1px solid var(--line,#eee);border-bottom:1px solid var(--line,#eee);font-size:.82rem;color:var(--mute,#666)}
 .article-featured-image{margin:1.5rem 0 0;overflow:hidden;border-radius:var(--r-lg,16px);background:var(--soft,#fff2f1)}
 .article-featured-image img{display:block;width:100%;height:auto;max-height:480px;object-fit:cover}

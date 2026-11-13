@@ -20,7 +20,7 @@ tags:
   - tugas koordinator kebakaran
   - organisasi penanggulangan kebakaran
   - KEP.186/MEN/1999
-featuredImage: /images/articles/07-apa-itu-koordinator-unit-penanggulangan-kebakaran-damkar-b.svg
+featuredImage: /images/articles/07-apa-itu-koordinator-unit-penanggulangan-kebakaran-damkar-b.webp
 featuredImageAlt: "Koordinator Unit Penanggulangan Kebakaran (Damkar B): Peran, Tugas, dan Tanggung Jawab"
 relatedServices: [2]
 relatedArticles: [8, 9]

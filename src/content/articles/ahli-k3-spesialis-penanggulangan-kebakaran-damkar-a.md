@@ -8,7 +8,7 @@ title: "Ahli K3 Spesialis Penanggulangan Kebakaran (Damkar A): Peran dan Kompete
 description: "Pelajari peran Damkar A, ruang lingkup keahlian spesialis kebakaran, tanggung jawab teknis, dan kontribusinya dalam sistem K3 perusahaan."
 draft: false
 pubDate: '2026-11-11T14:45:00Z'
-updatedDate: '2026-11-13T09:00:00Z'
+updatedDate: '2026-11-13T00:01:05Z'
 author:
   name: Tim Pelatihan Damkar Betracom
   type: Organization
@@ -20,7 +20,7 @@ tags:
   - ahli K3 kebakaran
   - kompetensi ahli kebakaran
   - sistem manajemen keselamatan kebakaran
-featuredImage: /images/ahli-k3-spesialis-kebakaran.webp
+featuredImage: /images/articles/10-apa-itu-ahli-k3-spesialis-penanggulangan-kebakaran-damkar-a.webp
 featuredImageAlt: "Ahli K3 Spesialis Penanggulangan Kebakaran (Damkar A): Peran dan Kompetensi"
 relatedServices: [1]
 relatedArticles: [11, 12]

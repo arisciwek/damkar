@@ -20,7 +20,7 @@ tags:
   - peserta Damkar D
   - dokumen pelatihan damkar
   - pendaftaran pelatihan pemadam kebakaran
-featuredImage: /images/articles/02-syarat-pelatihan-damkar-d.svg
+featuredImage: /images/articles/02-syarat-pelatihan-damkar-d.webp
 featuredImageAlt: "Syarat Mengikuti Pelatihan Damkar D: Peserta, Dokumen, dan Tahapan Pendaftaran"
 relatedServices: [4]
 relatedArticles: [1, 3]

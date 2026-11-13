@@ -122,6 +122,26 @@ function blockError(component: string): never {
         </section>
       );
     }
+    if (block.component === 'process-timeline') {
+      return (
+        <section id={block.id} class="article-process-timeline" aria-labelledby={`${block.id}-title`}>
+          <header class="article-process-timeline__header">
+            <h2 id={`${block.id}-title`}>{block.title}</h2>
+          </header>
+          <ol class="article-process-timeline__steps">
+            {block.steps.map((step: any, idx: number) => (
+              <li class="article-process-timeline__step">
+                <span class="article-process-timeline__number" aria-hidden="true">{idx + 1}</span>
+                <div class="article-process-timeline__content">
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      );
+    }
     if (block.component === 'cta') {
       const message = `Halo, saya ingin konsultasi mengenai ${block.heading ?? 'Pelatihan Damkar'}.`;
       return (
@@ -189,6 +209,14 @@ function blockError(component: string): never {
 .article-faq__item{padding:1rem 0;border-bottom:1px solid var(--line,#f3dedc)}
 .article-faq__item summary{font-weight:600;cursor:pointer}
 .article-faq__item p{margin:.65rem 0 0}
+.article-process-timeline{margin:2rem 0}
+.article-process-timeline__header{margin:0 0 1.5rem}
+.article-process-timeline__header h2{font-size:1.3rem;margin:0 0 .5rem;line-height:1.35}
+.article-process-timeline__steps{display:grid;gap:1.25rem;margin:0;padding:0;list-style:none;counter-reset:step}
+.article-process-timeline__step{display:grid;grid-template-columns:44px 1fr;gap:1rem;align-items:start}
+.article-process-timeline__number{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--black,#dc1e1e);color:#fff;font-weight:700;font-size:1rem}
+.article-process-timeline__content h3{margin:0 0 .35rem;font-size:1.05rem;line-height:1.35;color:var(--ink,#111)}
+.article-process-timeline__content p{margin:0;color:var(--mute,#3f3a3a);line-height:1.7}
 .article-cta-block{display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:center;margin:2.5rem 0;padding:1.5rem;border-radius:var(--r-lg,16px);background:var(--black,#dc1e1e);color:#fff}
 .article-cta-block h2{color:#fff;font-size:1.3rem;margin:0 0 .4rem}
 .article-cta-block p{margin:0;color:#fff;line-height:1.7}

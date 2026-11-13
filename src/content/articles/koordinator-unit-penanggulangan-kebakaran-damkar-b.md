@@ -7,8 +7,8 @@ slug: koordinator-unit-penanggulangan-kebakaran-damkar-b
 title: "Koordinator Unit Penanggulangan Kebakaran (Damkar B): Peran, Tugas, dan Tanggung Jawab"
 description: "Koordinator Unit Penanggulangan Kebakaran merupakan unsur yang mengoordinasikan pelaksanaan tugas organisasi penanggulangan kebakaran di tempat kerja. Peran ini menghubungkan kebijakan dan arahan penanggung jawab dengan pekerjaan petugas peran kebakaran serta regu penanggulangan kebakaran. Dalam pembinaan teknis, Damkar B lazim dikaitkan dengan tingkat dasar II untuk Koordinator Unit Penanggulangan Kebakaran. Perusahaan tetap perlu memeriksa nomenklatur program dan dokumen hasil yang ditawarkan penyelenggara."
 draft: false
-pubDate: '2026-11-13T09:30:00Z'
-updatedDate: '2026-11-13T09:30:00Z'
+pubDate: '2026-11-13T02:30:00Z'
+updatedDate: '2026-11-13T02:30:00Z'
 author:
   name: Tim Pelatihan Damkar Betracom
   type: Organization

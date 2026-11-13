@@ -33,7 +33,7 @@ const articleNode = {
   datePublished: article.pubDate.toISOString(),
   dateModified: article.updatedDate.toISOString(),
   author,
-  publisher: { '@id': `${new URL('/', Astro.site).toString().replace(/\\/$/, '')}#organization` },
+  publisher: { '@id': `${new URL('/', Astro.site).toString().replace(/\/$/, '')}#organization` },
   articleSection: article.category,
   keywords: article.tags,
   inLanguage: 'id-ID',

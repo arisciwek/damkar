@@ -7,8 +7,8 @@ slug: apa-itu-regu-penanggulangan-kebakaran-damkar-c
 title: "Apa Itu Regu Penanggulangan Kebakaran (Damkar C)? Tugas, Struktur, dan Kompetensinya"
 description: "Regu Penanggulangan Kebakaran adalah bagian dari organisasi penanggulangan kebakaran yang dibentuk perusahaan untuk melaksanakan upaya penanggulangan sesuai tingkat risiko dan kemampuan personelnya. Dalam konteks pembinaan teknis, Damkar C lazim dikaitkan dengan pembinaan tingkat dasar II bagi personel regu. Regu bekerja berdasarkan pembagian tugas, prosedur keadaan darurat, dan koordinasi dengan unsur organisasi lainnya."
 draft: false
-pubDate: '2026-11-13T09:10:00Z'
-updatedDate: '2026-11-13T09:10:00Z'
+pubDate: '2026-11-13T02:10:00Z'
+updatedDate: '2026-11-13T02:10:00Z'
 author:
   name: Tim Pelatihan Damkar Betracom
   type: Organization
@@ -20,7 +20,7 @@ tags:
   - tugas regu pemadam kebakaran
   - organisasi penanggulangan kebakaran
   - KEP.186/MEN/1999
-featuredImage: /images/articles/04-apa-itu-regu-penanggulangan-kebakaran-damkar-c.svg
+featuredImage: /images/articles/04-apa-itu-regu-penanggulangan-kebakaran-damkar-c.webp
 featuredImageAlt: "Apa Itu Regu Penanggulangan Kebakaran (Damkar C)? Tugas, Struktur, dan Kompetensinya"
 relatedServices: [3]
 relatedArticles: [5, 6]

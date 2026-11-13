@@ -1,5 +1,22 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — Konsistensi `description` = paragraf pertama + kartu jadi component
+
+- **Keputusan user**: kartu artikel harus konsisten memakai frontmatter yang sama;
+  `description` = **paragraf pertama** (item `p` pertama `blocks[]`) untuk semua
+  artikel; kartu dijadikan reusable component.
+- **Isi `description` kedua artikel disamakan dengan P1 blocks** (persis):
+  - D: 390 char (2 kalimat — sebelumnya hanya kalimat pertama, 160 char);
+  - A: 404 char (sebelumnya ringkasan terpisah 137 char);
+  - `updatedDate` keduanya diperbarui (`00:53:25Z` / `00:53:30Z`).
+- **Component baru `src/components/ArticleCard.astro`**: markup + CSS kartu
+  dipindah dari inline `artikel/index.astro` — kini reusable; indeks tinggal
+  `<ArticleCard entry={entry} />`.
+- **AGENTS.md** konvensi artikel ditulis ulang: `description` = salinan paragraf
+  pertama (satu teks untuk meta/og/JSON-LD/kartu/lead), bukan ringkasan terpisah.
+- Tampilan lead halaman detail tidak berbeda: lead = P1 blocks (diekstrak),
+  kini `description` juga = P1 → **kartu, meta, dan lead semua teks yang sama**.
+
 ## 13 Nov 2026 — Perbaikan build artikel dan aturan description vs paragraf pembuka
 
 - Commit `23dad97`: pulihkan backtick penutup template literal pada

@@ -39,16 +39,16 @@ Dua hal ini terpisah. Jangan dicampur.
 
 ## Konvensi artikel (wajib)
 
-- `description` adalah **meta description ringkas** untuk `<meta name="description">`,
-  Open Graph, dan kartu artikel. Tulis ringkas, spesifik, menjelaskan topik/benefit,
-  dan relevan dengan intent pencarian. Jangan memaksakan kalimat pembuka artikel
-  yang panjang ke field ini. Panjang SERP bukan batas karakter yang dijamin Google.
-- Paragraf pembuka lengkap berada di `blocks[]`, sebagai `type: p` pertama
-  pada section pertama. Paragraf ini harus menjelaskan topik secara utuh dan natural,
-  bukan sekadar mengulang meta description. Keduanya saling mendukung, tetapi
-  **tidak wajib identik**.
-- Jangan membuat field `intro` metadata tambahan untuk menduplikasi paragraf pertama.
-  Isi artikel tetap berada di `blocks[]`; `description` khusus metadata/kartu.
+- **Keputusan 13 Nov 2026**: `description` = **paragraf pertama artikel** — item
+  `type: p` pertama pada section pertama `blocks[]`, disalin persis ke frontmatter.
+  Satu teks yang sama dipakai untuk `<meta name="description">`, Open Graph, JSON-LD
+  `Article.description`, kartu artikel (`ArticleCard`), dan lead halaman detail.
+  Konsisten di semua artikel; jangan menulis ringkasan terpisah.
+- Karena itu panjang `description` mengikuti paragraf pertama (ratusan karakter
+  boleh). Panjang SERP bukan batas karakter yang dijamin Google — Google dapat
+  memilih snippet dari isi halaman sesuai kueri.
+- Jangan membuat field `intro` metadata tambahan. Isi artikel tetap berada di
+  `blocks[]`; `description` = salinan paragraf pertama untuk keperluan metadata/kartu.
 - Google dapat memilih snippet dari isi halaman sesuai kueri; meta description
   bukan instruksi agar Google selalu menampilkan teks itu. Tulis paragraf pembuka
   yang berdiri sendiri dan informatif.

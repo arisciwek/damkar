@@ -1,5 +1,29 @@
 # Log Pekerjaan
 
+## 13 Nov 2026 — Standar kartu artikel + split hero halaman detail
+
+- **Kartu artikel** (`fa4e534`): seluruh elemen teks diberi semantic class
+  (`article-card__title`, `article-card__description`); gambar memakai rasio
+  1.11:1 agar lebih dekat dengan proporsi aset artikel, bukan 16:10.
+- Tinggi kartu dibuat penuh mengikuti grid; deskripsi tetap utuh pada sumber
+  dan dibatasi 5 baris hanya di tampilan melalui CSS line-clamp. Tautan kartu
+  tetap menjadi satu target klik; animasi hover menghormati
+  `prefers-reduced-motion`.
+- **Hero artikel** (`351c922`): halaman detail memakai komponen
+  `components/content/Hero.astro` yang sama dengan layanan. Kategori dan judul
+  serta P1 tampil di kiri; featured image di kanan; breadcrumb dan metadata
+  penulis/tanggal tetap tersedia.
+- P1 tetap diambil dari item paragraf pertama pada section pertama `blocks[]`,
+  ditampilkan di hero satu kali, lalu dikeluarkan dari `bodyBlocks` agar tidak
+  terulang dalam isi artikel. Metadata SEO, JSON-LD, canonical, OG, tanggal,
+  dan URL tidak diubah.
+- **Konvensi baru dicatat di `AGENTS.md`**: semantic class kartu, rasio gambar,
+  clamp visual tanpa mengubah description, dan reuse Hero layanan.
+- **Belum diverifikasi lokal**: perubahan kode belum menjalani
+  `npm run check`, `npm run build`, screenshot desktop/mobile, atau pemeriksaan
+  diff HTML. Lakukan setelah `git pull`; jika ada error, kirim output-nya
+  sebelum perubahan lanjutan.
+
 ## 13 Nov 2026 — Konsistensi `description` = paragraf pertama + kartu jadi component
 
 - **Keputusan user**: kartu artikel harus konsisten memakai frontmatter yang sama;

@@ -1,6 +1,6 @@
 ---
 id: 12
-ulid: 01K9Z8Y7X6W5V4T3S2R0Q9P8N0
+ulid: 01K9Z8Y7X6W5V4T3S2R0Q9P8MV
 type: article
 schemaType: Article
 slug: materi-pelatihan-ahli-k3-spesialis-penanggulangan-kebakaran-damkar-a
@@ -8,7 +8,7 @@ title: "Materi Pelatihan Damkar A: Kompetensi Ahli K3 Spesialis Penanggulangan K
 description: "Materi untuk fungsi ahli perlu membangun pemahaman yang menyeluruh mengenai kebakaran sebagai risiko keselamatan kerja. Peserta perlu memahami karakteristik api, perilaku asap, sumber penyalaan, bahan berbahaya, serta hubungan antara desain fasilitas, proses kerja, sistem proteksi, dan kesiapsiagaan organisasi."
 draft: false
 pubDate: '2026-11-07T08:50:00Z'
-updatedDate: '2026-11-13T04:30:00Z'
+updatedDate: '2026-11-13T04:10:40Z'
 author:
   name: Tim Pelatihan Damkar Betracom
   type: Organization
@@ -20,7 +20,7 @@ tags:
   - analisis risiko kebakaran
   - sistem proteksi kebakaran
   - audit keselamatan kebakaran
-featuredImage: /images/materi-ahli-k3-damkar-a.webp
+featuredImage: /images/articles/10-apa-itu-ahli-k3-spesialis-penanggulangan-kebakaran-damkar-a.webp
 featuredImageAlt: "Materi Pelatihan Damkar A: Kompetensi Ahli K3 Spesialis Penanggulangan Kebakaran"
 relatedServices: [1]
 relatedArticles: [10, 11]

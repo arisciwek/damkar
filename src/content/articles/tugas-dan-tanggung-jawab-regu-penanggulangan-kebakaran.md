@@ -7,8 +7,8 @@ slug: tugas-dan-tanggung-jawab-regu-penanggulangan-kebakaran
 title: "Tugas dan Tanggung Jawab Regu Penanggulangan Kebakaran di Tempat Kerja"
 description: "Regu Penanggulangan Kebakaran menjalankan tugas berdasarkan organisasi dan prosedur yang ditetapkan perusahaan. Ruang lingkupnya mencakup kesiapsiagaan, respons sesuai kompetensi, koordinasi, serta dukungan terhadap evakuasi. Pelaksanaan tugas harus mempertimbangkan klasifikasi risiko, ketersediaan sarana, dan batas kemampuan personel."
 draft: false
-pubDate: '2026-11-11T08:20:00Z'
-updatedDate: '2026-11-13T07:15:00Z'
+pubDate: '2026-11-11T01:20:00Z'
+updatedDate: '2026-11-13T00:15:00Z'
 author:
   name: Tim Pelatihan Damkar Betracom
   type: Organization
@@ -20,7 +20,7 @@ tags:
   - Damkar C
   - prosedur tanggap darurat kebakaran
   - koordinasi regu pemadam
-featuredImage: /images/articles/06-tugas-anggota-regu-pemadam-kebakaran-perusahaan.svg
+featuredImage: /images/articles/06-tugas-anggota-regu-pemadam-kebakaran-perusahaan.webp
 featuredImageAlt: "Tugas dan Tanggung Jawab Regu Penanggulangan Kebakaran di Tempat Kerja"
 relatedServices: [3]
 relatedArticles: [4, 6]

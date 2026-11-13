@@ -7,8 +7,8 @@ slug: materi-pelatihan-koordinator-unit-penanggulangan-kebakaran-damkar-b
 title: "Materi Pelatihan Damkar B: Kompetensi Koordinator Unit Penanggulangan Kebakaran"
 description: "Materi organisasi menjadi fondasi bagi koordinator untuk memahami bagaimana unsur penanggulangan kebakaran dibentuk, dihubungkan, dan diarahkan. Koordinator perlu mengetahui posisi petugas peran kebakaran, regu penanggulangan, penanggung jawab, serta hubungan dengan fungsi K3 dan manajemen perusahaan."
 draft: false
-pubDate: '2026-11-13T06:30:00Z'
-updatedDate: '2026-11-13T06:30:00Z'
+pubDate: '2026-11-12T23:30:00Z'
+updatedDate: '2026-11-12T23:30:00Z'
 author:
   name: Tim Pelatihan Damkar Betracom
   type: Organization
@@ -20,7 +20,7 @@ tags:
   - Koordinator Unit Penanggulangan Kebakaran
   - organisasi tanggap darurat
   - kesiapsiagaan kebakaran
-featuredImage: /images/articles/07-materi-pelatihan-koordinator-unit-damkar-b.svg
+featuredImage: /images/articles/07-materi-pelatihan-koordinator-unit-damkar-b.webp
 featuredImageAlt: "Materi Pelatihan Damkar B: Kompetensi Koordinator Unit Penanggulangan Kebakaran"
 relatedServices: [2]
 relatedArticles: [7, 8]

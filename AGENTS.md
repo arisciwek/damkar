@@ -58,6 +58,15 @@ Dua hal ini terpisah. Jangan dicampur.
 - Quote string YAML yang berpotensi ditafsirkan sebagai sintaks YAML (terutama
   `description` dengan tanda baca seperti `: `, kutip, atau karakter khusus).
   Setelah menulis artikel, validasi parse frontmatter melalui `npm run check`.
+- `ArticleCard.astro` adalah komponen listing reusable: semua elemen punya semantic
+  class `article-card__*`; gambar memakai rasio 1.11:1 yang mendekati aset artikel;
+  description tidak diubah di sumber dan boleh dibatasi **hanya secara visual**
+  dengan line-clamp (saat ini 5 baris). Jangan menambahkan ringkasan khusus kartu.
+- Halaman detail artikel memakai split hero yang sama dengan halaman layanan:
+  kategori/eyebrow, H1, P1 di kolom kiri; featured image di kolom kanan. Hero memakai
+  komponen `Hero.astro` yang sudah ada, bukan membuat sistem hero/CSS paralel.
+  P1 diambil dari `blocks[]`, ditampilkan sekali di hero, lalu dikeluarkan dari
+  body renderer agar tidak berulang.
 - Saat mengubah `.astro`, periksa pasangan backtick, kurung, kurawal, dan array
   pada ekspresi JSX/Astro, terutama `class:list` dan template literal. Jangan
   menganggap edit satu karakter aman tanpa `npm run check` + `npm run build`.

@@ -2,6 +2,7 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageBlockRenderer from '../../blocks/PageBlockRenderer.astro';
+import LatestArticlesSection from '../../components/LatestArticlesSection.astro';
 import type { PageBlockConfig } from '../../blocks/types';
 import SiteFooter from '../../components/shared/SiteFooter.astro';
 import SiteHeader from '../../components/shared/SiteHeader.astro';
@@ -63,6 +64,7 @@ const jsonLd = [
   <SiteHeader />
   <main id="konten">
     <PageBlockRenderer blocks={blocks} />
+    <LatestArticlesSection offset={3} limit={3} />
   </main>
   <SiteFooter />
   <WaFloat />

@@ -1,0 +1,146 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+
+interface Props {
+  offset?: number;
+  limit?: number;
+}
+
+const { offset = 0, limit = 3 } = Astro.props;
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => {
+    const updatedDifference = b.data.updatedDate.getTime() - a.data.updatedDate.getTime();
+    if (updatedDifference !== 0) return updatedDifference;
+
+    const publishedDifference = b.data.pubDate.getTime() - a.data.pubDate.getTime();
+    if (publishedDifference !== 0) return publishedDifference;
+
+    return b.data.id - a.data.id;
+  })
+  .slice(offset, offset + limit);
+---
+
+{articles.length > 0 && (
+  <section class="latest-articles" aria-labelledby="latest-articles-title">
+    <div class="container latest-articles__container">
+      <header class="latest-articles__header">
+        <p class="latest-articles__eyebrow">Wawasan & Informasi</p>
+        <h2 class="latest-articles__title" id="latest-articles-title">Artikel Terbaru</h2>
+        <p class="latest-articles__intro">
+          Informasi seputar pelatihan, kompetensi, dan keselamatan penanggulangan kebakaran di tempat kerja.
+        </p>
+      </header>
+
+      <div class="latest-articles__grid">
+        {articles.map((entry) => <ArticleCard entry={entry} />)}
+      </div>
+
+      <div class="latest-articles__footer">
+        <a class="latest-articles__more" href="/artikel/">
+          Lihat semua artikel <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .latest-articles {
+    width: 100%;
+    padding: clamp(3.5rem, 7vw, 5.5rem) 0;
+    border-top: 1px solid var(--line);
+    background: linear-gradient(180deg, #fff8f7 0%, #fff 100%);
+  }
+
+  .latest-articles__container {
+    width: min(var(--container), 100% - 48px);
+    margin-inline: auto;
+  }
+
+  .latest-articles__header {
+    max-width: 680px;
+    margin: 0 auto 2rem;
+    text-align: center;
+  }
+
+  .latest-articles__eyebrow {
+    margin: 0 0 .55rem;
+    color: var(--black);
+    font-size: .76rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .latest-articles__title {
+    margin: 0 0 .65rem;
+    color: var(--ink);
+    font-size: clamp(1.7rem, 3vw, 2.35rem);
+    line-height: 1.2;
+  }
+
+  .latest-articles__intro {
+    margin: 0;
+    color: var(--mute);
+    font-size: .94rem;
+  }
+
+  .latest-articles__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+
+  .latest-articles__footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .latest-articles__more {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .7rem 1.15rem;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-sm);
+    color: var(--black);
+    background: #fff;
+    font-size: .9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color .2s, background-color .2s, color .2s;
+  }
+
+  .latest-articles__more:hover {
+    border-color: var(--black);
+    color: #fff;
+    background: var(--black);
+  }
+
+  @media (max-width: 900px) {
+    .latest-articles__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .latest-articles__container {
+      width: min(100% - 32px, var(--container));
+    }
+
+    .latest-articles__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .latest-articles__more {
+      transition: none;
+    }
+  }
+</style>

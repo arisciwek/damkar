@@ -33,7 +33,7 @@
 
 ### 1.1 Buat collection `trainings` (plural)
 
-- [x] `src/content/trainings/` — 4 file: `kelas-d.md`, `kelas-c.md`, `kelas-b.md`, `kelas-a.md`
+- [x] `src/content/trainings/` — 4 file: `damkar-kelas-d.md`, `damkar-kelas-c.md`, `damkar-kelas-b.md`, `damkar-kelas-a.md`
 - [x] Field wajib: `trainingId`, `slug`, `name`, `role`, `desc`, `mode`, `courseMode`, `education`, `requirement`, `materi[]`, `order`
 - [x] Loader rekursif: `glob({ pattern: '**/*.md', base: './src/content/trainings' })`
 
@@ -80,23 +80,30 @@ completion: object? (completedDate, participants[], gallery[])
 
 ### 1.3 Validator relasi & keunikan
 
-- [x] Validasi `trainingId` menunjuk ke `trainings` yang dikenal
-- [x] Validasi `scheduleId` unik global (prefix `damkar_` + ULID)
-- [x] Validasi `slug` unik dalam bulan `startDate` (bukan global unik)
-- [x] Validasi folder tahun cocok dengan tahun `startDate`
-- [x] Validasi folder training cocok dengan `trainingId`
-- [x] Validasi `updatedDate >= pubDate`
-- [x] Validasi `endDate >= startDate`
-- [x] Validasi enum status, mode, attendanceMode, registration
+> Status: sebagian. `superRefine` Zod sudah menangani tanggal; validasi relasi
+> dan keunikan baru dijalankan sekali oleh script migrasi (belum permanen).
+
+- [ ] Validasi `trainingId` menunjuk ke `trainings` yang dikenal
+- [ ] Validasi `scheduleId` unik global (prefix `damkar_` + ULID)
+- [ ] Validasi `slug` unik dalam bulan `startDate` (bukan global unik)
+- [ ] Validasi folder tahun cocok dengan tahun `startDate`
+- [ ] Validasi folder training cocok dengan `trainingId`
+- [x] Validasi `updatedDate >= pubDate` (Zod `superRefine`)
+- [x] Validasi `endDate >= startDate` (Zod `superRefine`)
+- [x] Validasi enum status, mode, attendanceMode, registration (Zod)
 
 ### 1.4 Helper bersama (data layer)
 
-- [x] `getSchedules()` — semua schedule, sorted by `startDate` + `trainingId`
-- [x] `getSchedulesByMonth()` — grouping per `YYYY-MM`
-- [x] `getSchedulesByTraining()` — grouping per `trainingId`
-- [x] `getScheduleBySlug(month, slug)` — lookup detail
-- [x] `computeStatus(startDate, endDate, statusOverride?)` — status lifecycle
-- [x] `getSitemapLastmod(schedules)` — max `updatedDate` per scope
+> Status: ditunda ke Tahap 3 (bagian route). Bentuk `Batch` lama sengaja
+> dipertahankan lewat adapter agar output HTML tidak berubah; helper baru
+> dibuat setelah konsumen route baru diketahui.
+
+- [ ] `getSchedules()` — semua schedule, sorted by `startDate` + `trainingId`
+- [ ] `getSchedulesByMonth()` — grouping per `YYYY-MM`
+- [ ] `getSchedulesByTraining()` — grouping per `trainingId`
+- [ ] `getScheduleBySlug(month, slug)` — lookup detail
+- [ ] `computeStatus(startDate, endDate, statusOverride?)` — status lifecycle
+- [ ] `getSitemapLastmod(schedules)` — max `updatedDate` per scope
 
 **Gerbang:** Seluruh konten lama dapat dipetakan ke schema baru; `npm run check` lulus.
 

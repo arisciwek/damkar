@@ -32,6 +32,7 @@ Branch ini dibuat dari `main` setelah migrasi collection `trainings` dan `schedu
 - [x] `b1c75fc` — resolver sitemap membaca file schedule secara rekursif di `src/content/schedules/**`; detail dicari berdasarkan kombinasi bulan + slug.
 - [x] `887d266` — label tanggal memakai `dateLabel` dari frontmatter dan breadcrumb bulan memakai nama bulan Indonesia.
 - [x] `3d6afbb` — detail menampilkan kapasitas jika tersedia serta pemberitahuan khusus untuk status postponed/cancelled.
+- [x] `37bbb84` — status detail dan JSON-LD memakai `phase` hasil `computePhase()` agar lifecycle mengikuti tanggal dan override terminal.
 - [x] `b61e042`, `8ca907e`, `8026a75`, `54c588f` — sinkronisasi validator, helper data schedule, script `npm run check`, dan checklist schema terbaru dari `main`.
 - [x] `7136c84` — route detail menggunakan `getSchedules()` dan `getScheduleBySlug()` sebagai sumber data bersama.
 - [x] `3bfea5d` — Event JSON-LD memakai pemetaan lifecycle dan attendance mode dari helper data schedule.

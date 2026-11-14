@@ -21,6 +21,16 @@ Branch ini dibuat dari `main` terbaru setelah migrasi collection `trainings` dan
 
 ---
 
+### Commit lanjutan — Route detail dan hubungan Event
+
+- [x] `299795c` — route detail statis `/jadwal/[month]/[slug]/`, relasi ke master `trainings`, meta canonical, breadcrumb, tanggal pelaksanaan, status, pendaftaran, dan konten completion.
+- [x] `69a2a5d` — layout detail responsif dengan hero dua kolom, ringkasan sticky di desktop, konten lifecycle, dan galeri.
+- [x] `f9482d0` — menghapus Event JSON-LD dari halaman daftar; Event kini menjadi entitas pada halaman detail kanonis.
+- [x] `ac80ac9` — ItemList arsip bulanan mengarah ke URL detail kanonis setiap schedule.
+- [x] `8401507` — pemformatan tanggal menggunakan kalender tanggal ISO agar tidak bergeser akibat timezone server.
+
+**Validasi yang masih perlu dilakukan di lingkungan build:** `npm run check` dan `npm run build`. Belum dijalankan dari sesi ini.
+
 ## Ringkasan Tahap
 
 | Tahap | Cakupan | Target |
@@ -53,16 +63,16 @@ Branch ini dibuat dari `main` terbaru setelah migrasi collection `trainings` dan
 
 ### 3.3 Route detail `/jadwal/[month]/[slug]/`
 
-- [ ] `src/pages/jadwal/[month]/[slug].astro`
-- [ ] `getStaticPaths()` dari `getSchedules()` → generate `{ month, slug }`
-- [ ] Validasi `month` cocok dengan `startDate` schedule
+- [x] `src/pages/jadwal/[month]/[slug].astro`
+- [x] `getStaticPaths()` dari collection `schedules` → generate `{ month, slug }`
+- [x] Validasi `month` cocok dengan `startDate` schedule
 - [ ] Layout split hero: kiri (kategori/eyebrow, H1, P1), kanan (featured image)
 - [ ] Konten per fase lifecycle:
   - **Scheduled/Ongoing**: info program, tanggal, lokasi, metode, biaya/kuota, syarat, CTA daftar
   - **Completed**: info selesai, peserta/sertifikat (jika dipublikasikan), galeri
 - [ ] Bagian kosong tidak dirender (conditional rendering)
-- [ ] Canonical URL = URL detail ini
-- [ ] Breadcrumbs: Beranda → Jadwal → Bulan → Detail
+- [x] Canonical URL = URL detail ini
+- [x] Breadcrumbs: Beranda → Jadwal → Bulan → Detail
 
 ### 3.4 Integrasi ke halaman existing
 
@@ -96,9 +106,9 @@ Branch ini dibuat dari `main` terbaru setelah migrasi collection `trainings` dan
     offers: { '@type': 'Offer', category: 'Paid', availability: ..., price: ..., priceCurrency: 'IDR', url: ... }
   }
   ```
-- [ ] Inject ke `<head>` di halaman detail (`jadwal/[month]/[slug].astro`)
-- [ ] **Jangan** pakai `pubDate`/`updatedDate` untuk `startDate`/`endDate`
-- [ ] `ongoing` → `EventScheduled` (Schema.org tidak punya Ongoing)
+- [x] Inject ke `<head>` melalui `BaseLayout` di halaman detail (`jadwal/[month]/[slug].astro`)
+- [x] **Jangan** pakai `pubDate`/`updatedDate` untuk `startDate`/`endDate`
+- [x] `ongoing` → `EventScheduled` (Schema.org tidak punya Ongoing)
 
 ### 4.2 JSON-LD `CourseInstance` di halaman layanan (existing)
 
@@ -167,7 +177,7 @@ Ambil 1 schedule (misal Kelas D November 2026), uji berurutan:
 - [ ] `/jadwal/YYYY-MM/` menampilkan semua schedule bulan tersebut
 - [ ] `/jadwal/YYYY-MM/slug/` detail lengkap per fase lifecycle
 - [ ] Setiap schedule punya **tepat 1** URL detail kanonikal
-- [ ] Semua tautan internal dari kartu/baris jadwal → URL detail baru
+- [x] Judul kartu `.batch-grid` → URL detail baru; tautan program, WhatsApp, dan Google Calendar tetap terpisah
 - [ ] JSON-LD `Event` di halaman detail valid & pakai tanggal pelaksanaan
 - [ ] JSON-LD `CourseInstance` di layanan pakai field baru
 - [ ] `lastmod` detail = `updatedDate`; arsip/indeks = max `updatedDate`

@@ -10,7 +10,7 @@
  * memakai field kontrak baru secara langsung.
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { site } from '../config/site';
+import { defaultVenue, site } from '../config/site';
 
 export type ScheduleEntry = CollectionEntry<'schedules'>;
 export type ClassKey = 'D' | 'C' | 'B' | 'A';
@@ -178,6 +178,30 @@ export function getSitemapLastmod(items: ScheduleView[]): Date | undefined {
     (max, item) => (!max || item.data.updatedDate > max ? item.data.updatedDate : max),
     undefined,
   );
+}
+
+export interface VenueView {
+  name: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  countryCode?: string;
+}
+
+/**
+ * Venue yang dipakai halaman detail dan JSON-LD `Event`.
+ * `venue` di frontmatter selalu menang; bila kosong, dipakai alamat
+ * penyelenggara dari `site.ts` (`defaultVenue`) supaya Event punya `location`.
+ */
+export function resolveVenue(
+  venue?: ScheduleEntry['data']['venue'],
+): VenueView {
+  return venue?.name ? venue : defaultVenue;
+}
+
+/** Alamat venue sebagai satu baris: "Jl. … , Jakarta Barat, DKI Jakarta". */
+export function venueAddressText(venue: VenueView): string {
+  return [venue.address, venue.city, venue.province].filter(Boolean).join(', ');
 }
 
 /** Nama bulan Indonesia panjang. */

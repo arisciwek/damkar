@@ -43,6 +43,20 @@ export const organization = {
   sameAs: ['https://betracom.co.id/'],
 } as const;
 
+/**
+ * Venue default penyelenggaraan — alamat penyelenggara di `organization.address`.
+ * Dipakai halaman detail jadwal dan JSON-LD `Event` bila sebuah schedule tidak
+ * punya `venue` sendiri di frontmatter. Schedule yang lokasinya berbeda cukup
+ * menambahkan `venue:` di file-nya; nilai di sana selalu menang.
+ */
+export const defaultVenue = {
+  name: organization.address.street,
+  address: organization.address.road,
+  city: organization.address.city,
+  province: organization.address.region,
+  countryCode: organization.address.country,
+} as const;
+
 export const whatsapp = {
   /** Pendaftaran (nomor sales). */
   daftar: '6282268066126',

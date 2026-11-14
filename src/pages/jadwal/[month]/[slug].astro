@@ -13,6 +13,7 @@ import {
   websiteNode,
 } from '../../../utils/schema';
 import { scheduleDetailUrl, scheduleMonth } from '../../../utils/schedule-routing';
+import { resolveVenue, venueAddressText } from '../../../utils/schedules';
 
 export async function getStaticPaths() {
   const [schedules, trainings] = await Promise.all([
@@ -58,6 +59,9 @@ const description = schedule.description;
 const deliveryMode = schedule.delivery?.mode ?? 'offline';
 const attendanceMode = schedule.delivery?.attendanceMode ?? 'offline';
 const registrationStatus = schedule.registration?.status ?? 'not-open';
+// Frontmatter `venue` menang; kalau kosong pakai alamat penyelenggara (site.ts).
+const venue = resolveVenue(schedule.venue);
+const venueAddress = venueAddressText(venue);
 
 const statusLabels = {
   scheduled: 'Dijadwalkan',
@@ -123,7 +127,7 @@ const jsonLd = [
     endDate: schedule.endDate,
     status: schedule.status,
     attendanceMode,
-    venue: schedule.venue,
+    venue,
   }),
 ];
 ---
@@ -173,15 +177,12 @@ const jsonLd = [
             <dt>Metode</dt>
             <dd>{deliveryMode === 'blended' ? 'Blended training' : deliveryMode === 'online' ? 'Online' : 'Tatap muka'}</dd>
           </div>
-          {schedule.venue && (
-            <div class="schedule-detail-fact">
-              <dt>Lokasi</dt>
-              <dd>
-                {schedule.venue.name}
-                {[schedule.venue.address, schedule.venue.city, schedule.venue.province].filter(Boolean).join(', ')}
-              </dd>
-            </div>
-          )}
+          <div class="schedule-detail-fact">
+            <dt>Lokasi</dt>
+            <dd>
+              {venue.name}{venueAddress ? `, ${venueAddress}` : ''}
+            </dd>
+          </div>
           {schedule.registration?.deadline && (
             <div class="schedule-detail-fact">
               <dt>Batas pendaftaran</dt>

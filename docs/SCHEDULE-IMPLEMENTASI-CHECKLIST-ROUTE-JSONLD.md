@@ -1,8 +1,23 @@
 # Checklist Implementasi Schedule — Route & JSON-LD (Bagian 2)
 
-**Status:** Rencana implementasi, belum dikerjakan  
+**Status:** Implementasi berjalan pada branch `feat/schedule-detail-routes`; berbasis `main` setelah migrasi Bagian 1.  
 **Tanggung jawab:** User (route & JSON-LD)  
 **Berdasarkan:** `SCHEDULE-ARCHITECTURE-PLAN.md` (Tahap 3–5)
+
+---
+
+## Progres pada branch `feat/schedule-detail-routes`
+
+Branch ini dibuat dari `main` terbaru setelah migrasi collection `trainings` dan `schedules` masuk ke `main`. Pekerjaan Bagian 2 sebelumnya yang berbasis struktur lama tidak dipakai sebagai basis integrasi; utilitas yang relevan dibawa ulang secara terkontrol.
+
+### Commit implementasi
+
+- [x] `9212600` — helper URL kanonis: `scheduleMonth()`, `scheduleArchivePath()`, `scheduleDetailPath()`, `scheduleDetailUrl()`.
+- [x] `4475151` — Event JSON-LD lifecycle-aware; `@id` memakai canonical detail URL + `#event`; tanggal hanya dari `startDate`/`endDate`.
+- [x] `7458a31` — adapter `Batch` mengekspos `slug` dari frontmatter schedule.
+- [x] `14f4eca` — judul pada setiap kartu `.batch-grid` menjadi anchor ke URL detail; tautan layanan dipertahankan sebagai tautan terpisah. Tombol WhatsApp dan Google Calendar tetap independen.
+
+**Catatan:** route detail belum dibuat pada tahap ini. Karena itu tautan kartu sudah memakai pola URL final, tetapi halaman tujuan baru akan tersedia setelah implementasi route detail selesai. Belum ada klaim bahwa `npm run check` atau `npm run build` telah lulus.
 
 ---
 
@@ -23,7 +38,7 @@
 - [ ] `src/pages/jadwal/index.astro` — pakai `getSchedules()` baru
 - [ ] Tampilkan schedule mendatang (status `scheduled`, `ongoing`)
 - [ ] Kelompokkan per bulan (pakai helper `getSchedulesByMonth()`)
-- [ ] Setiap kartu → link ke detail `/jadwal/YYYY-MM/slug/`
+- [x] Setiap kartu pada `Scheduler.astro` → link ke detail `/jadwal/YYYY-MM/slug/`
 - [ ] Breadcrumbs: Beranda → Jadwal
 - [ ] Hero section (pakai `Hero.astro` existing)
 
@@ -52,7 +67,7 @@
 ### 3.4 Integrasi ke halaman existing
 
 - [ ] `src/pages/layanan/[slug].astro` — ganti `scheduleForSchema` pakai helper baru
-- [ ] `src/components/content/Scheduler.astro` — pakai `getSchedules()` baru
+- [x] `src/components/content/Scheduler.astro` — memakai adapter `getBatches()` di atas collection `schedules`; judul kartu kini menuju URL detail kanonis
 - [ ] `src/pages/jadwal/[...path].astro` — deprecate/redirect ke struktur baru
 - [ ] Internal links: semua tautan jadwal lama → redirect ke URL baru
 
@@ -64,7 +79,7 @@
 
 ### 4.1 JSON-LD `Event` node di halaman detail
 
-- [ ] `src/utils/schema.ts` — tambah fungsi `eventNode(schedule)`:
+- [x] `src/utils/schema.ts` — tambah fungsi `eventNode(schedule)` dan pemetaan lifecycle/attendance mode:
   ```typescript
   {
     '@type': 'Event',

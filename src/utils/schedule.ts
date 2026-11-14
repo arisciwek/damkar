@@ -27,6 +27,8 @@ export interface Gelombang {
 export type StatusKey = 'open' | 'soon' | 'ongoing' | 'done';
 
 export interface Batch extends Gelombang {
+  /** Slug detail kanonis dari frontmatter schedule. */
+  slug: string;
   /** Tanggal publikasi data gelombang — dipakai untuk sitemap. */
   pubDate: Date;
   /** Tanggal perubahan data terakhir — dipakai untuk sitemap. */
@@ -77,6 +79,7 @@ export async function getBatches(): Promise<Batch[]> {
       const classKey = (g.trainingId.split('-').pop() ?? '').toUpperCase() as KelasKey;
       return {
         class: classKey,
+        slug: g.slug,
         batch: g.batchNo,
         startDate: g.startDate,
         endDate: g.endDate,

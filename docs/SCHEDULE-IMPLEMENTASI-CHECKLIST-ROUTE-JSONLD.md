@@ -8,7 +8,7 @@
 
 ## Progres pada branch `feat/schedule-detail-routes`
 
-Branch ini dibuat dari `main` terbaru setelah migrasi collection `trainings` dan `schedules` masuk ke `main`. Pekerjaan Bagian 2 sebelumnya yang berbasis struktur lama tidak dipakai sebagai basis integrasi; utilitas yang relevan dibawa ulang secara terkontrol.
+Branch ini dibuat dari `main` setelah migrasi collection `trainings` dan `schedules`. Dua commit lanjutan dari `main` (helper data schedule dan validator kontrak) juga disinkronkan ke branch ini; integrasi route menggunakan helper `getSchedules()` dan `getScheduleBySlug()`.
 
 ### Commit implementasi
 
@@ -31,6 +31,9 @@ Branch ini dibuat dari `main` terbaru setelah migrasi collection `trainings` dan
 
 - [x] `b1c75fc` — resolver sitemap membaca file schedule secara rekursif di `src/content/schedules/**`; detail dicari berdasarkan kombinasi bulan + slug.
 - [x] `887d266` — label tanggal memakai `dateLabel` dari frontmatter dan breadcrumb bulan memakai nama bulan Indonesia.
+- [x] `b61e042`, `8ca907e`, `8026a75`, `54c588f` — sinkronisasi validator, helper data schedule, script `npm run check`, dan checklist schema terbaru dari `main`.
+- [x] `7136c84` — route detail menggunakan `getSchedules()` dan `getScheduleBySlug()` sebagai sumber data bersama.
+- [x] `3bfea5d` — Event JSON-LD memakai pemetaan lifecycle dan attendance mode dari helper data schedule.
 
 **Validasi yang masih perlu dilakukan di lingkungan build:** `npm run check` dan `npm run build`. Belum dijalankan dari sesi ini.
 

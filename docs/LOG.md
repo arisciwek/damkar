@@ -1,5 +1,40 @@
 # Log Pekerjaan
 
+## 14 Nov 2026 — Merge route detail jadwal + Event JSON-LD
+
+- **Branch yang di-merge:** `feat/schedule-detail-routes` (12 commit) →
+  `main` (`542e57e`). Branch `feat/schedule-route-jsonld` **tidak** di-merge:
+  isinya subset (schedule-routing.ts byte-identik, `eventNode` sama), tanpa
+  route/halaman, dan merge keduanya menghasilkan duplikat
+  `ScheduleEventInput`/`eventStatusUrl`/`eventNode` di `src/utils/schema.ts`.
+- **Hasil build:** 83 → 140 halaman. 83 halaman lama tetap ada (0 hilang),
+  57 halaman detail baru di `/jadwal/<YYYY-MM>/<slug>/`. 68 halaman lama
+  berubah isi, semuanya karena dua hal yang disengaja: kartu gelombang di
+  `Scheduler.astro` kini menaut ke halaman detail (+ satu `li` tautan
+  program), dan arsip/indeks jadwal mengganti daftar `Event` inline dengan
+  `ItemList` yang menunjuk detail. URL arsip lama (`/jadwal/<YYYY-MM>/`,
+  `/jadwal/kelas-x/`, `/jadwal/kelas-x/<YYYY-MM>/`) tidak berubah.
+- **Tiga cacat pada branch ditemukan saat verifikasi dan diperbaiki:**
+  1. `58d3b4f` — `Scheduler.astro:240` `href={\`/layanan/\${info.id}/\">`
+     tanpa backtick + `}` penutup, build gagal (`Expected } but found
+     Identifier`). Import `getBatches` di `jadwal/index.astro` juga mati.
+  2. `d3f2442` — breadcrumb detail menampilkan `2026-01` mentah (JSON-LD
+     menampilkan "Januari 2026"); dan `eventNode` menulis `@id`
+     `<url>#event` (slash dibuang) sementara `WebPage.about` menunjuk
+     `<url>/#event` → referensi menggantung.
+  3. `d55d2ff` — regex `startDate` di resolver `<lastmod>` (`astro.config.mjs`)
+     kehilangan flag `m`, sehingga tidak satu pun file schedule pernah cocok
+     dan `<lastmod>` semua route `/jadwal/*` selalu memakai tanggal template.
+- **Verifikasi:** `npm run check` lulus (4 training, 57 schedule, 77 entri
+  editorial); build 140 halaman; 0 file hilang; 57 detail URL `<lastmod>`
+  sama persis dengan `updatedDate` masing-masing schedule; 0 referensi `@id`
+  menggantung di 140 halaman; 5 tautan internal rusak (`/kontak/`,
+  `/layanan/damkar-{a..d}/`) sudah ada sebelum merge, bukan regresi.
+- **Belum ditutup:** `Event` JSON-LD tidak memuat `location` karena `venue`
+  sengaja kosong (FAQ resmi: lokasi menyesuaikan penyelenggara). Google
+  mensyaratkan `location` untuk rich result Event — perlu keputusan apakah
+  `venue` diisi per gelombang atau rich result Event diterima apa adanya.
+
 ## 13 Nov 2026 — Standar kartu artikel + split hero halaman detail
 
 - **Kartu artikel** (`fa4e534`): seluruh elemen teks diberi semantic class

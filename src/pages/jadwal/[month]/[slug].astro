@@ -13,17 +13,17 @@ import {
   websiteNode,
 } from '../../../utils/schema';
 import { scheduleDetailUrl, scheduleMonth } from '../../../utils/schedule-routing';
-import { monthLabel } from '../../../utils/schedule';
+import { getScheduleBySlug, getSchedules, monthLabel } from '../../../utils/schedules';
 
 export async function getStaticPaths() {
   const [schedules, trainings] = await Promise.all([
-    getCollection('schedules', (entry) => !entry.data.draft),
+    getSchedules(),
     getCollection('trainings', (entry) => !entry.data.draft),
   ]);
   const trainingById = new Map(trainings.map((entry) => [entry.data.trainingId, entry]));
 
-  return schedules.map((entry) => {
-    const schedule = entry.data;
+  return schedules.map((view) => {
+    const schedule = view.data;
     const training = trainingById.get(schedule.trainingId);
     if (!training) {
       throw new Error(
@@ -32,19 +32,23 @@ export async function getStaticPaths() {
     }
 
     return {
-      params: {
-        month: scheduleMonth(schedule.startDate),
-        slug: schedule.slug,
-      },
-      props: { schedule, training: training.data },
+      params: { month: view.month, slug: schedule.slug },
+      props: { scheduleId: schedule.scheduleId, training: training.data },
     };
   });
 }
 
-const { schedule, training } = Astro.props;
+const { scheduleId, training } = Astro.props;
 const month = Astro.params.month!;
-const expectedMonth = scheduleMonth(schedule.startDate);
+const slug = Astro.params.slug!;
+const scheduleView = await getScheduleBySlug(month, slug);
 
+if (!scheduleView || scheduleView.data.scheduleId !== scheduleId) {
+  throw new Error(`Schedule ${scheduleId} tidak ditemukan pada route /jadwal/${month}/${slug}/.`);
+}
+
+const schedule = scheduleView.data;
+const expectedMonth = scheduleMonth(schedule.startDate);
 if (month !== expectedMonth) {
   throw new Error(
     `Route bulan ${month} tidak cocok dengan startDate schedule ${schedule.scheduleId} (${expectedMonth}).`,

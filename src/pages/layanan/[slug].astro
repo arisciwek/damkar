@@ -130,8 +130,8 @@ const scheduleForSchema = (await getBatches())
   .map((batch) => ({
     class: batch.class,
     batch: batch.batch,
-    start: batch.start,
-    end: batch.end,
+    startDate: batch.startDate,
+    endDate: batch.endDate,
     label: batch.label,
   }));
 

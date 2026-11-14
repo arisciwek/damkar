@@ -209,8 +209,8 @@ function gcalUrl(batch: Batch, name: string, mode: string): string {
               <li
                 class={`batch${closed ? ' is-closed' : ''}`}
                 data-level={batch.class}
-                data-start={batch.start}
-                data-end={batch.end}
+                data-start={batch.startDate}
+                data-end={batch.endDate}
                 data-status={batch.status}
                 data-month={batch.month}
               >
@@ -235,7 +235,7 @@ function gcalUrl(batch: Batch, name: string, mode: string): string {
                     <span class={`status status--${batch.status}`}>{batch.statusText}</span>
                   </div>
                   <p class="batch-when">
-                    <time datetime={batch.start}>{batch.label}</time>
+                    <time datetime={batch.startDate}>{batch.label}</time>
                   </p>
                   <ul class="batch-facts">
                     <li>{info.data.mode}</li>

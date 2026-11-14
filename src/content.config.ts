@@ -124,10 +124,10 @@ const schedule = defineCollection({
     class: z.enum(['D', 'C', 'B', 'A']),
     /** Nomor gelombang, mis. "01" (dua digit). */
     batch: z.string().regex(/^\d{2}$/, 'batch harus dua digit, mis. "01"'),
-    /** Tanggal mulai (YYYY-MM-DD). */
-    start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'start harus YYYY-MM-DD'),
-    /** Tanggal selesai (YYYY-MM-DD). */
-    end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'end harus YYYY-MM-DD'),
+    /** Tanggal mulai pelatihan (YYYY-MM-DD). */
+    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'startDate harus YYYY-MM-DD'),
+    /** Tanggal selesai pelatihan (YYYY-MM-DD). */
+    endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'endDate harus YYYY-MM-DD'),
     /** Label tampilan, mis. "19–21 Januari 2026". */
     label: z.string().min(1),
     /** Waktu publikasi data gelombang ini (ISO 8601 UTC tanpa milidetik). */

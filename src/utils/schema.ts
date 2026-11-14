@@ -111,22 +111,22 @@ export interface KelasSchemaInput {
   courseMode: string;
   education: string;
   materi: string[];
-  schedule: { class: string; batch: string; start: string; end: string; label: string }[];
+  schedule: { class: string; batch: string; startDate: string; endDate: string; label: string }[];
 }
 
 /** Course + CourseInstance (hanya gelombang yang belum dimulai) + Syllabus per materi. */
 export function courseNode(kelas: KelasSchemaInput, today = new Date()): JsonLd {
   const url = `${site.url}/layanan/${kelas.slug}/`;
   const instances = kelas.schedule
-    .filter((row) => row.class === kelas.key && parseIso(row.start) > today)
-    .sort((a, b) => a.start.localeCompare(b.start))
+    .filter((row) => row.class === kelas.key && parseIso(row.startDate) > today)
+    .sort((a, b) => a.startDate.localeCompare(b.startDate))
     .map((row) => ({
       '@type': 'CourseInstance',
       name: `${kelas.name} Gelombang ${row.batch}`,
       description: `Public Training ${kelas.name} (${kelas.mode}), ${row.label}.`,
       courseMode: kelas.courseMode,
-      startDate: row.start,
-      endDate: row.end,
+      startDate: row.startDate,
+      endDate: row.endDate,
       url: `${url}#jadwal`,
       inLanguage: site.language,
     }));

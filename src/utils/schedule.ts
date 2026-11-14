@@ -19,10 +19,10 @@ export interface Gelombang {
   class: KelasKey;
   /** Nomor gelombang, mis. "01". */
   batch: string;
-  /** Tanggal mulai (YYYY-MM-DD). */
-  start: string;
-  /** Tanggal selesai (YYYY-MM-DD). */
-  end: string;
+  /** Tanggal mulai pelatihan (YYYY-MM-DD). */
+  startDate: string;
+  /** Tanggal selesai pelatihan (YYYY-MM-DD). */
+  endDate: string;
   /** Label tampilan, mis. "19–21 Januari 2026". */
   label: string;
 }
@@ -74,14 +74,14 @@ export async function getBatches(): Promise<Batch[]> {
   cache = entries
     .map((entry) => {
       const g = entry.data;
-      const st = dateOf(g.start);
-      const en = dateOf(g.end);
+      const st = dateOf(g.startDate);
+      const en = dateOf(g.endDate);
       const [status, statusText] = statusOf(st, en);
       return {
         class: g.class,
         batch: g.batch,
-        start: g.start,
-        end: g.end,
+        startDate: g.startDate,
+        endDate: g.endDate,
         label: g.label,
         pubDate: g.pubDate,
         updatedDate: g.updatedDate,
@@ -89,7 +89,7 @@ export async function getBatches(): Promise<Batch[]> {
         en,
         status,
         statusText,
-        month: g.start.slice(0, 7),
+        month: g.startDate.slice(0, 7),
       } satisfies Batch;
     })
     .sort(

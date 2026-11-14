@@ -1,0 +1,338 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SiteFooter from '../../../components/shared/SiteFooter.astro';
+import SiteHeader from '../../../components/shared/SiteHeader.astro';
+import WaFloat from '../../../components/shared/WaFloat.astro';
+import { organization, photos, site, waDaftar } from '../../../config/site';
+import {
+  breadcrumbNode,
+  eventNode,
+  organizationNode,
+  webpageNode,
+  websiteNode,
+} from '../../../utils/schema';
+import { scheduleDetailUrl, scheduleMonth } from '../../../utils/schedule-routing';
+
+export async function getStaticPaths() {
+  const [schedules, trainings] = await Promise.all([
+    getCollection('schedules', (entry) => !entry.data.draft),
+    getCollection('trainings', (entry) => !entry.data.draft),
+  ]);
+  const trainingById = new Map(trainings.map((entry) => [entry.data.trainingId, entry]));
+
+  return schedules.map((entry) => {
+    const schedule = entry.data;
+    const training = trainingById.get(schedule.trainingId);
+    if (!training) {
+      throw new Error(
+        `Schedule ${schedule.scheduleId} merujuk trainingId "${schedule.trainingId}" yang tidak ditemukan.`,
+      );
+    }
+
+    return {
+      params: {
+        month: scheduleMonth(schedule.startDate),
+        slug: schedule.slug,
+      },
+      props: { schedule, training: training.data },
+    };
+  });
+}
+
+const { schedule, training } = Astro.props;
+const month = Astro.params.month!;
+const expectedMonth = scheduleMonth(schedule.startDate);
+
+if (month !== expectedMonth) {
+  throw new Error(
+    `Route bulan ${month} tidak cocok dengan startDate schedule ${schedule.scheduleId} (${expectedMonth}).`,
+  );
+}
+
+const canonical = scheduleDetailUrl(schedule, site.url);
+const photoIndex = ({ D: 0, C: 1, B: 2, A: 3 } as const)[training.key as 'D' | 'C' | 'B' | 'A'];
+const photo = photos[photoIndex] ?? photos[0];
+const title = schedule.title;
+const description = schedule.description;
+const deliveryMode = schedule.delivery?.mode ?? 'offline';
+const attendanceMode = schedule.delivery?.attendanceMode ?? 'offline';
+const registrationStatus = schedule.registration?.status ?? 'not-open';
+
+const statusLabels = {
+  scheduled: 'Dijadwalkan',
+  ongoing: 'Sedang berlangsung',
+  completed: 'Telah selesai',
+  postponed: 'Ditunda',
+  cancelled: 'Dibatalkan',
+} as const;
+const statusLabel = statusLabels[schedule.status];
+
+const dateFormatter = new Intl.DateTimeFormat('id-ID', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+function formatDate(value: string): string {
+  const [year, monthValue, day] = value.slice(0, 10).split('-').map(Number);
+  return dateFormatter.format(new Date(Date.UTC(year, monthValue - 1, day, 12)));
+}
+const startLabel = formatDate(schedule.startDate);
+const endLabel = formatDate(schedule.endDate);
+const dateText = startLabel === endLabel ? startLabel : `${startLabel} – ${endLabel}`;
+
+const registrationMessage =
+  `Halo tim Betracom, saya ingin mendaftar ${schedule.title}. Mohon informasi biaya, persyaratan, dan ketersediaan kuota.`;
+const canRegister =
+  schedule.status === 'scheduled' &&
+  (registrationStatus === 'open' || registrationStatus === 'not-open');
+
+const jsonLd = [
+  organizationNode(),
+  websiteNode(),
+  webpageNode({
+    url: canonical,
+    name: title,
+    description,
+    pubDate: schedule.pubDate,
+    updatedDate: schedule.updatedDate,
+    extra: {
+      about: { '@id': `${canonical}#event` },
+      breadcrumb: { '@id': `${canonical}#breadcrumb` },
+    },
+  }),
+  breadcrumbNode(canonical, [
+    { name: 'Beranda', url: new URL('/', site.url).toString() },
+    { name: 'Jadwal', url: new URL('/jadwal/', site.url).toString() },
+    { name: `${new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1, 1, 12)))}`, url: new URL(`/jadwal/${month}/`, site.url).toString() },
+    { name: title, url: canonical },
+  ]),
+  eventNode({
+    url: canonical,
+    title,
+    description,
+    startDate: schedule.startDate,
+    endDate: schedule.endDate,
+    status: schedule.status,
+    attendanceMode,
+    venue: schedule.venue,
+  }),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  image={photo.ogSrc}
+  imageAlt={photo.alt}
+  preloadImage={photo.src}
+  publishedTime={schedule.pubDate}
+  modifiedTime={schedule.updatedDate}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+  <main id="konten" class="schedule-detail-page">
+    <nav class="schedule-breadcrumb" aria-label="Breadcrumb">
+      <ol class="schedule-breadcrumb-list">
+        <li class="schedule-breadcrumb-item"><a href="/">Beranda</a></li>
+        <li class="schedule-breadcrumb-item"><a href="/jadwal/">Jadwal</a></li>
+        <li class="schedule-breadcrumb-item"><a href={`/jadwal/${month}/`}>{month}</a></li>
+        <li class="schedule-breadcrumb-item" aria-current="page">{schedule.title}</li>
+      </ol>
+    </nav>
+
+    <section class="schedule-detail-hero">
+      <div class="schedule-detail-copy">
+        <p class="schedule-detail-eyebrow">Pelatihan Damkar · Kelas {training.key} · Gelombang {schedule.batchNo}</p>
+        <div class="schedule-detail-status-row">
+          <span class={`schedule-status schedule-status--${schedule.status}`}>{statusLabel}</span>
+          {registrationStatus === 'closed' && <span class="schedule-registration-status">Pendaftaran ditutup</span>}
+        </div>
+        <h1 class="schedule-detail-title">{schedule.title}</h1>
+        <p class="schedule-detail-description">{schedule.description}</p>
+
+        <dl class="schedule-detail-facts">
+          <div class="schedule-detail-fact">
+            <dt>Tanggal pelaksanaan</dt>
+            <dd>{dateText}</dd>
+          </div>
+          <div class="schedule-detail-fact">
+            <dt>Program</dt>
+            <dd><a href={`/layanan/${training.slug}/`}>{training.name} — {training.role}</a></dd>
+          </div>
+          <div class="schedule-detail-fact">
+            <dt>Metode</dt>
+            <dd>{deliveryMode === 'blended' ? 'Blended training' : deliveryMode === 'online' ? 'Online' : 'Tatap muka'}</dd>
+          </div>
+          {schedule.venue && (
+            <div class="schedule-detail-fact">
+              <dt>Lokasi</dt>
+              <dd>
+                {schedule.venue.name}
+                {[schedule.venue.address, schedule.venue.city, schedule.venue.province].filter(Boolean).join(', ')}
+              </dd>
+            </div>
+          )}
+          {schedule.registration?.deadline && (
+            <div class="schedule-detail-fact">
+              <dt>Batas pendaftaran</dt>
+              <dd>{formatDate(schedule.registration.deadline)}</dd>
+            </div>
+          )}
+        </dl>
+
+        <div class="schedule-detail-actions">
+          {canRegister ? (
+            <a class="btn btn-black" href={waDaftar(registrationMessage)} target="_blank" rel="noopener nofollow">
+              Tanyakan pendaftaran
+            </a>
+          ) : (
+            <a class="btn btn-outline" href={waDaftar(`Halo tim Betracom, saya ingin menanyakan informasi ${schedule.title}.`)} target="_blank" rel="noopener nofollow">
+              Hubungi penyelenggara
+            </a>
+          )}
+          <a class="schedule-service-link" href={`/layanan/${training.slug}/`}>Lihat detail program</a>
+        </div>
+      </div>
+
+      <figure class="schedule-detail-media">
+        <img src={photo.src} alt={photo.alt} width={photo.w} height={photo.h} loading="eager" fetchpriority="high" />
+        <figcaption>{photo.cap}</figcaption>
+      </figure>
+    </section>
+
+    <div class="schedule-detail-content">
+      <article class="schedule-detail-main">
+        <section class="schedule-detail-section">
+          <h2>Informasi Pelatihan</h2>
+          <p>{training.desc} Program ini diselenggarakan dalam format {training.mode.toLowerCase()} dengan sertifikasi Kemnaker RI bersama {organization.name}.</p>
+          <h3>Materi pelatihan</h3>
+          <ul class="schedule-detail-list">
+            {training.materi.map((item) => <li>{item}</li>)}
+          </ul>
+          <h3>Persyaratan peserta</h3>
+          <p>{training.requirement}</p>
+        </section>
+
+        {schedule.status === 'completed' && schedule.completion && (
+          <section class="schedule-detail-section schedule-completion">
+            <h2>Dokumentasi Pelaksanaan</h2>
+            {schedule.completion.completedDate && (
+              <p>Pelatihan telah diselesaikan pada {formatDate(schedule.completion.completedDate)}.</p>
+            )}
+            {schedule.completion.participants.length > 0 && (
+              <div class="schedule-completion-participants">
+                <h3>Peserta yang dipublikasikan</h3>
+                <ul class="schedule-detail-list">
+                  {schedule.completion.participants.map((participant) => (
+                    <li>
+                      {participant.name}
+                      {participant.certificateNumber && <span> — Sertifikat {participant.certificateNumber}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {schedule.completion.gallery.length > 0 && (
+              <div class="schedule-completion-gallery">
+                <h3>Galeri kegiatan</h3>
+                <div class="schedule-gallery-grid">
+                  {schedule.completion.gallery.map((item) => (
+                    <figure class="schedule-gallery-item">
+                      <img src={item.src} alt={item.alt} loading="lazy" />
+                      {item.caption && <figcaption>{item.caption}</figcaption>}
+                    </figure>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+      </article>
+
+      <aside class="schedule-detail-aside" aria-label="Ringkasan jadwal">
+        <div class="schedule-aside-card">
+          <p class="schedule-aside-kicker">Jadwal pelatihan</p>
+          <h2>{training.name}</h2>
+          <p>{dateText}</p>
+          <p>Gelombang {schedule.batchNo}</p>
+          <a href={`/jadwal/${month}/`}>Jadwal lain pada bulan ini</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <SiteFooter />
+  <WaFloat />
+</BaseLayout>
+
+
+<style>
+  .schedule-detail-page { width: min(var(--container), 100% - 48px); margin-inline: auto; padding: 24px 0 88px; }
+  .schedule-breadcrumb { margin-bottom: 28px; font-size: .82rem; }
+  .schedule-breadcrumb-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .schedule-breadcrumb-item { display: inline-flex; align-items: center; gap: 8px; color: var(--mute); }
+  .schedule-breadcrumb-item + .schedule-breadcrumb-item::before { content: "›"; color: var(--mute-2); }
+  .schedule-breadcrumb-item a { color: var(--ink); font-weight: 500; text-decoration: none; }
+  .schedule-breadcrumb-item a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .schedule-detail-hero { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr); gap: clamp(28px, 5vw, 64px); align-items: center; padding: 20px 0 56px; border-bottom: 1px solid var(--line); }
+  .schedule-detail-copy { min-width: 0; }
+  .schedule-detail-eyebrow { display: inline-flex; margin-bottom: 14px; padding: 5px 12px; border: 1px solid var(--line-2); border-radius: 999px; color: var(--mute); font-size: .78rem; font-weight: 600; }
+  .schedule-detail-status-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .schedule-status, .schedule-registration-status { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; background: var(--soft); color: var(--mute-2); font-size: .72rem; font-weight: 700; }
+  .schedule-status--completed { background: #F1F2F3; color: #4B5563; }
+  .schedule-status--ongoing { background: #FFF3D9; color: #8A5A00; }
+  .schedule-status--cancelled { background: #FDE8E8; color: #A51D1D; }
+  .schedule-status--postponed { background: #FFF3D9; color: #8A5A00; }
+  .schedule-detail-title { margin-bottom: 14px; font-size: clamp(2rem, 4vw, 3.15rem); line-height: 1.16; }
+  .schedule-detail-description { max-width: 62ch; margin-bottom: 24px; color: var(--mute); font-size: 1rem; }
+  .schedule-detail-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .schedule-detail-fact { min-width: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r); }
+  .schedule-detail-fact dt { margin-bottom: 3px; color: var(--mute); font-size: .72rem; font-weight: 500; }
+  .schedule-detail-fact dd { color: var(--ink); font-size: .86rem; font-weight: 600; overflow-wrap: anywhere; }
+  .schedule-detail-fact a { text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+  .schedule-detail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .schedule-service-link { color: var(--ink); font-size: .88rem; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+  .schedule-detail-media { position: relative; margin: 0; aspect-ratio: 5 / 4; overflow: hidden; border-radius: var(--r-lg); background: var(--soft); box-shadow: var(--shadow); }
+  .schedule-detail-media img { width: 100%; height: 100%; object-fit: cover; }
+  .schedule-detail-media figcaption { position: absolute; inset: auto 0 0; padding: 28px 20px 16px; background: linear-gradient(transparent, rgba(0,0,0,.68)); color: #fff; font-size: .82rem; font-weight: 500; }
+  .schedule-detail-content { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 56px; align-items: start; padding-top: 48px; }
+  .schedule-detail-main { min-width: 0; }
+  .schedule-detail-section { padding: 0 0 36px; }
+  .schedule-detail-section + .schedule-detail-section { padding-top: 32px; border-top: 1px solid var(--line); }
+  .schedule-detail-section h2 { margin-bottom: 14px; font-size: clamp(1.45rem, 2.2vw, 1.85rem); }
+  .schedule-detail-section h3 { margin: 24px 0 10px; font-size: 1.05rem; }
+  .schedule-detail-section p { color: var(--mute); }
+  .schedule-detail-list { display: grid; gap: 8px; padding-left: 20px; list-style: disc; }
+  .schedule-detail-list li { padding-left: 4px; color: var(--text); }
+  .schedule-completion-participants, .schedule-completion-gallery { margin-top: 24px; }
+  .schedule-gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .schedule-gallery-item { margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--r); background: #fff; }
+  .schedule-gallery-item img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .schedule-gallery-item figcaption { padding: 10px 12px; color: var(--mute); font-size: .78rem; }
+  .schedule-detail-aside { position: sticky; top: calc(var(--header-h) + 24px); }
+  .schedule-aside-card { padding: 22px; border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow); }
+  .schedule-aside-kicker { margin-bottom: 8px; color: var(--mute-2); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .schedule-aside-card h2 { margin-bottom: 12px; font-size: 1.15rem; }
+  .schedule-aside-card p { margin-bottom: 6px; color: var(--mute); font-size: .88rem; }
+  .schedule-aside-card a { display: inline-flex; margin-top: 14px; color: var(--black); font-size: .86rem; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+  @media (max-width: 900px) {
+    .schedule-detail-hero { grid-template-columns: minmax(0, 1fr) minmax(260px, .8fr); gap: 28px; }
+    .schedule-detail-content { grid-template-columns: minmax(0, 1fr) 240px; gap: 28px; }
+  }
+  @media (max-width: 700px) {
+    .schedule-detail-page { width: min(var(--container), 100% - 32px); padding-top: 18px; }
+    .schedule-detail-hero { grid-template-columns: 1fr; padding-bottom: 36px; }
+    .schedule-detail-media { grid-row: 1; aspect-ratio: 16 / 10; }
+    .schedule-detail-facts { grid-template-columns: 1fr 1fr; }
+    .schedule-detail-content { grid-template-columns: 1fr; gap: 28px; padding-top: 32px; }
+    .schedule-detail-aside { position: static; }
+  }
+  @media (max-width: 420px) {
+    .schedule-detail-facts { grid-template-columns: 1fr; }
+    .schedule-detail-actions { align-items: stretch; flex-direction: column; }
+    .schedule-detail-actions .btn { width: 100%; }
+    .schedule-gallery-grid { grid-template-columns: 1fr; }
+  }
+</style>

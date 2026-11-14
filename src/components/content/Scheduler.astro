@@ -21,6 +21,7 @@ import {
 } from '../../utils/schedule';
 import { organization, site, waDaftar, waKonsultasi, whatsapp } from '../../config/site';
 import Icon from '../ui/Icon.astro';
+import { scheduleDetailPath } from '../../utils/schedule-routing';
 
 interface Props {
   /** Jenjang tertentu; kosong = semua kelas. */
@@ -221,16 +222,14 @@ function gcalUrl(batch: Batch, name: string, mode: string): string {
                 <div class="batch-body">
                   <div class="batch-head">
                     <h4 class="batch-title">
-                      {showClass ? (
-                        <>
-                          <a href={`/layanan/${info.id}/`}>
-                            {info.data.name} {info.data.role}
-                          </a>{' '}
-                          <span>Gelombang {batch.batch}</span>
-                        </>
-                      ) : (
-                        `Gelombang ${batch.batch}`
-                      )}
+                      <a
+                        class="batch-detail-link"
+                        href={scheduleDetailPath(batch)}
+                        aria-label={`Lihat detail ${info.data.name} ${info.data.role} Gelombang ${batch.batch}`}
+                      >
+                        {showClass ? `${info.data.name} ${info.data.role} — ` : ''}
+                        Gelombang {batch.batch}
+                      </a>
                     </h4>
                     <span class={`status status--${batch.status}`}>{batch.statusText}</span>
                   </div>
@@ -238,6 +237,7 @@ function gcalUrl(batch: Batch, name: string, mode: string): string {
                     <time datetime={batch.startDate}>{batch.label}</time>
                   </p>
                   <ul class="batch-facts">
+                    <li><a class="batch-service-link" href={`/layanan/${info.id}/">{info.data.name} {info.data.role}</a></li>
                     <li>{info.data.mode}</li>
                     <li>Pendidikan min. {info.data.education}</li>
                   </ul>

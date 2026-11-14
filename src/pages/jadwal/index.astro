@@ -12,7 +12,6 @@ import { ui } from '../../config/ui';
 import {
   breadcrumbNode,
   organizationNode,
-  scheduleEventNode,
   scheduleItemList,
   webpageNode,
   websiteNode,
@@ -74,16 +73,6 @@ const jsonLd = [
     { name: 'Jadwal', url },
   ]),
   scheduleItemList(url, `Halaman jadwal per kelas ${site.year}`, kelasItems),
-  ...(await getBatches()).map((batch) =>
-    scheduleEventNode({
-      url,
-      kelas: batch.class,
-      batch: batch.batch,
-      start: batch.startDate,
-      end: batch.endDate,
-      label: batch.label,
-    }),
-  ),
 ];
 ---
 

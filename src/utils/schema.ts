@@ -207,6 +207,82 @@ export function scheduleEventNode(input: {
   };
 }
 
+export interface ScheduleEventInput {
+  url: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  status: 'scheduled' | 'ongoing' | 'completed' | 'postponed' | 'cancelled';
+  attendanceMode: 'offline' | 'online' | 'mixed';
+  venue?: {
+    name?: string;
+    address?: string;
+    city?: string;
+    province?: string;
+    countryCode?: string;
+  };
+}
+
+/** Status lifecycle internal → vocabulary EventStatus Schema.org. */
+export function eventStatusUrl(status: ScheduleEventInput['status']): string {
+  const values = {
+    scheduled: 'EventScheduled',
+    ongoing: 'EventScheduled',
+    completed: 'EventCompleted',
+    postponed: 'EventPostponed',
+    cancelled: 'EventCancelled',
+  } as const;
+  return `https://schema.org/${values[status]}`;
+}
+
+/**
+ * Event untuk satu schedule: identitas Event melekat pada canonical detail URL.
+ * Tanggal pelaksanaan hanya berasal dari startDate/endDate, bukan metadata editorial.
+ */
+export function eventNode(schedule: ScheduleEventInput): JsonLd {
+  const attendanceModes = {
+    offline: 'OfflineEventAttendanceMode',
+    online: 'OnlineEventAttendanceMode',
+    mixed: 'MixedEventAttendanceMode',
+  } as const;
+
+  const location: JsonLd | undefined = schedule.venue
+    ? {
+        '@type': 'Place',
+        ...(schedule.venue.name ? { name: schedule.venue.name } : {}),
+        ...(schedule.venue.address || schedule.venue.city || schedule.venue.province
+          ? {
+              address: {
+                '@type': 'PostalAddress',
+                ...(schedule.venue.address ? { streetAddress: schedule.venue.address } : {}),
+                ...(schedule.venue.city ? { addressLocality: schedule.venue.city } : {}),
+                ...(schedule.venue.province ? { addressRegion: schedule.venue.province } : {}),
+                ...(schedule.venue.countryCode
+                  ? { addressCountry: schedule.venue.countryCode }
+                  : {}),
+              },
+            }
+          : {}),
+      }
+    : undefined;
+
+  return {
+    '@type': 'Event',
+    '@id': `${schedule.url.replace(/\/$/, '')}#event`,
+    url: schedule.url,
+    name: schedule.title,
+    description: schedule.description,
+    startDate: schedule.startDate,
+    endDate: schedule.endDate,
+    eventStatus: eventStatusUrl(schedule.status),
+    eventAttendanceMode: `https://schema.org/${attendanceModes[schedule.attendanceMode]}`,
+    ...(location ? { location } : {}),
+    inLanguage: site.language,
+    organizer: { '@id': ids.org },
+  };
+}
+
 /** ItemList untuk halaman jadwal (halaman kelas / halaman bulan). */
 export function scheduleItemList(
   url: string,

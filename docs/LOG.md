@@ -30,10 +30,16 @@
   sama persis dengan `updatedDate` masing-masing schedule; 0 referensi `@id`
   menggantung di 140 halaman; 5 tautan internal rusak (`/kontak/`,
   `/layanan/damkar-{a..d}/`) sudah ada sebelum merge, bukan regresi.
-- **Belum ditutup:** `Event` JSON-LD tidak memuat `location` karena `venue`
-  sengaja kosong (FAQ resmi: lokasi menyesuaikan penyelenggara). Google
-  mensyaratkan `location` untuk rich result Event — perlu keputusan apakah
-  `venue` diisi per gelombang atau rich result Event diterima apa adanya.
+- **`Event.location` (14 Nov 2026):** awalnya kosong karena `venue` sengaja
+  tidak diisi (FAQ resmi: lokasi menyesuaikan penyelenggara). Atas permintaan
+  pemilik situs, venue kini diisi dari **alamat penyelenggara** di
+  `src/config/site.ts` (`organization.address` → `defaultVenue`): Grand Slipi
+  Tower Lt. 9, Jl. Letjen S. Parman, Jakarta Barat, DKI Jakarta.
+  Alamat **tidak** disalin ke 57 file schedule; halaman detail memakai
+  `resolveVenue()`/`venueAddressText()` di `utils/schedules.ts` sehingga
+  frontmatter `venue:` tetap menang bila suatu gelombang lokasinya berbeda.
+  Efek: 57 halaman detail mendapat fakta "Lokasi" dan `Event.location`
+  (`Place` + `PostalAddress`); tidak ada halaman lain yang berubah.
 
 ## 13 Nov 2026 — Standar kartu artikel + split hero halaman detail
 

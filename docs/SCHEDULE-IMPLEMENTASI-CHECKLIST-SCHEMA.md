@@ -153,7 +153,7 @@ src/content/schedules/
 - [x] `status`: hitung dari tanggal (scheduled/ongoing/completed)
 - [x] `registration`: default `status: "open"`, `deadline: startDate - 7 hari`, `capacity: 20`
 - [x] `delivery`: default `mode: "offline"`, `attendanceMode: "offline"`
-- [ ] `venue`: sengaja DIBIARKAN KOSONG — halaman FAQ menyatakan lokasi menyesuaikan penyelenggara, jadi tidak boleh mengarang venue
+- [x] `venue`: tidak ditulis di frontmatter; venue default diambil dari `defaultVenue` (`src/config/site.ts` → `organization.address`) agar `Event.location` terisi. Frontmatter `venue:` tetap bisa menimpa per gelombang
 - [x] `completion`: tidak ditambahkan (belum ada data pascapelatihan nyata; section kosong tidak boleh dirender — domain Tahap 3)
 
 ### 2.4 Verifikasi migrasi
@@ -223,7 +223,9 @@ src/content/schedules/
 2. **`batchNo`** dipertahankan sebagai metadata nomor gelombang (bukan primary key).
 3. **`status`** hanya menyimpan keadaan terminal (`completed`) atau `scheduled`.
    Badge UI (Pendaftaran dibuka / Mulai N hari / Sedang berlangsung / Selesai) tetap **dihitung dari tanggal** di `utils/schedule.ts`, sesuai AGENTS.md kebijakan tanggal.
-4. **`venue` kosong** — tidak ada data lokasi tetap; FAQ resmi menyatakan lokasi menyesuaikan penyelenggara.
+4. **`venue`**: awalnya dikosongkan (FAQ: lokasi menyesuaikan penyelenggara), lalu **direvisi 14 Nov 2026** atas permintaan pemilik situs — venue diisi dari alamat penyelenggara.
+   Caranya bukan menyalin alamat ke 57 file, melainkan `defaultVenue` di `src/config/site.ts` ditambah `resolveVenue()` di `utils/schedules.ts`: frontmatter `venue:` menang bila ada, kalau tidak dipakai alamat situs. Satu sumber kebenaran, dan venue per gelombang tetap bisa ditimpa.
+   Konsekuensi: `Event.location` sekarang terisi (syarat rich result Event Google).
 5. **`registration`** default: `open` + `deadline = startDate − 7 hari` untuk status `scheduled`; `closed` untuk `completed`.
 6. **`delivery`** default: `offline`/`offline`.
 7. **Adapter** `utils/schedule.ts` memetakan field baru ke bentuk `Batch` lama sehingga route, komponen, dan **HTML identik** dengan baseline (83 file, md5 sama).

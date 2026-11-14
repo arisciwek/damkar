@@ -26,11 +26,11 @@ import {
   type KelasKey,
 } from '../../utils/schedule';
 import { photos, site, waDaftar } from '../../config/site';
+import { scheduleDetailUrl } from '../../utils/schedule-routing';
 import { ui } from '../../config/ui';
 import {
   breadcrumbNode,
   organizationNode,
-  scheduleEventNode,
   scheduleItemList,
   webpageNode,
   websiteNode,
@@ -162,18 +162,18 @@ if (kelas && !bulan) {
 }
 
 
-jsonLd.push(
-  ...list.map((batch) =>
-    scheduleEventNode({
+if (bulan) {
+  jsonLd.push(
+    scheduleItemList(
       url,
-      kelas: batch.class,
-      batch: batch.batch,
-      start: batch.startDate,
-      end: batch.endDate,
-      label: batch.label,
-    }),
-  ),
-);
+      `Gelombang Pelatihan Damkar ${monthText}`,
+      list.map((batch) => ({
+        url: scheduleDetailUrl(batch, site.url),
+        name: `Pelatihan Damkar Kelas ${batch.class} — Gelombang ${batch.batch}`,
+      })),
+    ),
+  );
+}
 
 // ---- Facts ----------------------------------------------------------------
 const facts = kelas

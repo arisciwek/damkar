@@ -48,6 +48,7 @@ if (!scheduleView || scheduleView.data.scheduleId !== scheduleId) {
 }
 
 const schedule = scheduleView.data;
+const phase = scheduleView.phase;
 const expectedMonth = scheduleMonth(schedule.startDate);
 if (month !== expectedMonth) {
   throw new Error(
@@ -71,7 +72,7 @@ const statusLabels = {
   postponed: 'Ditunda',
   cancelled: 'Dibatalkan',
 } as const;
-const statusLabel = statusLabels[schedule.status];
+const statusLabel = statusLabels[phase];
 
 const dateFormatter = new Intl.DateTimeFormat('id-ID', {
   day: 'numeric',
@@ -88,7 +89,7 @@ const dateText = schedule.dateLabel;
 const registrationMessage =
   `Halo tim Betracom, saya ingin mendaftar ${schedule.title}. Mohon informasi biaya, persyaratan, dan ketersediaan kuota.`;
 const canRegister =
-  schedule.status === 'scheduled' &&
+  phase === 'scheduled' &&
   (registrationStatus === 'open' || registrationStatus === 'not-open');
 
 const jsonLd = [
@@ -117,7 +118,7 @@ const jsonLd = [
     description,
     startDate: schedule.startDate,
     endDate: schedule.endDate,
-    status: schedule.status,
+    status: phase,
     attendanceMode,
     venue: schedule.venue,
   }),
@@ -150,7 +151,7 @@ const jsonLd = [
       <div class="schedule-detail-copy">
         <p class="schedule-detail-eyebrow">Pelatihan Damkar · Kelas {training.key} · Gelombang {schedule.batchNo}</p>
         <div class="schedule-detail-status-row">
-          <span class={`schedule-status schedule-status--${schedule.status}`}>{statusLabel}</span>
+          <span class={`schedule-status schedule-status--${phase}`}>{statusLabel}</span>
           {registrationStatus === 'open' && <span class="schedule-registration-status schedule-registration-status--open">Pendaftaran dibuka</span>}
           {registrationStatus === 'not-open' && <span class="schedule-registration-status">Pendaftaran belum dibuka</span>}
           {registrationStatus === 'closed' && <span class="schedule-registration-status">Pendaftaran ditutup</span>}
@@ -216,12 +217,12 @@ const jsonLd = [
 
     <div class="schedule-detail-content">
       <article class="schedule-detail-main">
-        {schedule.status === 'postponed' && (
+        {phase === 'postponed' && (
           <div class="schedule-lifecycle-notice schedule-lifecycle-notice--postponed" role="status">
             Jadwal pelatihan ini ditunda. Hubungi penyelenggara untuk memperoleh informasi tanggal terbaru.
           </div>
         )}
-        {schedule.status === 'cancelled' && (
+        {phase === 'cancelled' && (
           <div class="schedule-lifecycle-notice schedule-lifecycle-notice--cancelled" role="status">
             Penyelenggaraan pelatihan ini dibatalkan. Silakan hubungi penyelenggara untuk informasi program berikutnya.
           </div>
@@ -237,7 +238,7 @@ const jsonLd = [
           <p>{training.requirement}</p>
         </section>
 
-        {schedule.status === 'completed' && schedule.completion && (
+        {phase === 'completed' && schedule.completion && (
           <section class="schedule-detail-section schedule-completion">
             <h2>Dokumentasi Pelaksanaan</h2>
             {schedule.completion.completedDate && (

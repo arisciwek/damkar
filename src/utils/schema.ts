@@ -269,7 +269,7 @@ export function eventNode(schedule: ScheduleEventInput): JsonLd {
 
   return {
     '@type': 'Event',
-    '@id': `${schedule.url.replace(/\/$/, '')}#event`,
+    '@id': `${schedule.url}#event`,
     url: schedule.url,
     name: schedule.title,
     description: schedule.description,

@@ -1,14 +1,11 @@
 /**
- * Sumber jadwal gelombang — membaca collection `schedule`
- * (src/content/schedule/*.md, 57 gelombang; Tahap 4 keputusan #14).
+ * Sumber jadwal gelombang — membaca collection `schedules`
+ * (src/content/schedules/<YYYY>/<trainingId>/<slug>.md).
  *
- * Dipindah utuh dari src/config/jadwal.ts (kini retired): logika status,
- * pengurutan, dan bentuk `Batch` identik supaya output tidak berubah.
- * Status gelombang (Selesai / Sedang berlangsung / Mulai N hari lagi /
- * Pendaftaran dibuka) dihitung dari tanggal build supaya konsisten.
- *
- * Perbedaan: seluruh fungsi data kini async (sumber = content collection).
- * Konstanta murni (MONTHS/MON) dan `monthLabel` tetap sync.
+ * Adapter lapisan data: memetakan field kontrak baru (trainingId, batchNo,
+ * dateLabel, status) ke bentuk `Batch` lama supaya route/komponen dan output
+ * HTML tidak berubah selama Tahap 2. Status badge (open/soon/ongoing/done)
+ * tetap dihitung dari tanggal build, bukan dari field `status` editorial.
  */
 import { getCollection } from 'astro:content';
 import { site } from '../config/site';
@@ -70,19 +67,20 @@ let cache: Batch[] | null = null;
 /** Semua gelombang, diurutkan menurut tanggal lalu jenjang (D, C, B, A). */
 export async function getBatches(): Promise<Batch[]> {
   if (cache) return cache;
-  const entries = await getCollection('schedule', (entry) => !entry.data.draft);
+  const entries = await getCollection('schedules', (entry) => !entry.data.draft);
   cache = entries
     .map((entry) => {
       const g = entry.data;
       const st = dateOf(g.startDate);
       const en = dateOf(g.endDate);
       const [status, statusText] = statusOf(st, en);
+      const classKey = (g.trainingId.split('-').pop() ?? '').toUpperCase() as KelasKey;
       return {
-        class: g.class,
-        batch: g.batch,
+        class: classKey,
+        batch: g.batchNo,
         startDate: g.startDate,
         endDate: g.endDate,
-        label: g.label,
+        label: g.dateLabel,
         pubDate: g.pubDate,
         updatedDate: g.updatedDate,
         st,

@@ -10,23 +10,37 @@
  * Dijalankan otomatis oleh `npm run check` (dan `npm run build` lewat check).
  * Gagal di sini = build gagal; jangan diam-diam mengisi tanggal asal-asalan.
  */
-import { readdir, readFile } from 'node:fs/promises';
+import { readdir, readFile, stat } from 'node:fs/promises';
+import { join } from 'node:path';
 
-const DIRS = ['src/content/pages', 'src/content/schedule', 'src/content/articles'];
+const DIRS = ['src/content/pages', 'src/content/schedules', 'src/content/articles'];
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 
 const problems = [];
 let checked = 0;
 
-for (const dir of DIRS) {
-  let names = [];
+/** Kumpulkan semua *.md secara rekursif (schedules/<YYYY>/<trainingId>/<slug>.md). */
+async function markdownFiles(dir) {
+  let out = [];
+  let entries = [];
   try {
-    names = (await readdir(dir)).filter((f) => f.endsWith('.md'));
+    entries = await readdir(dir);
   } catch {
-    continue; // koleksi belum dibuat (mis. artikel di Tahap 5) — lewati.
+    return out; // koleksi belum dibuat (mis. artikel di Tahap 5) — lewati.
   }
-  for (const name of names) {
-    const path = `${dir}/${name}`;
+  for (const name of entries) {
+    const path = join(dir, name);
+    if ((await stat(path)).isDirectory()) {
+      out = out.concat(await markdownFiles(path));
+    } else if (name.endsWith('.md')) {
+      out.push(path);
+    }
+  }
+  return out;
+}
+
+for (const dir of DIRS) {
+  for (const path of await markdownFiles(dir)) {
     const text = await readFile(path, 'utf8');
     checked++;
     for (const field of ['pubDate', 'updatedDate']) {

@@ -121,28 +121,85 @@ const pages = defineCollection({
 });
 
 /**
- * Collection jadwal gelombang — 57 file di `src/content/schedule/`
- * (Tahap 4, keputusan #14): satu file per gelombang, dipindah dari
- * `src/config/jadwal.ts`. Field `start`/`end` di-quoted agar tetap string.
+ * Collection jadwal gelombang — 57 file gelombang 2026, dipindah dari
+ * `src/content/schedule/` (flat) ke `src/content/schedules/<YYYY>/<trainingId>/`
+ * (Tahap 2 SCHEDULE-ARCHITECTURE-PLAN.md). Data asal berasal dari
+ * `src/config/jadwal.ts`. Field tanggal pelaksanaan di-quoted agar tetap string.
  */
-const schedule = defineCollection({
-  loader: glob({ pattern: '*.md', base: './src/content/schedule' }),
+/**
+ * Collection schedules — satu Markdown = satu penyelenggaraan.
+ * Struktur: src/content/schedules/<YYYY>/<trainingId>/<slug>.md
+ * Kontrak bersama: docs/SCHEDULE-ARCHITECTURE-PLAN.md §2, §5.
+ *
+ * Tanggal pelaksanaan (`startDate`/`endDate`) hanya untuk tampilan jadwal dan
+ * JSON-LD Event. Metadata editorial (`pubDate`/`updatedDate`) hanya untuk
+ * <lastmod> sitemap. Jangan menukar keduanya.
+ */
+const schedules = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/schedules' }),
   schema: z.object({
-    /** Huruf jenjang: D | C | B | A */
-    class: z.enum(['D', 'C', 'B', 'A']),
-    /** Nomor gelombang, mis. "01" (dua digit). */
-    batch: z.string().regex(/^\d{2}$/, 'batch harus dua digit, mis. "01"'),
-    /** Tanggal mulai pelatihan (YYYY-MM-DD). */
-    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'startDate harus YYYY-MM-DD'),
-    /** Tanggal selesai pelatihan (YYYY-MM-DD). */
-    endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'endDate harus YYYY-MM-DD'),
+    type: z.literal('schedule'),
+    /** Identitas global satu penyelenggaraan (prefix publisher + ULID). */
+    scheduleId: z.string().min(1),
+    /** Identitas situs penerbit asal. */
+    publisherId: z.literal('damkar'),
+    /** Relasi ke master training (trainings.trainingId). */
+    trainingId: z.string().min(1),
+    /** Nomor gelombang, mis. "01". Metadata, bukan primary key. */
+    batchNo: z.string().regex(/^\d{1,3}$/, 'batchNo harus angka, mis. "01"'),
+    /** Slug URL, unik di dalam bulan startDate. */
+    slug: z.string().min(1),
+    title: z.string().min(1),
+    description: z.string().min(1),
+    /** Tanggal mulai pelaksanaan (YYYY-MM-DD atau ISO 8601 lengkap). */
+    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:\d{2}))?$/, 'startDate harus tanggal ISO'),
+    /** Tanggal selesai pelaksanaan. */
+    endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:\d{2}))?$/, 'endDate harus tanggal ISO'),
     /** Label tampilan, mis. "19–21 Januari 2026". */
-    label: z.string().min(1),
-    /** Waktu publikasi data gelombang ini (ISO 8601 UTC tanpa milidetik). */
-    /** Wajib di setiap entri — "data entri" yang berujung ke <lastmod> sitemap. */
+    dateLabel: z.string().min(1),
+    timezone: z.string().min(1).default('Asia/Jakarta'),
+    /** Waktu publikasi entri (ISO 8601 UTC tanpa milidetik) → sitemap lastmod. */
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date(),
     draft: z.boolean().default(false),
+    /** Lifecycle penyelenggaraan (bukan status pendaftaran). */
+    status: z.enum(['scheduled', 'ongoing', 'completed', 'postponed', 'cancelled']).default('scheduled'),
+    registration: z.object({
+      status: z.enum(['not-open', 'open', 'closed']).default('not-open'),
+      deadline: z.string().optional(),
+      capacity: z.number().int().positive().optional(),
+    }).optional(),
+    delivery: z.object({
+      mode: z.enum(['offline', 'online', 'blended']).default('offline'),
+      attendanceMode: z.enum(['offline', 'online', 'mixed']).default('offline'),
+    }).optional(),
+    venue: z.object({
+      name: z.string().min(1),
+      address: z.string().optional(),
+      city: z.string().optional(),
+      province: z.string().optional(),
+      countryCode: z.string().length(2).default('ID'),
+    }).optional(),
+    /** Data pascapelatihan; kosong/tidak ada = tidak dirender. */
+    completion: z.object({
+      completedDate: z.string().optional(),
+      participants: z.array(z.object({
+        name: z.string().min(1),
+        certificateNumber: z.string().optional(),
+      })).default([]),
+      gallery: z.array(z.object({
+        src: z.string().min(1),
+        alt: z.string().min(1),
+        caption: z.string().optional(),
+      })).default([]),
+    }).optional(),
+  }).superRefine((data, ctx) => {
+    if (data.updatedDate < data.pubDate) {
+      ctx.addIssue({ code: 'custom', message: 'updatedDate tidak boleh lebih awal daripada pubDate.' });
+    }
+    if (data.endDate < data.startDate) {
+      ctx.addIssue({ code: 'custom', message: 'endDate tidak boleh lebih awal daripada startDate.' });
+    }
   }),
 });
 
@@ -195,4 +252,4 @@ const articles = defineCollection({
     }
   }),
 });
-export const collections = { trainings, pages, schedule, articles };
+export const collections = { trainings, pages, schedules, articles };

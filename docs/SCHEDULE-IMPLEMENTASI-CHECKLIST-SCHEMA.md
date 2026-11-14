@@ -80,14 +80,15 @@ completion: object? (completedDate, participants[], gallery[])
 
 ### 1.3 Validator relasi & keunikan
 
-> Status: sebagian. `superRefine` Zod sudah menangani tanggal; validasi relasi
-> dan keunikan baru dijalankan sekali oleh script migrasi (belum permanen).
+> Status: selesai. Dijalankan permanen oleh `scripts/validate-schedules.mjs`
+> (bagian dari `npm run check`), diuji negatif dengan file duplikat.
 
-- [ ] Validasi `trainingId` menunjuk ke `trainings` yang dikenal
-- [ ] Validasi `scheduleId` unik global (prefix `damkar_` + ULID)
-- [ ] Validasi `slug` unik dalam bulan `startDate` (bukan global unik)
-- [ ] Validasi folder tahun cocok dengan tahun `startDate`
-- [ ] Validasi folder training cocok dengan `trainingId`
+- [x] Validasi `trainingId` menunjuk ke `trainings` yang dikenal
+- [x] Validasi `scheduleId` unik global (prefix `damkar_` + ULID)
+- [x] Validasi `slug` unik dalam bulan `startDate` (bukan global unik)
+- [x] Validasi folder tahun cocok dengan tahun `startDate`
+- [x] Validasi folder training cocok dengan `trainingId`
+- [x] Validasi nama file = `slug`
 - [x] Validasi `updatedDate >= pubDate` (Zod `superRefine`)
 - [x] Validasi `endDate >= startDate` (Zod `superRefine`)
 - [x] Validasi enum status, mode, attendanceMode, registration (Zod)
@@ -228,8 +229,7 @@ src/content/schedules/
 
 ### Utang teknis / belum selesai
 
-- [ ] Validator unik lintas entri (`scheduleId`, `slug` per bulan, `trainingId` valid) baru dijalankan di script migrasi sekali jalan — belum menjadi validator permanen di `npm run check`. Perlu ditambahkan sebagai script validasi (mis. `scripts/validate-schedules.mjs`).
-- [ ] Validasi folder tahun/training cocok dengan `startDate`/`trainingId` belum permanen.
+- [x] Validator unik lintas entri & struktur path sudah permanen: `scripts/validate-schedules.mjs`, dipanggil `npm run check`, diuji negatif.
 - [ ] Helper baru (`getSchedulesByMonth`, `getScheduleBySlug`, `getSitemapLastmod`) belum dibuat — menunggu Tahap 3 (bagian route) agar bentuk data final diketahui.
 - [ ] Data pascapelatihan (`completion`) belum ada; menunggu foto/peserta nyata.
 - [ ] Rename collection `trainings` belum menyentuh `entry.id`; URL `/layanan/<slug>/` tetap. Jika kelak `slug` dipisah dari id file, route harus ikut diubah.

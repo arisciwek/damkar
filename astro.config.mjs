@@ -83,7 +83,7 @@ const scheduleFiles = (() => {
     const text = readFileSync(path, 'utf8');
     const trainingId = text.match(/^trainingId:\s*['"]?([^'"]+)['"]?\s*$/m)?.[1];
     const cls = trainingId?.match(/^kelas-([a-d])$/)?.[1]?.toUpperCase() ?? null;
-    const start = text.match(/^startDate:\s*['"]?(\d{4}-\d{2}-\d{2})/)?.[1] ?? null;
+    const start = text.match(/^startDate:\s*['"]?(\d{4}-\d{2}-\d{2})/m)?.[1] ?? null;
     const slug = text.match(/^slug:\s*['"]?([^'"]+)['"]?\s*$/m)?.[1] ?? null;
     const updated = text.match(/^updatedDate:\s*['"]?([0-9]{4}-[0-9:-]+T[0-9:]+Z)['"]?\s*$/m)?.[1] ?? null;
     const published = text.match(/^pubDate:\s*['"]?([0-9]{4}-[0-9:-]+T[0-9:]+Z)['"]?\s*$/m)?.[1] ?? null;

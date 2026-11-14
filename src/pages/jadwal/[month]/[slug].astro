@@ -13,6 +13,7 @@ import {
   websiteNode,
 } from '../../../utils/schema';
 import { scheduleDetailUrl, scheduleMonth } from '../../../utils/schedule-routing';
+import { monthLabel } from '../../../utils/schedule';
 
 export async function getStaticPaths() {
   const [schedules, trainings] = await Promise.all([
@@ -78,9 +79,7 @@ function formatDate(value: string): string {
   const [year, monthValue, day] = value.slice(0, 10).split('-').map(Number);
   return dateFormatter.format(new Date(Date.UTC(year, monthValue - 1, day, 12)));
 }
-const startLabel = formatDate(schedule.startDate);
-const endLabel = formatDate(schedule.endDate);
-const dateText = startLabel === endLabel ? startLabel : `${startLabel} – ${endLabel}`;
+const dateText = schedule.dateLabel;
 
 const registrationMessage =
   `Halo tim Betracom, saya ingin mendaftar ${schedule.title}. Mohon informasi biaya, persyaratan, dan ketersediaan kuota.`;
@@ -138,7 +137,7 @@ const jsonLd = [
       <ol class="schedule-breadcrumb-list">
         <li class="schedule-breadcrumb-item"><a href="/">Beranda</a></li>
         <li class="schedule-breadcrumb-item"><a href="/jadwal/">Jadwal</a></li>
-        <li class="schedule-breadcrumb-item"><a href={`/jadwal/${month}/`}>{month}</a></li>
+        <li class="schedule-breadcrumb-item"><a href={`/jadwal/${month}/`}>{monthLabel(month)}</a></li>
         <li class="schedule-breadcrumb-item" aria-current="page">{schedule.title}</li>
       </ol>
     </nav>
@@ -148,6 +147,7 @@ const jsonLd = [
         <p class="schedule-detail-eyebrow">Pelatihan Damkar · Kelas {training.key} · Gelombang {schedule.batchNo}</p>
         <div class="schedule-detail-status-row">
           <span class={`schedule-status schedule-status--${schedule.status}`}>{statusLabel}</span>
+          {registrationStatus === 'open' && <span class="schedule-registration-status schedule-registration-status--open">Pendaftaran dibuka</span>}
           {registrationStatus === 'closed' && <span class="schedule-registration-status">Pendaftaran ditutup</span>}
         </div>
         <h1 class="schedule-detail-title">{schedule.title}</h1>
@@ -285,6 +285,7 @@ const jsonLd = [
   .schedule-status--ongoing { background: #FFF3D9; color: #8A5A00; }
   .schedule-status--cancelled { background: #FDE8E8; color: #A51D1D; }
   .schedule-status--postponed { background: #FFF3D9; color: #8A5A00; }
+  .schedule-registration-status--open { background: #EAF7EF; color: #176B3A; }
   .schedule-detail-title { margin-bottom: 14px; font-size: clamp(2rem, 4vw, 3.15rem); line-height: 1.16; }
   .schedule-detail-description { max-width: 62ch; margin-bottom: 24px; color: var(--mute); font-size: 1rem; }
   .schedule-detail-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px; }

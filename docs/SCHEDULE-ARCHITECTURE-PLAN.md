@@ -475,3 +475,282 @@ Pada langkah 4–7, pastikan URL, `scheduleId`, `startDate`, dan `endDate` tidak
 ## 16. Batas pekerjaan dokumen ini
 
 Dokumen ini menetapkan target arsitektur dan rencana migrasi. Dokumen ini **tidak** mengubah schema, file schedule, halaman, route, JSON-LD, atau sitemap. Implementasi baru dimulai setelah audit/pemetaan rinci dan persetujuan tahap eksekusi.
+
+---
+# Addendum — Sumber Data Terpusat dan Situs Induk
+
+> Addendum ini memperluas spesifikasi sebelumnya. Jika ada pertentangan mengenai integrasi situs utama, aturan dalam addendum ini yang berlaku. Dokumen ini tetap merupakan rencana; bukan instruksi untuk langsung mengubah kode atau konten produksi.
+
+## 18. Satu repository sebagai sumber data kanonis
+
+Gunakan repository khusus, misalnya arisciwek/schedule-data, sebagai single source of truth untuk data training dan schedule. Situs spesifik (Confined Space, Damkar, dan situs lain) serta situs utama membaca file Markdown yang sama.
+
+```text
+arisciwek/schedule-data/
+└── src/content/
+    ├── trainings/
+    │   ├── teknisi-k3-ruang-terbatas.md
+    │   ├── damkar-kelas-d.md
+    │   └── ...
+    └── schedules/
+        └── 2026/
+            └── teknisi-k3-ruang-terbatas/
+                └── 07-11-desember-2026.md
+
+             ┌──────────────────────┐
+             │ schedule-data        │
+             │ satu sumber Markdown │
+             └──────────┬───────────┘
+                  ┌─────┴─────┐
+                  ▼           ▼
+             Confined Space  Situs utama
+             filter publisher agregasi semua publisher
+             URL lokal        URL portal
+```
+
+Ketentuan:
+
+- Satu penyelenggaraan hanya memiliki satu file Markdown kanonis.
+- File schedule tidak boleh disalin menjadi salinan yang diedit terpisah di setiap situs.
+- Data master training juga berada di repository sumber agar relasi dan identitas konsisten.
+- Repository sumber mengelola data; situs konsumen mengelola route, layout, UI, SEO halaman, dan proses build/deploy.
+- Repository sumber tidak memerlukan backend, database, atau API untuk kebutuhan ini.
+- Perubahan data dilakukan pada repository sumber, kemudian situs konsumen memperbarui referensi commit sumber dan menjalankan build.
+
+## 19. Struktur repository sumber
+
+```text
+schedule-data/
+└── src/content/
+    ├── trainings/
+    │   └── <training-slug>.md
+    └── schedules/
+        ├── 2026/
+        │   └── <training-slug>/
+        │       └── <schedule-slug>.md
+        └── 2027/
+            └── ...
+```
+
+Folder tahun mengikuti tahun dari startDate. Folder training mengikuti identitas/slug master training. Nama file adalah slug schedule. Path file bukan primary key dan tidak menentukan URL publik.
+
+## 20. Kontrak frontmatter dan perbedaan presentasi per situs
+
+Nama serta makna field inti tetap sama untuk seluruh schedule. Nilai field boleh berbeda antar-schedule karena setiap penyelenggaraan memiliki fakta sendiri. Jika satu schedule memerlukan judul, deskripsi, CTA, atau URL pendaftaran yang berbeda pada tiap situs, gunakan kelompok sites opsional.
+
+Contoh acuan:
+
+```yaml
+---
+type: schedule
+scheduleId: confinedspace_01JXXXXXXXXXXXXXXX
+publisherId: confinedspace
+trainingId: teknisi-k3-ruang-terbatas
+slug: 07-11-desember-2026
+
+title: Jadwal Teknisi K3 Ruang Terbatas
+description: Informasi penyelenggaraan pelatihan Teknisi K3 Ruang Terbatas.
+
+startDate: 2026-12-07T08:00:00+07:00
+endDate: 2026-12-11T17:00:00+07:00
+dateLabel: 7–11 Desember 2026
+timezone: Asia/Jakarta
+
+pubDate: 2026-10-01T08:00:00+07:00
+updatedDate: 2026-11-20T08:00:00+07:00
+draft: false
+status: scheduled
+
+registration:
+  status: open
+  deadline: 2026-12-01T23:59:00+07:00
+  capacity: 20
+
+delivery:
+  mode: offline
+  attendanceMode: offline
+
+venue:
+  name: Nama tempat
+  address: Alamat tempat
+  city: Jakarta
+  province: DKI Jakarta
+  countryCode: ID
+
+sites:
+  confinedspace:
+    enabled: true
+    title: Jadwal Pelatihan Teknisi K3 Ruang Terbatas Desember 2026
+    description: Informasi jadwal dan pendaftaran pelatihan.
+    ctaLabel: Daftar Pelatihan
+    registrationUrl: https://confinedspace.example/daftar/
+
+  main:
+    enabled: true
+    title: Jadwal Teknisi K3 Ruang Terbatas — 7–11 Desember 2026
+    description: Jadwal pelatihan dari penyelenggara Confined Space.
+    ctaLabel: Lihat Detail dan Pendaftaran
+---
+```
+
+Aturan override:
+
+- title dan description pada root adalah nilai default.
+- sites.<siteId> hanya menyimpan perbedaan presentasi yang diperlukan situs terkait.
+- Jika override tidak tersedia, situs menggunakan nilai root.
+- enabled: false mengecualikan schedule dari situs tersebut tanpa menghapus record kanonis.
+- publisherId adalah identitas penerbit/penyelenggara asal, bukan situs konsumen.
+- sites.main mengatur presentasi di portal; key situs lain mengikuti ID situs yang ditetapkan.
+- URL pendaftaran boleh spesifik situs. Jangan menebak URL dari domain atau slug.
+- Fakta inti seperti tanggal, lokasi, status, kapasitas, dan identitas tidak boleh berbeda hanya karena override presentasi.
+- Schema harus memvalidasi struktur sites, tipe field, dan ID situs yang diizinkan.
+
+## 21. Identitas dan aturan distribusi
+
+| Field | Makna |
+|---|---|
+| scheduleId | Identitas global satu penyelenggaraan |
+| trainingId | Identitas global jenis/program pelatihan |
+| publisherId | Identitas situs penerbit/penyelenggara asal |
+
+Situs Confined Space mengambil schedule dengan publisherId confinedspace dan sites.confinedspace.enabled true. Situs Damkar menggunakan publisherId damkar dan flag situsnya. Portal mengambil seluruh schedule yang sites.main.enabled true, tanpa membatasi satu publisher.
+
+Jangan menyamakan publisherId dengan target distribusi. Satu schedule dapat diterbitkan oleh satu situs dan didistribusikan ke beberapa situs.
+
+## 22. URL lokal dan URL portal
+
+Satu record sumber boleh menghasilkan URL berbeda karena setiap situs memiliki struktur navigasi sendiri.
+
+**Situs spesifik**
+
+Confined Space mempertahankan URL lokal yang telah digunakan, misalnya:
+
+```text
+/jadwal/07-11-desember-2026/
+```
+
+Damkar mempertahankan pola route lokal yang disepakati pada tahap implementasinya. Khusus arsip bulanan yang sudah ada, URL dan fungsinya tidak diganti oleh arsitektur portal.
+
+**Situs utama**
+
+Pola detail portal:
+
+```text
+/jadwal/<YYYY-MM>/<training-slug>/<schedule-slug>/
+```
+
+Contoh:
+
+```text
+/jadwal/2026-12/teknisi-k3-ruang-terbatas/07-11-desember-2026/
+```
+
+Aturan:
+
+- Segmen YYYY-MM diturunkan dari bulan startDate menurut timezone schedule.
+- Contoh tanggal 7–11 Desember 2026 masuk ke /jadwal/2026-12/, bukan /jadwal/2026-11/. Bulan November pada contoh data adalah bulan editorial, bukan bulan pelaksanaan.
+- Arsip /jadwal/YYYY-MM/ tetap merupakan halaman agregasi. Pada portal, arsip menggabungkan semua training dan publisher yang aktif untuk portal.
+- Setiap kartu di arsip menaut ke detail schedule.
+- Detail portal memuat konteks training dan publisher serta tautan ke situs penyelenggara bila relevan.
+- Slug training berasal dari master training yang stabil, bukan dari SEO title yang dapat berubah.
+- Canonical detail ditentukan oleh masing-masing situs dan menunjuk ke URL detail pada domain situs itu. URL lokal dan URL portal adalah dua presentasi atas entitas data yang sama, bukan satu URL lintas-domain.
+
+## 23. Integrasi teknis repository sumber
+
+Rekomendasi awal adalah Git submodule pada masing-masing situs konsumen.
+
+```text
+confinedspace/
+└── data/
+    └── schedule-data/  # submodule
+
+main-site/
+└── data/
+    └── schedule-data/  # submodule yang sama
+```
+
+Ketentuan:
+
+- Kedua situs menunjuk ke repository sumber yang sama.
+- Submodule mengunci commit tertentu agar build dapat direproduksi.
+- Update data dilakukan dengan memperbarui pointer submodule pada branch situs konsumen.
+- Astro membaca Markdown secara rekursif dari direktori submodule; jangan membuat salinan konten saat build.
+- Schema lokal harus memvalidasi kontrak sumber. Bila kelak schema/helper dipaketkan bersama, pastikan tidak ada dua definisi yang menyimpang.
+- Tidak perlu menambahkan API, backend, atau database untuk membaca file statis.
+- Evaluasi mekanisme distribusi lain hanya jika submodule terbukti menghambat workflow; hindari kembali ke duplikasi manual.
+
+## 24. Pembagian tanggung jawab
+
+| Area | schedule-data | Situs spesifik | Situs utama |
+|---|---|---|---|
+| Data schedule kanonis | Pemilik | Konsumen | Konsumen |
+| Master training | Pemilik | Konsumen | Konsumen |
+| Identitas dan relasi | Pemilik | Validasi | Validasi |
+| Override presentasi | Menyimpan | Menggunakan | Menggunakan |
+| Filter publisher | — | Publisher sendiri | Gabungan |
+| Route dan URL | — | Route lokal | Route portal |
+| Layout, UI, CSS | — | Pemilik | Pemilik |
+| Canonical dan SEO halaman | — | Pemilik | Pemilik |
+| Build dan deploy | — | Pemilik | Pemilik |
+
+## 25. Tahap implementasi tambahan untuk portal
+
+Tahapan berikut dilakukan sebagai pekerjaan terpisah dan tidak otomatis dimulai hanya karena dokumen ini direvisi.
+
+**Tahap A — Bentuk repository sumber**
+- Buat repository arisciwek/schedule-data.
+- Siapkan master trainings dan schedules dengan struktur kanonis.
+- Tetapkan schema, enum, identitas, dan fixture.
+- Gerbang: satu schedule contoh terbaca dari satu file dan seluruh ID/relasi valid.
+
+**Tahap B — Integrasi satu situs spesifik**
+- Hubungkan Confined Space ke repository sumber sebagai submodule.
+- Filter berdasarkan publisherId dan sites.confinedspace.enabled.
+- Pertahankan URL lokal yang telah ada pada tahap ini.
+- Gerbang: situs membaca sumber, bukan salinan lokal; hasil build sesuai baseline.
+
+**Tahap C — Integrasi situs utama**
+- Hubungkan portal ke repository sumber yang sama.
+- Filter schedule dengan sites.main.enabled.
+- Bangun indeks, arsip bulanan, dan detail sesuai pola URL portal.
+- Gerbang: satu perubahan pada file sumber dapat tercermin pada kedua situs setelah pointer submodule diperbarui dan build dijalankan.
+
+**Tahap D — Konsistensi operasional**
+- Uji schedule yang tampil di dua situs dengan copy berbeda.
+- Uji schedule yang hanya aktif di satu situs.
+- Uji perubahan tanggal, status, venue, dan registration; fakta operasional harus konsisten pada semua konsumen.
+- Dokumentasikan alur update submodule dan urutan deploy.
+- Gerbang: tidak ada salinan schedule yang menjadi sumber kebenaran kedua.
+
+## 26. Penegasan khusus untuk Damkar
+
+Perluasan ke portal tidak membatalkan atau mengganti arsip bulanan Damkar yang sudah ada.
+
+- /jadwal/2026-11/ tetap halaman arsip bulanan Damkar.
+- Halaman tersebut tetap menampilkan kumpulan schedule November 2026.
+- Setiap kartu/baris schedule ditautkan ke detail schedule yang sesuai.
+- Data schedule nantinya dibaca dari file kanonis di repository sumber.
+- Integrasi sumber data tidak boleh menghilangkan fungsi arsip, merusak desain/DOM yang telah disepakati, atau mengubah URL arsip tanpa persetujuan terpisah.
+
+## 27. Checklist tambahan integrasi sumber data
+
+- [ ] Repository schedule-data menjadi satu-satunya pemilik Markdown schedule kanonis.
+- [ ] Master training juga berada di repository sumber.
+- [ ] Satu penyelenggaraan hanya memiliki satu file sumber.
+- [ ] Kedua situs mengonsumsi repository dan commit sumber yang sama.
+- [ ] Tidak ada salinan schedule yang diedit secara independen di situs konsumen.
+- [ ] Field inti sama; nilai antar-schedule boleh berbeda sesuai fakta.
+- [ ] Override copy/CTA per situs berada dalam kelompok sites.
+- [ ] publisherId menunjukkan penerbit, bukan target distribusi.
+- [ ] Situs spesifik memfilter publisher dan flag situsnya.
+- [ ] Portal mengagregasi semua publisher yang diaktifkan untuk portal.
+- [ ] URL portal mengikuti /jadwal/YYYY-MM/<training-slug>/<schedule-slug>/.
+- [ ] Bulan URL berasal dari startDate.
+- [ ] Arsip bulanan Damkar tetap ada dan tidak diganti.
+- [ ] Canonical dibuat per domain situs konsumen.
+- [ ] Build dapat direproduksi dari commit sumber yang terkunci.
+- [ ] Perubahan satu file sumber dapat dipropagasikan ke seluruh konsumen melalui update submodule.
+
+## 28. Batas perubahan addendum
+
+Addendum ini hanya menetapkan arsitektur dan rencana. Ia tidak membuat repository schedule-data, tidak memindahkan file schedule, tidak menambahkan submodule, dan tidak mengubah route, JSON-LD, sitemap, atau tampilan situs. Implementasi dilakukan sebagai tahap terpisah setelah audit dan persetujuan.

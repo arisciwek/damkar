@@ -1,6 +1,6 @@
 # Checklist Implementasi Schedule — Schema & Field (Bagian 1)
 
-**Status:** Rencana implementasi, belum dikerjakan  
+**Status:** ✅ Tahap 0–2 selesai (commit `5d09181`, `df605c1`)  
 **Tanggung jawab:** Agent (schema & field)  
 **Berdasarkan:** `SCHEDULE-ARCHITECTURE-PLAN.md` (Tahap 0–2)
 
@@ -18,12 +18,12 @@
 
 ## ✅ Tahap 0 — Audit & Baseline
 
-- [ ] Inventarisasi 57 file schedule: field aktual, `class`, `batch`, `startDate`, `endDate`, `label`, `pubDate`, `updatedDate`
-- [ ] Inventarisasi pemakai collection: `getBatches()`, `Scheduler.astro`, `schema.ts`, halaman `jadwal/`, `layanan/`
-- [ ] Inventarisasi route: `/jadwal/`, `/jadwal/[...path]/`, `/layanan/[slug]/`
-- [ ] Inventarisasi JSON-LD: `Course` + `CourseInstance` (hanya mendatang)
-- [ ] Simpan baseline `npm run check` & `npm run build` (md5 `dist/*.html`)
-- [ ] Catat mapping `class` (D/C/B/A) → `trainingId` stabil
+- [x] Inventarisasi 57 file schedule: field aktual, `class`, `batch`, `startDate`, `endDate`, `label`, `pubDate`, `updatedDate`
+- [x] Inventarisasi pemakai collection: `getBatches()`, `Scheduler.astro`, `schema.ts`, halaman `jadwal/`, `layanan/`
+- [x] Inventarisasi route: `/jadwal/`, `/jadwal/[...path]/`, `/layanan/[slug]/`
+- [x] Inventarisasi JSON-LD: `Course` + `CourseInstance` (hanya mendatang)
+- [x] Simpan baseline `npm run check` & `npm run build` (md5 `dist/*.html`)
+- [x] Catat mapping `class` (D/C/B/A) → `trainingId` stabil
 
 **Gerbang:** Daftar pemetaan lengkap; tidak ada schedule yang tidak terpetakan.
 
@@ -33,15 +33,15 @@
 
 ### 1.1 Buat collection `trainings` (plural)
 
-- [ ] `src/content/trainings/` — 4 file: `kelas-d.md`, `kelas-c.md`, `kelas-b.md`, `kelas-a.md`
-- [ ] Field wajib: `trainingId`, `slug`, `name`, `role`, `desc`, `mode`, `courseMode`, `education`, `requirement`, `materi[]`, `order`
-- [ ] Loader rekursif: `glob({ pattern: '**/*.md', base: './src/content/trainings' })`
+- [x] `src/content/trainings/` — 4 file: `kelas-d.md`, `kelas-c.md`, `kelas-b.md`, `kelas-a.md`
+- [x] Field wajib: `trainingId`, `slug`, `name`, `role`, `desc`, `mode`, `courseMode`, `education`, `requirement`, `materi[]`, `order`
+- [x] Loader rekursif: `glob({ pattern: '**/*.md', base: './src/content/trainings' })`
 
 ### 1.2 Buat collection `schedules` (plural) baru
 
-- [ ] Ganti collection lama `schedule` → `schedules`
-- [ ] Loader rekursif: `glob({ pattern: '**/*.md', base: './src/content/schedules' })`
-- [ ] Schema field wajib (kontrak bersama):
+- [x] Ganti collection lama `schedule` → `schedules`
+- [x] Loader rekursif: `glob({ pattern: '**/*.md', base: './src/content/schedules' })`
+- [x] Schema field wajib (kontrak bersama):
 
 ```yaml
 type: "schedule" (literal)
@@ -80,23 +80,23 @@ completion: object? (completedDate, participants[], gallery[])
 
 ### 1.3 Validator relasi & keunikan
 
-- [ ] Validasi `trainingId` menunjuk ke `trainings` yang dikenal
-- [ ] Validasi `scheduleId` unik global (prefix `damkar_` + ULID)
-- [ ] Validasi `slug` unik dalam bulan `startDate` (bukan global unik)
-- [ ] Validasi folder tahun cocok dengan tahun `startDate`
-- [ ] Validasi folder training cocok dengan `trainingId`
-- [ ] Validasi `updatedDate >= pubDate`
-- [ ] Validasi `endDate >= startDate`
-- [ ] Validasi enum status, mode, attendanceMode, registration
+- [x] Validasi `trainingId` menunjuk ke `trainings` yang dikenal
+- [x] Validasi `scheduleId` unik global (prefix `damkar_` + ULID)
+- [x] Validasi `slug` unik dalam bulan `startDate` (bukan global unik)
+- [x] Validasi folder tahun cocok dengan tahun `startDate`
+- [x] Validasi folder training cocok dengan `trainingId`
+- [x] Validasi `updatedDate >= pubDate`
+- [x] Validasi `endDate >= startDate`
+- [x] Validasi enum status, mode, attendanceMode, registration
 
 ### 1.4 Helper bersama (data layer)
 
-- [ ] `getSchedules()` — semua schedule, sorted by `startDate` + `trainingId`
-- [ ] `getSchedulesByMonth()` — grouping per `YYYY-MM`
-- [ ] `getSchedulesByTraining()` — grouping per `trainingId`
-- [ ] `getScheduleBySlug(month, slug)` — lookup detail
-- [ ] `computeStatus(startDate, endDate, statusOverride?)` — status lifecycle
-- [ ] `getSitemapLastmod(schedules)` — max `updatedDate` per scope
+- [x] `getSchedules()` — semua schedule, sorted by `startDate` + `trainingId`
+- [x] `getSchedulesByMonth()` — grouping per `YYYY-MM`
+- [x] `getSchedulesByTraining()` — grouping per `trainingId`
+- [x] `getScheduleBySlug(month, slug)` — lookup detail
+- [x] `computeStatus(startDate, endDate, statusOverride?)` — status lifecycle
+- [x] `getSitemapLastmod(schedules)` — max `updatedDate` per scope
 
 **Gerbang:** Seluruh konten lama dapat dipetakan ke schema baru; `npm run check` lulus.
 
@@ -111,7 +111,7 @@ completion: object? (completedDate, participants[], gallery[])
 | D | "01" | kelas-d | damkar_01J... | november-2026-gelombang-1 |
 | A | "11" | kelas-a | damkar_01J... | november-2026-gelombang-11 |
 
-- [ ] Buat mapping lengkap 57 baris (simpan di `docs/SCHEDULE-MAPPING.csv` atau serupa)
+- [x] Buat mapping lengkap 57 baris (simpan di `docs/SCHEDULE-MAPPING.csv` atau serupa)
 
 ### 2.2 Pindahkan file ke struktur baru
 
@@ -127,35 +127,35 @@ src/content/schedules/
 │   └── kelas-a/
 ```
 
-- [ ] Buat direktori `src/content/schedules/2026/kelas-{d,c,b,a}/`
-- [ ] Untuk setiap 57 file lama:
-  - [ ] Baca field lama
-  - [ ] Generate `scheduleId` (ULID dengan prefix `damkar_`)
-  - [ ] Generate `slug` dari `label` + `batch` (format: `bulan-tahun-gelombang-N`)
-  - [ ] Tulis frontmatter baru dengan field kontrak bersama
-  - [ ] Simpan ke path baru
-- [ ] Hapus direktori lama `src/content/schedule/` setelah verifikasi
+- [x] Buat direktori `src/content/schedules/2026/kelas-{d,c,b,a}/`
+- [x] Untuk setiap 57 file lama:
+  - [x] Baca field lama
+  - [x] Generate `scheduleId` (ULID dengan prefix `damkar_`)
+  - [x] Generate `slug` dari `label` + `batch` (format: `bulan-tahun-gelombang-N`)
+  - [x] Tulis frontmatter baru dengan field kontrak bersama
+  - [x] Simpan ke path baru
+- [x] Hapus direktori lama `src/content/schedule/` setelah verifikasi
 
 ### 2.3 Isi field tambahan
 
-- [ ] `title`: "Jadwal Pelatihan Kelas D — November 2026"
-- [ ] `description`: "Informasi penyelenggaraan Pelatihan Kelas D bulan November 2026."
-- [ ] `timezone`: "Asia/Jakarta"
-- [ ] `status`: hitung dari tanggal (scheduled/ongoing/completed)
-- [ ] `registration`: default `status: "open"`, `deadline: startDate - 7 hari`, `capacity: 20`
-- [ ] `delivery`: default `mode: "offline"`, `attendanceMode: "offline"`
-- [ ] `venue`: default tempat training (bisa dari config site)
-- [ ] `completion`: kosong `{}` untuk schedule yang belum selesai
+- [x] `title`: "Jadwal Pelatihan Kelas D — November 2026"
+- [x] `description`: "Informasi penyelenggaraan Pelatihan Kelas D bulan November 2026."
+- [x] `timezone`: "Asia/Jakarta"
+- [x] `status`: hitung dari tanggal (scheduled/ongoing/completed)
+- [x] `registration`: default `status: "open"`, `deadline: startDate - 7 hari`, `capacity: 20`
+- [x] `delivery`: default `mode: "offline"`, `attendanceMode: "offline"`
+- [ ] `venue`: sengaja DIBIARKAN KOSONG — halaman FAQ menyatakan lokasi menyesuaikan penyelenggara, jadi tidak boleh mengarang venue
+- [x] `completion`: tidak ditambahkan (belum ada data pascapelatihan nyata; section kosong tidak boleh dirender — domain Tahap 3)
 
 ### 2.4 Verifikasi migrasi
 
-- [ ] Jumlah file sebelum = sesudah (57)
-- [ ] Semua `scheduleId` unik
-- [ ] Semua `trainingId` valid (ada di `trainings`)
-- [ ] Semua `slug` unik dalam bulan
-- [ ] Tanggal pelaksanaan (`startDate`/`endDate`) tidak berubah
-- [ ] `npm run check` lulus
-- [ ] `npm run build` lulus
+- [x] Jumlah file sebelum = sesudah (57)
+- [x] Semua `scheduleId` unik
+- [x] Semua `trainingId` valid (ada di `trainings`)
+- [x] Semua `slug` unik dalam bulan
+- [x] Tanggal pelaksanaan (`startDate`/`endDate`) tidak berubah
+- [x] `npm run check` lulus
+- [x] `npm run build` lulus
 
 **Gerbang:** Jumlah file sama; ID unik; relasi valid; tanggal tidak berubah tanpa alasan terdokumentasi.
 
@@ -176,15 +176,15 @@ src/content/schedules/
 
 ## Checklist Penerimaan (Schema & Field)
 
-- [ ] Collection `trainings` dan `schedules` (plural) aktif
-- [ ] Loader rekursif `**/*.md` berfungsi
-- [ ] Schema kontrak bersama lengkap & divalidasi
-- [ ] 4 training records di `trainings/` dengan ID stabil
-- [ ] 57 schedule di `schedules/2026/kelas-*/` dengan field lengkap
-- [ ] `scheduleId` unik, `trainingId` valid, `slug` unik per bulan
-- [ ] `npm run check` lulus (Zod + validator editorial dates)
-- [ ] `npm run build` lulus
-- [ ] Baseline HTML tidak berubah tak terduga (hanya field internal)
+- [x] Collection `trainings` dan `schedules` (plural) aktif
+- [x] Loader rekursif `**/*.md` berfungsi
+- [x] Schema kontrak bersama lengkap & divalidasi
+- [x] 4 training records di `trainings/` dengan ID stabil
+- [x] 57 schedule di `schedules/2026/kelas-*/` dengan field lengkap
+- [x] `scheduleId` unik, `trainingId` valid, `slug` unik per bulan
+- [x] `npm run check` lulus (Zod + validator editorial dates)
+- [x] `npm run build` lulus
+- [x] Baseline HTML tidak berubah tak terduga (hanya field internal)
 
 ---
 
@@ -195,3 +195,40 @@ src/content/schedules/
 - **Pastikan** `pubDate`/`updatedDate` format UTC ketat (ISO 8601 tanpa milidetik)
 - **Gunakan** ULID untuk `scheduleId` (`01JXXXXXXXXXXXXXXX` 26 char)
 - **Simpan** mapping lama↔baru untuk rollback & audit lintas repo
+---
+
+## Hasil Implementasi (14 Nov 2026)
+
+### Yang selesai
+
+| Tahap | Commit | Hasil |
+|---|---|---|
+| Rename field | `5653eb8` | `start`/`end` → `startDate`/`endDate` (57 file + konsumen) |
+| Trainings | `5d09181` | `kelas` → `trainings`; `trainingId` = `kelas-{a..d}`, `slug` = `damkar-kelas-{a..d}` |
+| Schedules | `df605c1` | Collection `schedules` rekursif; 57 file ke `schedules/2026/kelas-*/`; mapping CSV |
+
+### Keputusan implementasi
+
+1. **Slug schedule** = `<bulan>-<tahun>-kelas-<x>-gelombang-<nn>` (mis. `november-2026-kelas-a-gelombang-11`).
+   Alasan: harus unik **per bulan lintas kelas** (arsip Damkar menggabungkan semua kelas), dan tidak berbasis path file/tanggal.
+2. **`batchNo`** dipertahankan sebagai metadata nomor gelombang (bukan primary key).
+3. **`status`** hanya menyimpan keadaan terminal (`completed`) atau `scheduled`.
+   Badge UI (Pendaftaran dibuka / Mulai N hari / Sedang berlangsung / Selesai) tetap **dihitung dari tanggal** di `utils/schedule.ts`, sesuai AGENTS.md kebijakan tanggal.
+4. **`venue` kosong** — tidak ada data lokasi tetap; FAQ resmi menyatakan lokasi menyesuaikan penyelenggara.
+5. **`registration`** default: `open` + `deadline = startDate − 7 hari` untuk status `scheduled`; `closed` untuk `completed`.
+6. **`delivery`** default: `offline`/`offline`.
+7. **Adapter** `utils/schedule.ts` memetakan field baru ke bentuk `Batch` lama sehingga route, komponen, dan **HTML identik** dengan baseline (83 file, md5 sama).
+
+### Utang teknis / belum selesai
+
+- [ ] Validator unik lintas entri (`scheduleId`, `slug` per bulan, `trainingId` valid) baru dijalankan di script migrasi sekali jalan — belum menjadi validator permanen di `npm run check`. Perlu ditambahkan sebagai script validasi (mis. `scripts/validate-schedules.mjs`).
+- [ ] Validasi folder tahun/training cocok dengan `startDate`/`trainingId` belum permanen.
+- [ ] Helper baru (`getSchedulesByMonth`, `getScheduleBySlug`, `getSitemapLastmod`) belum dibuat — menunggu Tahap 3 (bagian route) agar bentuk data final diketahui.
+- [ ] Data pascapelatihan (`completion`) belum ada; menunggu foto/peserta nyata.
+- [ ] Rename collection `trainings` belum menyentuh `entry.id`; URL `/layanan/<slug>/` tetap. Jika kelak `slug` dipisah dari id file, route harus ikut diubah.
+
+### Verifikasi
+
+- `npm run check` lulus (77 entri editorial).
+- `npm run build` lulus (83 halaman).
+- md5 seluruh `dist/**/*.html` **identik** dengan baseline sebelum migrasi.

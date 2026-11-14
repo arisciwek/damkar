@@ -1,5 +1,20 @@
 # Log Pekerjaan
 
+## 14 Nov 2026 — Tautan tanggal pada kartu jadwal
+
+- Teks tanggal (`<time datetime>`) di kartu `.batch` kini dibungkus anchor ke
+  halaman detail schedule — tujuan yang sama dengan tautan judul. Tautan yang
+  sudah ada (judul, nama program, WhatsApp, Google Calendar) **tidak diubah**.
+- Gaya visual tidak berubah: `.batch-when a` mewarisi warna/berat teks, hanya
+  bergaris bawah saat hover (pola yang sama dengan tautan judul).
+- `aria-label` tautan tanggal menyebut program, gelombang, dan rentang tanggal;
+  teks yang terlihat tetap `dateLabel`.
+- Verifikasi: 342 kartu di 68 halaman mendapat 1 tautan tambahan; 72 halaman
+  lain hanya berubah karena hash CSS. 0 href menyimpang dari tautan judul,
+  0 tujuan tidak ada, 140 halaman, `npm run check` lulus.
+- Konsekuensi yang disengaja: dua tautan ke URL yang sama per kartu
+  (judul + tanggal), sehingga target klik tanggal ikut besar.
+
 ## 14 Nov 2026 — Merge lanjutan route detail jadwal (18 commit)
 
 - **Latar:** `feat/schedule-detail-routes` diperbarui setelah merge pertama

@@ -234,7 +234,13 @@ function gcalUrl(batch: Batch, name: string, mode: string): string {
                     <span class={`status status--${batch.status}`}>{batch.statusText}</span>
                   </div>
                   <p class="batch-when">
-                    <time datetime={batch.startDate}>{batch.label}</time>
+                    <a
+                      class="batch-when-link"
+                      href={scheduleDetailPath(batch)}
+                      aria-label={`Lihat detail ${info.data.name} ${info.data.role} Gelombang ${batch.batch}, ${batch.label}`}
+                    >
+                      <time datetime={batch.startDate}>{batch.label}</time>
+                    </a>
                   </p>
                   <ul class="batch-facts">
                     <li><a class="batch-service-link" href={`/layanan/${info.id}/`}>{info.data.name} {info.data.role}</a></li>

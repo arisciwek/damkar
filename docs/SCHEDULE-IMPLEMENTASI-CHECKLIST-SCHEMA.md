@@ -95,16 +95,17 @@ completion: object? (completedDate, participants[], gallery[])
 
 ### 1.4 Helper bersama (data layer)
 
-> Status: ditunda ke Tahap 3 (bagian route). Bentuk `Batch` lama sengaja
-> dipertahankan lewat adapter agar output HTML tidak berubah; helper baru
-> dibuat setelah konsumen route baru diketahui.
+> Status: selesai di `src/utils/schedules.ts` (plural). Diuji runtime lewat
+> halaman debug sementara: 57 schedule, 12 bulan, 4 training, lookup detail OK.
+> `utils/schedule.ts` (tunggal) tetap adapter bentuk `Batch` lama.
 
-- [ ] `getSchedules()` — semua schedule, sorted by `startDate` + `trainingId`
-- [ ] `getSchedulesByMonth()` — grouping per `YYYY-MM`
-- [ ] `getSchedulesByTraining()` — grouping per `trainingId`
-- [ ] `getScheduleBySlug(month, slug)` — lookup detail
-- [ ] `computeStatus(startDate, endDate, statusOverride?)` — status lifecycle
-- [ ] `getSitemapLastmod(schedules)` — max `updatedDate` per scope
+- [x] `getSchedules()` — semua schedule, urut `startDate` + jenjang
+- [x] `getSchedulesByMonth()` — `Map<'YYYY-MM', ScheduleView[]>`
+- [x] `getSchedulesByTraining()` — `Map<trainingId, ScheduleView[]>`
+- [x] `getScheduleBySlug(month, slug)` — lookup detail
+- [x] `computePhase()` + `computeUiStatus()` — lifecycle & badge UI
+- [x] `eventStatusUrl()` + `attendanceModeUrl()` — pemetaan schema.org
+- [x] `getSitemapLastmod()` — max `updatedDate` per scope
 
 **Gerbang:** Seluruh konten lama dapat dipetakan ke schema baru; `npm run check` lulus.
 
@@ -230,7 +231,7 @@ src/content/schedules/
 ### Utang teknis / belum selesai
 
 - [x] Validator unik lintas entri & struktur path sudah permanen: `scripts/validate-schedules.mjs`, dipanggil `npm run check`, diuji negatif.
-- [ ] Helper baru (`getSchedulesByMonth`, `getScheduleBySlug`, `getSitemapLastmod`) belum dibuat — menunggu Tahap 3 (bagian route) agar bentuk data final diketahui.
+- [x] Helper baru sudah tersedia di `src/utils/schedules.ts` untuk dipakai Tahap 3–4.
 - [ ] Data pascapelatihan (`completion`) belum ada; menunggu foto/peserta nyata.
 - [ ] Rename collection `trainings` belum menyentuh `entry.id`; URL `/layanan/<slug>/` tetap. Jika kelak `slug` dipisah dari id file, route harus ikut diubah.
 

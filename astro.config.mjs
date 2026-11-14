@@ -150,7 +150,7 @@ const SOURCES = [
   },
   { match: (p) => p === '/jadwal/', lastmod: scheduleIndexLastmod },
   {
-    // 62 route turunan: max tanggal editorial template + gelombang penyumbang.
+    // Route turunan: max tanggal editorial template + schedule penyumbang.
     match: (p) => p.startsWith('/jadwal/'),
     lastmod: scheduleRouteLastmod,
   },

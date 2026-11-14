@@ -8,7 +8,7 @@
 
 ## Progres pada branch `feat/schedule-detail-routes`
 
-Branch ini dibuat dari `main` terbaru setelah migrasi collection `trainings` dan `schedules` masuk ke `main`. Pekerjaan Bagian 2 sebelumnya yang berbasis struktur lama tidak dipakai sebagai basis integrasi; utilitas yang relevan dibawa ulang secara terkontrol.
+Branch ini dibuat dari `main` setelah migrasi collection `trainings` dan `schedules`. Dua commit lanjutan dari `main` (helper data schedule dan validator kontrak) juga disinkronkan ke branch ini; integrasi route menggunakan helper `getSchedules()` dan `getScheduleBySlug()`.
 
 ### Commit implementasi
 
@@ -17,7 +17,7 @@ Branch ini dibuat dari `main` terbaru setelah migrasi collection `trainings` dan
 - [x] `7458a31` — adapter `Batch` mengekspos `slug` dari frontmatter schedule.
 - [x] `14f4eca` — judul pada setiap kartu `.batch-grid` menjadi anchor ke URL detail; tautan layanan dipertahankan sebagai tautan terpisah. Tombol WhatsApp dan Google Calendar tetap independen.
 
-**Catatan:** route detail belum dibuat pada tahap ini. Karena itu tautan kartu sudah memakai pola URL final, tetapi halaman tujuan baru akan tersedia setelah implementasi route detail selesai. Belum ada klaim bahwa `npm run check` atau `npm run build` telah lulus.
+**Catatan:** seluruh tautan kartu kini memiliki route detail statis sebagai tujuan. Belum ada klaim bahwa `npm run check` atau `npm run build` telah lulus.
 
 ---
 
@@ -28,6 +28,15 @@ Branch ini dibuat dari `main` terbaru setelah migrasi collection `trainings` dan
 - [x] `f9482d0` — menghapus Event JSON-LD dari halaman daftar; Event kini menjadi entitas pada halaman detail kanonis.
 - [x] `ac80ac9` — ItemList arsip bulanan mengarah ke URL detail kanonis setiap schedule.
 - [x] `8401507` — pemformatan tanggal menggunakan kalender tanggal ISO agar tidak bergeser akibat timezone server.
+
+- [x] `b1c75fc` — resolver sitemap membaca file schedule secara rekursif di `src/content/schedules/**`; detail dicari berdasarkan kombinasi bulan + slug.
+- [x] `887d266` — label tanggal memakai `dateLabel` dari frontmatter dan breadcrumb bulan memakai nama bulan Indonesia.
+- [x] `3d6afbb` — detail menampilkan kapasitas jika tersedia serta pemberitahuan khusus untuk status postponed/cancelled.
+- [x] `37bbb84` — status detail dan JSON-LD memakai `phase` hasil `computePhase()` agar lifecycle mengikuti tanggal dan override terminal.
+- [x] `7b34243` — menghapus builder Event listing lama agar satu-satunya Event builder memakai canonical detail URL.
+- [x] `b61e042`, `8ca907e`, `8026a75`, `54c588f` — sinkronisasi validator, helper data schedule, script `npm run check`, dan checklist schema terbaru dari `main`.
+- [x] `7136c84` — route detail menggunakan `getSchedules()` dan `getScheduleBySlug()` sebagai sumber data bersama.
+- [x] `3bfea5d` — Event JSON-LD memakai pemetaan lifecycle dan attendance mode dari helper data schedule.
 
 **Validasi yang masih perlu dilakukan di lingkungan build:** `npm run check` dan `npm run build`. Belum dijalankan dari sesi ini.
 
@@ -66,11 +75,11 @@ Branch ini dibuat dari `main` terbaru setelah migrasi collection `trainings` dan
 - [x] `src/pages/jadwal/[month]/[slug].astro`
 - [x] `getStaticPaths()` dari collection `schedules` → generate `{ month, slug }`
 - [x] Validasi `month` cocok dengan `startDate` schedule
-- [ ] Layout split hero: kiri (kategori/eyebrow, H1, P1), kanan (featured image)
-- [ ] Konten per fase lifecycle:
+- [x] Layout split hero: kiri (kategori/eyebrow, H1, P1), kanan (foto program terkait)
+- [x] Konten per fase lifecycle:
   - **Scheduled/Ongoing**: info program, tanggal, lokasi, metode, biaya/kuota, syarat, CTA daftar
   - **Completed**: info selesai, peserta/sertifikat (jika dipublikasikan), galeri
-- [ ] Bagian kosong tidak dirender (conditional rendering)
+- [x] Bagian kosong tidak dirender (conditional rendering)
 - [x] Canonical URL = URL detail ini
 - [x] Breadcrumbs: Beranda → Jadwal → Bulan → Detail
 
@@ -123,10 +132,10 @@ Branch ini dibuat dari `main` terbaru setelah migrasi collection `trainings` dan
 
 ### 4.4 Sitemap `lastmod`
 
-- [ ] Detail schedule: `lastmod = updatedDate`
-- [ ] Arsip bulanan: `lastmod = max(updatedDate schedule di bulan) + updatedDate halaman arsip`
-- [ ] Indeks `/jadwal/`: `lastmod = max(updatedDate semua schedule + updatedDate halaman indeks)`
-- [ ] Pastikan `astro.config.mjs` resolver `lastmod` pakai `updatedDate` dari frontmatter
+- [x] Detail schedule: `lastmod = updatedDate` (fallback `pubDate`)
+- [x] Arsip bulanan: `lastmod = max(updatedDate schedule di bulan) + updatedDate halaman arsip`
+- [x] Indeks `/jadwal/`: `lastmod = max(updatedDate semua schedule + updatedDate halaman indeks)`
+- [x] Pastikan `astro.config.mjs` membaca collection schedule rekursif dan memakai `updatedDate` (fallback `pubDate`)
 
 ### 4.5 Validasi tanggal
 
@@ -175,12 +184,12 @@ Ambil 1 schedule (misal Kelas D November 2026), uji berurutan:
 
 - [ ] `/jadwal/` menampilkan schedule grup per bulan, link detail valid
 - [ ] `/jadwal/YYYY-MM/` menampilkan semua schedule bulan tersebut
-- [ ] `/jadwal/YYYY-MM/slug/` detail lengkap per fase lifecycle
+- [x] `/jadwal/YYYY-MM/slug/` detail lengkap per fase lifecycle
 - [ ] Setiap schedule punya **tepat 1** URL detail kanonikal
 - [x] Judul kartu `.batch-grid` → URL detail baru; tautan program, WhatsApp, dan Google Calendar tetap terpisah
-- [ ] JSON-LD `Event` di halaman detail valid & pakai tanggal pelaksanaan
+- [x] JSON-LD `Event` pada halaman detail memakai tanggal pelaksanaan
 - [ ] JSON-LD `CourseInstance` di layanan pakai field baru
-- [ ] `lastmod` detail = `updatedDate`; arsip/indeks = max `updatedDate`
+- [x] Resolver `lastmod` detail = `updatedDate`; arsip/indeks = max `updatedDate`
 - [ ] Tanggal Event **tidak berubah** saat completion/galeri ditambah
 - [ ] `npm run check` & `npm run build` lulus
 - [ ] Rich Results Test lulus untuk halaman detail & layanan

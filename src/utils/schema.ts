@@ -8,6 +8,7 @@
  *   halaman kelas  : + Course (CourseInstance gelombang mendatang + Syllabus)
  */
 import { organization, photos, site } from '../config/site';
+import { attendanceModeUrl, eventStatusUrl } from './schedules';
 
 export type JsonLd = Record<string, unknown>;
 
@@ -184,29 +185,6 @@ export function programItemList(
   };
 }
 
-/** Event terstruktur untuk satu gelombang pelatihan; tanggal berasal dari pelaksanaan. */
-export function scheduleEventNode(input: {
-  url: string;
-  kelas: string;
-  batch: string;
-  start: string;
-  end: string;
-  label: string;
-}): JsonLd {
-  const id = `${site.url}/jadwal/#event-${input.kelas.toLowerCase()}-${input.batch}`;
-  return {
-    '@type': 'Event',
-    '@id': id,
-    url: input.url,
-    name: `Pelatihan Damkar ${input.kelas} — Gelombang ${input.batch}`,
-    description: `Public Training Pelatihan Damkar ${input.kelas}, ${input.label}.`,
-    startDate: input.start,
-    endDate: input.end,
-    inLanguage: site.language,
-    organizer: { '@id': ids.org },
-  };
-}
-
 export interface ScheduleEventInput {
   url: string;
   title: string;
@@ -224,29 +202,11 @@ export interface ScheduleEventInput {
   };
 }
 
-/** Status lifecycle internal → vocabulary EventStatus Schema.org. */
-export function eventStatusUrl(status: ScheduleEventInput['status']): string {
-  const values = {
-    scheduled: 'EventScheduled',
-    ongoing: 'EventScheduled',
-    completed: 'EventCompleted',
-    postponed: 'EventPostponed',
-    cancelled: 'EventCancelled',
-  } as const;
-  return `https://schema.org/${values[status]}`;
-}
-
 /**
  * Event untuk satu schedule: identitas Event melekat pada canonical detail URL.
  * Tanggal pelaksanaan hanya berasal dari startDate/endDate, bukan metadata editorial.
  */
 export function eventNode(schedule: ScheduleEventInput): JsonLd {
-  const attendanceModes = {
-    offline: 'OfflineEventAttendanceMode',
-    online: 'OnlineEventAttendanceMode',
-    mixed: 'MixedEventAttendanceMode',
-  } as const;
-
   const location: JsonLd | undefined = schedule.venue
     ? {
         '@type': 'Place',
@@ -276,7 +236,7 @@ export function eventNode(schedule: ScheduleEventInput): JsonLd {
     startDate: schedule.startDate,
     endDate: schedule.endDate,
     eventStatus: eventStatusUrl(schedule.status),
-    eventAttendanceMode: `https://schema.org/${attendanceModes[schedule.attendanceMode]}`,
+    eventAttendanceMode: attendanceModeUrl(schedule.attendanceMode),
     ...(location ? { location } : {}),
     inLanguage: site.language,
     organizer: { '@id': ids.org },

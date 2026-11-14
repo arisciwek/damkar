@@ -13,17 +13,23 @@ import {
   websiteNode,
 } from '../../../utils/schema';
 import { scheduleDetailUrl, scheduleMonth } from '../../../utils/schedule-routing';
-import { resolveVenue, venueAddressText } from '../../../utils/schedules';
+import {
+  getScheduleBySlug,
+  getSchedules,
+  monthLabel,
+  resolveVenue,
+  venueAddressText,
+} from '../../../utils/schedules';
 
 export async function getStaticPaths() {
   const [schedules, trainings] = await Promise.all([
-    getCollection('schedules', (entry) => !entry.data.draft),
+    getSchedules(),
     getCollection('trainings', (entry) => !entry.data.draft),
   ]);
   const trainingById = new Map(trainings.map((entry) => [entry.data.trainingId, entry]));
 
-  return schedules.map((entry) => {
-    const schedule = entry.data;
+  return schedules.map((view) => {
+    const schedule = view.data;
     const training = trainingById.get(schedule.trainingId);
     if (!training) {
       throw new Error(
@@ -32,19 +38,24 @@ export async function getStaticPaths() {
     }
 
     return {
-      params: {
-        month: scheduleMonth(schedule.startDate),
-        slug: schedule.slug,
-      },
-      props: { schedule, training: training.data },
+      params: { month: view.month, slug: schedule.slug },
+      props: { scheduleId: schedule.scheduleId, training: training.data },
     };
   });
 }
 
-const { schedule, training } = Astro.props;
+const { scheduleId, training } = Astro.props;
 const month = Astro.params.month!;
-const expectedMonth = scheduleMonth(schedule.startDate);
+const slug = Astro.params.slug!;
+const scheduleView = await getScheduleBySlug(month, slug);
 
+if (!scheduleView || scheduleView.data.scheduleId !== scheduleId) {
+  throw new Error(`Schedule ${scheduleId} tidak ditemukan pada route /jadwal/${month}/${slug}/.`);
+}
+
+const schedule = scheduleView.data;
+const phase = scheduleView.phase;
+const expectedMonth = scheduleMonth(schedule.startDate);
 if (month !== expectedMonth) {
   throw new Error(
     `Route bulan ${month} tidak cocok dengan startDate schedule ${schedule.scheduleId} (${expectedMonth}).`,
@@ -70,7 +81,7 @@ const statusLabels = {
   postponed: 'Ditunda',
   cancelled: 'Dibatalkan',
 } as const;
-const statusLabel = statusLabels[schedule.status];
+const statusLabel = statusLabels[phase];
 
 const dateFormatter = new Intl.DateTimeFormat('id-ID', {
   day: 'numeric',
@@ -82,22 +93,13 @@ function formatDate(value: string): string {
   const [year, monthValue, day] = value.slice(0, 10).split('-').map(Number);
   return dateFormatter.format(new Date(Date.UTC(year, monthValue - 1, day, 12)));
 }
-const startLabel = formatDate(schedule.startDate);
-const endLabel = formatDate(schedule.endDate);
-const dateText = startLabel === endLabel ? startLabel : `${startLabel} – ${endLabel}`;
+const dateText = schedule.dateLabel;
 
 const registrationMessage =
   `Halo tim Betracom, saya ingin mendaftar ${schedule.title}. Mohon informasi biaya, persyaratan, dan ketersediaan kuota.`;
 const canRegister =
-  schedule.status === 'scheduled' &&
+  phase === 'scheduled' &&
   (registrationStatus === 'open' || registrationStatus === 'not-open');
-
-// Label bulan arsip: "Januari 2026" (dipakai breadcrumb teks & JSON-LD).
-const monthName = new Intl.DateTimeFormat('id-ID', {
-  month: 'long',
-  year: 'numeric',
-  timeZone: 'UTC',
-}).format(new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1, 1, 12)));
 
 const jsonLd = [
   organizationNode(),
@@ -116,7 +118,7 @@ const jsonLd = [
   breadcrumbNode(canonical, [
     { name: 'Beranda', url: new URL('/', site.url).toString() },
     { name: 'Jadwal', url: new URL('/jadwal/', site.url).toString() },
-    { name: monthName, url: new URL(`/jadwal/${month}/`, site.url).toString() },
+    { name: monthLabel(month), url: new URL(`/jadwal/${month}/`, site.url).toString() },
     { name: title, url: canonical },
   ]),
   eventNode({
@@ -125,7 +127,7 @@ const jsonLd = [
     description,
     startDate: schedule.startDate,
     endDate: schedule.endDate,
-    status: schedule.status,
+    status: phase,
     attendanceMode,
     venue,
   }),
@@ -149,7 +151,7 @@ const jsonLd = [
       <ol class="schedule-breadcrumb-list">
         <li class="schedule-breadcrumb-item"><a href="/">Beranda</a></li>
         <li class="schedule-breadcrumb-item"><a href="/jadwal/">Jadwal</a></li>
-        <li class="schedule-breadcrumb-item"><a href={`/jadwal/${month}/`}>{monthName}</a></li>
+        <li class="schedule-breadcrumb-item"><a href={`/jadwal/${month}/`}>{monthLabel(month)}</a></li>
         <li class="schedule-breadcrumb-item" aria-current="page">{schedule.title}</li>
       </ol>
     </nav>
@@ -158,7 +160,9 @@ const jsonLd = [
       <div class="schedule-detail-copy">
         <p class="schedule-detail-eyebrow">Pelatihan Damkar · Kelas {training.key} · Gelombang {schedule.batchNo}</p>
         <div class="schedule-detail-status-row">
-          <span class={`schedule-status schedule-status--${schedule.status}`}>{statusLabel}</span>
+          <span class={`schedule-status schedule-status--${phase}`}>{statusLabel}</span>
+          {registrationStatus === 'open' && <span class="schedule-registration-status schedule-registration-status--open">Pendaftaran dibuka</span>}
+          {registrationStatus === 'not-open' && <span class="schedule-registration-status">Pendaftaran belum dibuka</span>}
           {registrationStatus === 'closed' && <span class="schedule-registration-status">Pendaftaran ditutup</span>}
         </div>
         <h1 class="schedule-detail-title">{schedule.title}</h1>
@@ -179,14 +183,18 @@ const jsonLd = [
           </div>
           <div class="schedule-detail-fact">
             <dt>Lokasi</dt>
-            <dd>
-              {venue.name}{venueAddress ? `, ${venueAddress}` : ''}
-            </dd>
+            <dd>{venue.name}{venueAddress ? `, ${venueAddress}` : ''}</dd>
           </div>
           {schedule.registration?.deadline && (
             <div class="schedule-detail-fact">
               <dt>Batas pendaftaran</dt>
               <dd>{formatDate(schedule.registration.deadline)}</dd>
+            </div>
+          )}
+          {schedule.registration?.capacity && (
+            <div class="schedule-detail-fact">
+              <dt>Kuota peserta</dt>
+              <dd>{schedule.registration.capacity} peserta</dd>
             </div>
           )}
         </dl>
@@ -213,6 +221,16 @@ const jsonLd = [
 
     <div class="schedule-detail-content">
       <article class="schedule-detail-main">
+        {phase === 'postponed' && (
+          <div class="schedule-lifecycle-notice schedule-lifecycle-notice--postponed" role="status">
+            Jadwal pelatihan ini ditunda. Hubungi penyelenggara untuk memperoleh informasi tanggal terbaru.
+          </div>
+        )}
+        {phase === 'cancelled' && (
+          <div class="schedule-lifecycle-notice schedule-lifecycle-notice--cancelled" role="status">
+            Penyelenggaraan pelatihan ini dibatalkan. Silakan hubungi penyelenggara untuk informasi program berikutnya.
+          </div>
+        )}
         <section class="schedule-detail-section">
           <h2>Informasi Pelatihan</h2>
           <p>{training.desc} Program ini diselenggarakan dalam format {training.mode.toLowerCase()} dengan sertifikasi Kemnaker RI bersama {organization.name}.</p>
@@ -224,7 +242,7 @@ const jsonLd = [
           <p>{training.requirement}</p>
         </section>
 
-        {schedule.status === 'completed' && schedule.completion && (
+        {phase === 'completed' && schedule.completion && (
           <section class="schedule-detail-section schedule-completion">
             <h2>Dokumentasi Pelaksanaan</h2>
             {schedule.completion.completedDate && (
@@ -293,6 +311,10 @@ const jsonLd = [
   .schedule-status--ongoing { background: #FFF3D9; color: #8A5A00; }
   .schedule-status--cancelled { background: #FDE8E8; color: #A51D1D; }
   .schedule-status--postponed { background: #FFF3D9; color: #8A5A00; }
+  .schedule-registration-status--open { background: #EAF7EF; color: #176B3A; }
+  .schedule-lifecycle-notice { margin: 0 0 28px; padding: 16px 18px; border: 1px solid var(--line-2); border-radius: var(--r); font-size: .9rem; font-weight: 500; }
+  .schedule-lifecycle-notice--postponed { background: #FFF7E6; color: #805400; }
+  .schedule-lifecycle-notice--cancelled { background: #FDECEC; color: #9E2020; }
   .schedule-detail-title { margin-bottom: 14px; font-size: clamp(2rem, 4vw, 3.15rem); line-height: 1.16; }
   .schedule-detail-description { max-width: 62ch; margin-bottom: 24px; color: var(--mute); font-size: 1rem; }
   .schedule-detail-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px; }

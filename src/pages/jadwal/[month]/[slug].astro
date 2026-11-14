@@ -72,11 +72,11 @@ const dateFormatter = new Intl.DateTimeFormat('id-ID', {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
-  timeZone: 'Asia/Jakarta',
+  timeZone: 'UTC',
 });
 function formatDate(value: string): string {
   const [year, monthValue, day] = value.slice(0, 10).split('-').map(Number);
-  return dateFormatter.format(new Date(year, monthValue - 1, day));
+  return dateFormatter.format(new Date(Date.UTC(year, monthValue - 1, day, 12)));
 }
 const startLabel = formatDate(schedule.startDate);
 const endLabel = formatDate(schedule.endDate);
@@ -105,7 +105,7 @@ const jsonLd = [
   breadcrumbNode(canonical, [
     { name: 'Beranda', url: new URL('/', site.url).toString() },
     { name: 'Jadwal', url: new URL('/jadwal/', site.url).toString() },
-    { name: `${new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1, 1))}`, url: new URL(`/jadwal/${month}/`, site.url).toString() },
+    { name: `${new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1, 1, 12)))}`, url: new URL(`/jadwal/${month}/`, site.url).toString() },
     { name: title, url: canonical },
   ]),
   eventNode({

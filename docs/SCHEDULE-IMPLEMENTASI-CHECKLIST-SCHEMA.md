@@ -91,6 +91,7 @@ completion: object? (completedDate, participants[], gallery[])
 - [x] Validasi nama file = `slug`
 - [x] Validasi `updatedDate >= pubDate` (Zod `superRefine`)
 - [x] Validasi `endDate >= startDate` (Zod `superRefine`)
+- [x] Validasi `dateLabel` konsisten dengan `startDate`/`endDate`: tanggal pertama dan terakhir yang disebut wajib sama. Mendukung daftar hari (`16, 18 & 19 Februari 2026`) dan rentang lintas bulan (`30 November–2 Desember 2026`). Diuji negatif dengan tiga bentuk label.
 - [x] Validasi enum status, mode, attendanceMode, registration (Zod)
 
 ### 1.4 Helper bersama (data layer)

@@ -1,5 +1,45 @@
 # Log Pekerjaan
 
+## 14 Nov 2026 — Merge lanjutan route detail jadwal (18 commit)
+
+- **Latar:** `feat/schedule-detail-routes` diperbarui setelah merge pertama
+  (`542e57e`): 18 commit baru di atas `b1c75fc`. Branch ini tetap **tidak bisa
+  build sendiri** karena perbaikan `Scheduler.astro` (`58d3b4f`) belum ada di
+  sana, jadi verifikasi dilakukan pada hasil merge nyata, bukan pada branch.
+- **Isi merge (`0047784`):**
+  - label tanggal detail memakai `dateLabel` editorial ("14–21 Desember 2026"),
+  - badge "Pendaftaran dibuka"/"belum dibuka" (sebelumnya hanya "ditutup"),
+  - konten lifecycle: notice postponed/cancelled dan baris kapasitas (belum ada
+    datanya, jadi belum dirender),
+  - status detail dan `Event` memakai `phase` dari `computePhase()`, dan CTA
+    "Tanyakan pendaftaran" hanya muncul saat `phase === 'scheduled'`,
+  - route detail memakai `getSchedules()`/`getScheduleBySlug()`,
+  - builder `scheduleEventNode` lama (100 baris, sudah tidak dipakai) dihapus.
+- **Konflik & resolusi (3 file):** `utils/schedules.ts` diambil dari `main`
+  (venue default); `utils/schema.ts` = versi `main` + pemetaan bersama
+  `eventStatusUrl`/`attendanceModeUrl`, `eventNode` dan `@id` kanonis
+  dipertahankan; halaman detail = basis branch + `resolveVenue()` +
+  `monthLabel()`. Tidak ada conflict marker tersisa.
+- **`feat/schedule-route-jsonld` dihapus dari remote:** berbasis `233a815`
+  (sebelum migrasi collection), hanya 3 file; `schedule-routing.ts`
+  byte-identik dengan `main` dan `eventNode`-nya sudah versi lebih baru di
+  `main`. Tidak ada kontribusi unik yang hilang.
+- **Validator baru:** `dateLabel` wajib konsisten dengan ujung
+  `startDate`/`endDate` — tanggal pertama dan terakhir yang disebut harus sama.
+  Mendukung daftar hari (`16, 18 & 19 Februari 2026`) dan rentang lintas bulan
+  (`30 November–2 Desember 2026`). Diuji negatif (akhir salah, lintas bulan
+  salah, daftar hari salah) dan semuanya gagal sesuai harapan.
+- **Verifikasi:** `npm run check` lulus (4 training, 57 schedule, 77 entri);
+  140 halaman; 0 halaman hilang/baru; **tepat 57 halaman detail** berubah;
+  `sitemap-0.xml` byte-identik dengan sebelum merge; 57/57 `Event` lengkap dan
+  `@id` ↔ `WebPage.about` cocok; 0 referensi `@id` menggantung; 1 H1 per
+  halaman; semua halaman punya meta description.
+- **Efek output:** 8 halaman mendapat badge "Pendaftaran dibuka", 57 halaman
+  memakai label tanggal ringkas; tidak ada halaman lain yang berubah.
+- **Sisa (bukan bagian merge ini):** Tahap 3.1 (indeks `/jadwal/` memakai
+  `getSchedules()`), 3.2 (arsip bulanan), dan 3.4 (integrasi halaman layanan)
+  masih memakai adapter `getBatches()`.
+
 ## 14 Nov 2026 — Merge route detail jadwal + Event JSON-LD
 
 - **Branch yang di-merge:** `feat/schedule-detail-routes` (12 commit) →

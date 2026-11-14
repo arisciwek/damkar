@@ -1,6 +1,6 @@
 # Checklist Implementasi Schedule — Route & JSON-LD (Bagian 2)
 
-**Status:** Implementasi berjalan pada branch `feat/schedule-detail-routes`; berbasis `main` setelah migrasi Bagian 1.  
+**Status:** Sudah di-merge ke `main` (merge `0047784`, 18 commit branch) dan terverifikasi di lingkungan build.  
 **Tanggung jawab:** User (route & JSON-LD)  
 **Berdasarkan:** `SCHEDULE-ARCHITECTURE-PLAN.md` (Tahap 3–5)
 
@@ -38,7 +38,9 @@ Branch ini dibuat dari `main` setelah migrasi collection `trainings` dan `schedu
 - [x] `7136c84` — route detail menggunakan `getSchedules()` dan `getScheduleBySlug()` sebagai sumber data bersama.
 - [x] `3bfea5d` — Event JSON-LD memakai pemetaan lifecycle dan attendance mode dari helper data schedule.
 
-**Validasi yang masih perlu dilakukan di lingkungan build:** `npm run check` dan `npm run build`. Belum dijalankan dari sesi ini.
+**Validasi (dijalankan setelah merge):** `npm run check` lulus (4 training, 57 schedule, 77 entri editorial); build 140 halaman dengan 0 halaman hilang/baru; tepat 57 halaman detail berubah; sitemap byte-identik dengan sebelum merge; 57/57 `Event` lengkap dan `@id` cocok dengan `WebPage.about`.
+
+**Sisa pekerjaan (bukan bagian merge ini):** Tahap 3.1 (indeks `/jadwal/` memakai `getSchedules()`), 3.2 (arsip bulanan), dan 3.4 (integrasi halaman layanan) masih terbuka — halaman lama tetap memakai adapter `getBatches()`.
 
 ## Ringkasan Tahap
 

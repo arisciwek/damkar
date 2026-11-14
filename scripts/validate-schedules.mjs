@@ -11,6 +11,10 @@
  *   5. Struktur path cocok: schedules/<YYYY>/<trainingId>/<slug>.md.
  *   6. pubDate/updatedDate ISO UTC ketat; updatedDate >= pubDate.
  *   7. endDate >= startDate.
+ *   8. dateLabel konsisten dengan startDate/endDate: tanggal pertama yang
+ *      disebut = startDate, tanggal terakhir = endDate. Label boleh memuat
+ *      hari terpisah (mis. "16, 18 & 19 Februari 2026") karena rentang
+ *      pelaksanaan tidak selalu berurutan, tetapi kedua ujungnya wajib sama.
  *
  * Gagal di sini = build gagal.
  */
@@ -23,6 +27,20 @@ const TRAININGS = join(ROOT, 'src/content/trainings');
 const SCHEDULES = join(ROOT, 'src/content/schedules');
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:\d{2}))?$/;
+const MONTHS = {
+  januari: 1,
+  februari: 2,
+  maret: 3,
+  april: 4,
+  mei: 5,
+  juni: 6,
+  juli: 7,
+  agustus: 8,
+  september: 9,
+  oktober: 10,
+  november: 11,
+  desember: 12,
+};
 
 const problems = [];
 const fail = (msg) => problems.push(msg);
@@ -58,6 +76,36 @@ function frontmatter(path, text) {
 }
 
 const rel = (p) => relative(ROOT, p);
+
+/**
+ * Urai `dateLabel` Indonesia menjadi tanggal pertama & terakhir.
+ * Contoh: "30–31 Maret & 1 April 2026" → 2026-03-30 … 2026-04-01;
+ * "16, 18 & 19 Februari 2026" → 2026-02-16 … 2026-02-19.
+ *
+ * Nama bulan hanya ditulis sekali untuk daftar hari (mis. "25, 26 & 28 Mei"),
+ * jadi bulan diisi dari nama bulan terdekat di sebelah kanannya.
+ */
+function parseDateLabel(label) {
+  const year = Number(label.match(/\b(\d{4})\b/)?.[1]);
+  if (!year) return null;
+  const tokens = [...label.matchAll(/\b(\d{1,2})\b(?:\s+([A-Za-z]+))?/g)].map((m) => ({
+    day: Number(m[1]),
+    month: m[2] ? (MONTHS[m[2].toLowerCase()] ?? null) : null,
+  }));
+  if (tokens.length === 0) return null;
+  let nextMonth = null;
+  for (let i = tokens.length - 1; i >= 0; i -= 1) {
+    if (tokens[i].month) nextMonth = tokens[i].month;
+    else if (nextMonth) tokens[i].month = nextMonth;
+    else return null;
+  }
+  const iso = (t) => `${year}-${String(t.month).padStart(2, '0')}-${String(t.day).padStart(2, '0')}`;
+  return { first: iso(tokens[0]), last: iso(tokens.at(-1)) };
+}
+
+/** Ambil YYYY-MM-DD dari string ISO atau Date hasil parse YAML. */
+const isoDay = (value) =>
+  value instanceof Date ? value.toISOString().slice(0, 10) : String(value).slice(0, 10);
 
 // --- 1. Trainings ---
 const trainingIds = new Set();
@@ -106,6 +154,21 @@ for (const path of files) {
   }
   if (d.startDate && d.endDate && String(d.endDate) < String(d.startDate)) {
     fail(`${at}: endDate lebih awal daripada startDate`);
+  }
+  // dateLabel harus menyebut ujung yang sama dengan startDate/endDate.
+  if (!d.dateLabel) fail(`${at}: dateLabel hilang`);
+  else {
+    const parsed = parseDateLabel(String(d.dateLabel));
+    if (!parsed) {
+      fail(`${at}: dateLabel "${d.dateLabel}" tidak bisa dibaca sebagai tanggal Indonesia`);
+    } else {
+      if (d.startDate && parsed.first !== isoDay(d.startDate)) {
+        fail(`${at}: dateLabel "${d.dateLabel}" mulai ${parsed.first}, bukan startDate ${isoDay(d.startDate)}`);
+      }
+      if (d.endDate && parsed.last !== isoDay(d.endDate)) {
+        fail(`${at}: dateLabel "${d.dateLabel}" berakhir ${parsed.last}, bukan endDate ${isoDay(d.endDate)}`);
+      }
+    }
   }
   for (const f of ['pubDate', 'updatedDate']) {
     if (!d[f]) fail(`${at}: ${f} hilang`);

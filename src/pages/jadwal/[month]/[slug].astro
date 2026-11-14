@@ -1,0 +1,268 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SiteFooter from '../../../components/shared/SiteFooter.astro';
+import SiteHeader from '../../../components/shared/SiteHeader.astro';
+import WaFloat from '../../../components/shared/WaFloat.astro';
+import { organization, photos, site, waDaftar } from '../../../config/site';
+import {
+  breadcrumbNode,
+  eventNode,
+  organizationNode,
+  webpageNode,
+  websiteNode,
+} from '../../../utils/schema';
+import { scheduleDetailUrl, scheduleMonth } from '../../../utils/schedule-routing';
+
+export async function getStaticPaths() {
+  const [schedules, trainings] = await Promise.all([
+    getCollection('schedules', (entry) => !entry.data.draft),
+    getCollection('trainings', (entry) => !entry.data.draft),
+  ]);
+  const trainingById = new Map(trainings.map((entry) => [entry.data.trainingId, entry]));
+
+  return schedules.map((entry) => {
+    const schedule = entry.data;
+    const training = trainingById.get(schedule.trainingId);
+    if (!training) {
+      throw new Error(
+        `Schedule ${schedule.scheduleId} merujuk trainingId "${schedule.trainingId}" yang tidak ditemukan.`,
+      );
+    }
+
+    return {
+      params: {
+        month: scheduleMonth(schedule.startDate),
+        slug: schedule.slug,
+      },
+      props: { schedule, training: training.data },
+    };
+  });
+}
+
+const { schedule, training } = Astro.props;
+const month = Astro.params.month!;
+const expectedMonth = scheduleMonth(schedule.startDate);
+
+if (month !== expectedMonth) {
+  throw new Error(
+    `Route bulan ${month} tidak cocok dengan startDate schedule ${schedule.scheduleId} (${expectedMonth}).`,
+  );
+}
+
+const canonical = scheduleDetailUrl(schedule, site.url);
+const photoIndex = ({ D: 0, C: 1, B: 2, A: 3 } as const)[training.key as 'D' | 'C' | 'B' | 'A'];
+const photo = photos[photoIndex] ?? photos[0];
+const title = schedule.title;
+const description = schedule.description;
+const deliveryMode = schedule.delivery?.mode ?? 'offline';
+const attendanceMode = schedule.delivery?.attendanceMode ?? 'offline';
+const registrationStatus = schedule.registration?.status ?? 'not-open';
+
+const statusLabels = {
+  scheduled: 'Dijadwalkan',
+  ongoing: 'Sedang berlangsung',
+  completed: 'Telah selesai',
+  postponed: 'Ditunda',
+  cancelled: 'Dibatalkan',
+} as const;
+const statusLabel = statusLabels[schedule.status];
+
+const dateFormatter = new Intl.DateTimeFormat('id-ID', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'Asia/Jakarta',
+});
+function formatDate(value: string): string {
+  const [year, monthValue, day] = value.slice(0, 10).split('-').map(Number);
+  return dateFormatter.format(new Date(year, monthValue - 1, day));
+}
+const startLabel = formatDate(schedule.startDate);
+const endLabel = formatDate(schedule.endDate);
+const dateText = startLabel === endLabel ? startLabel : `${startLabel} – ${endLabel}`;
+
+const registrationMessage =
+  `Halo tim Betracom, saya ingin mendaftar ${schedule.title}. Mohon informasi biaya, persyaratan, dan ketersediaan kuota.`;
+const canRegister =
+  schedule.status === 'scheduled' &&
+  (registrationStatus === 'open' || registrationStatus === 'not-open');
+
+const jsonLd = [
+  organizationNode(),
+  websiteNode(),
+  webpageNode({
+    url: canonical,
+    name: title,
+    description,
+    pubDate: schedule.pubDate,
+    updatedDate: schedule.updatedDate,
+    extra: {
+      about: { '@id': `${canonical}#event` },
+      breadcrumb: { '@id': `${canonical}#breadcrumb` },
+    },
+  }),
+  breadcrumbNode(canonical, [
+    { name: 'Beranda', url: new URL('/', site.url).toString() },
+    { name: 'Jadwal', url: new URL('/jadwal/', site.url).toString() },
+    { name: `${new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1, 1))}`, url: new URL(`/jadwal/${month}/`, site.url).toString() },
+    { name: title, url: canonical },
+  ]),
+  eventNode({
+    url: canonical,
+    title,
+    description,
+    startDate: schedule.startDate,
+    endDate: schedule.endDate,
+    status: schedule.status,
+    attendanceMode,
+    venue: schedule.venue,
+  }),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  image={photo.ogSrc}
+  imageAlt={photo.alt}
+  preloadImage={photo.src}
+  publishedTime={schedule.pubDate}
+  modifiedTime={schedule.updatedDate}
+  jsonLd={jsonLd}
+>
+  <SiteHeader />
+  <main id="konten" class="schedule-detail-page">
+    <nav class="schedule-breadcrumb" aria-label="Breadcrumb">
+      <ol class="schedule-breadcrumb-list">
+        <li class="schedule-breadcrumb-item"><a href="/">Beranda</a></li>
+        <li class="schedule-breadcrumb-item"><a href="/jadwal/">Jadwal</a></li>
+        <li class="schedule-breadcrumb-item"><a href={`/jadwal/${month}/`}>{month}</a></li>
+        <li class="schedule-breadcrumb-item" aria-current="page">{schedule.title}</li>
+      </ol>
+    </nav>
+
+    <section class="schedule-detail-hero">
+      <div class="schedule-detail-copy">
+        <p class="schedule-detail-eyebrow">Pelatihan Damkar · Kelas {training.key} · Gelombang {schedule.batchNo}</p>
+        <div class="schedule-detail-status-row">
+          <span class={`schedule-status schedule-status--${schedule.status}`}>{statusLabel}</span>
+          {registrationStatus === 'closed' && <span class="schedule-registration-status">Pendaftaran ditutup</span>}
+        </div>
+        <h1 class="schedule-detail-title">{schedule.title}</h1>
+        <p class="schedule-detail-description">{schedule.description}</p>
+
+        <dl class="schedule-detail-facts">
+          <div class="schedule-detail-fact">
+            <dt>Tanggal pelaksanaan</dt>
+            <dd>{dateText}</dd>
+          </div>
+          <div class="schedule-detail-fact">
+            <dt>Program</dt>
+            <dd><a href={`/layanan/${training.slug}/`}>{training.name} — {training.role}</a></dd>
+          </div>
+          <div class="schedule-detail-fact">
+            <dt>Metode</dt>
+            <dd>{deliveryMode === 'blended' ? 'Blended training' : deliveryMode === 'online' ? 'Online' : 'Tatap muka'}</dd>
+          </div>
+          {schedule.venue && (
+            <div class="schedule-detail-fact">
+              <dt>Lokasi</dt>
+              <dd>
+                {schedule.venue.name}
+                {[schedule.venue.address, schedule.venue.city, schedule.venue.province].filter(Boolean).join(', ')}
+              </dd>
+            </div>
+          )}
+          {schedule.registration?.deadline && (
+            <div class="schedule-detail-fact">
+              <dt>Batas pendaftaran</dt>
+              <dd>{formatDate(schedule.registration.deadline)}</dd>
+            </div>
+          )}
+        </dl>
+
+        <div class="schedule-detail-actions">
+          {canRegister ? (
+            <a class="btn btn-black" href={waDaftar(registrationMessage)} target="_blank" rel="noopener nofollow">
+              Tanyakan pendaftaran
+            </a>
+          ) : (
+            <a class="btn btn-outline" href={waDaftar(`Halo tim Betracom, saya ingin menanyakan informasi ${schedule.title}.`)} target="_blank" rel="noopener nofollow">
+              Hubungi penyelenggara
+            </a>
+          )}
+          <a class="schedule-service-link" href={`/layanan/${training.slug}/`}>Lihat detail program</a>
+        </div>
+      </div>
+
+      <figure class="schedule-detail-media">
+        <img src={photo.src} alt={photo.alt} width={photo.w} height={photo.h} loading="eager" fetchpriority="high" />
+        <figcaption>{photo.cap}</figcaption>
+      </figure>
+    </section>
+
+    <div class="schedule-detail-content">
+      <article class="schedule-detail-main">
+        <section class="schedule-detail-section">
+          <h2>Informasi Pelatihan</h2>
+          <p>{training.desc} Program ini diselenggarakan dalam format {training.mode.toLowerCase()} dengan sertifikasi Kemnaker RI bersama {organization.name}.</p>
+          <h3>Materi pelatihan</h3>
+          <ul class="schedule-detail-list">
+            {training.materi.map((item) => <li>{item}</li>)}
+          </ul>
+          <h3>Persyaratan peserta</h3>
+          <p>{training.requirement}</p>
+        </section>
+
+        {schedule.status === 'completed' && schedule.completion && (
+          <section class="schedule-detail-section schedule-completion">
+            <h2>Dokumentasi Pelaksanaan</h2>
+            {schedule.completion.completedDate && (
+              <p>Pelatihan telah diselesaikan pada {formatDate(schedule.completion.completedDate)}.</p>
+            )}
+            {schedule.completion.participants.length > 0 && (
+              <div class="schedule-completion-participants">
+                <h3>Peserta yang dipublikasikan</h3>
+                <ul class="schedule-detail-list">
+                  {schedule.completion.participants.map((participant) => (
+                    <li>
+                      {participant.name}
+                      {participant.certificateNumber && <span> — Sertifikat {participant.certificateNumber}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {schedule.completion.gallery.length > 0 && (
+              <div class="schedule-completion-gallery">
+                <h3>Galeri kegiatan</h3>
+                <div class="schedule-gallery-grid">
+                  {schedule.completion.gallery.map((item) => (
+                    <figure class="schedule-gallery-item">
+                      <img src={item.src} alt={item.alt} loading="lazy" />
+                      {item.caption && <figcaption>{item.caption}</figcaption>}
+                    </figure>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+      </article>
+
+      <aside class="schedule-detail-aside" aria-label="Ringkasan jadwal">
+        <div class="schedule-aside-card">
+          <p class="schedule-aside-kicker">Jadwal pelatihan</p>
+          <h2>{training.name}</h2>
+          <p>{dateText}</p>
+          <p>Gelombang {schedule.batchNo}</p>
+          <a href={`/jadwal/${month}/`}>Jadwal lain pada bulan ini</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <SiteFooter />
+  <WaFloat />
+</BaseLayout>

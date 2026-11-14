@@ -42,7 +42,7 @@ interface Props {
 }
 
 export async function getStaticPaths() {
-  const entries = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+  const entries = (await getCollection('trainings', (entry) => !entry.data.draft)).sort(
     (a, b) => a.data.order - b.data.order,
   );
   const keys = entries.map((entry) => entry.data.key as KelasKey);
@@ -69,7 +69,7 @@ const { kelas, bulan } = Astro.props;
 const page = await getEntry('pages', 'jadwal-detail');
 if (!page) throw new Error('Template halaman jadwal (src/content/pages/jadwal-detail.md) tidak ditemukan.');
 
-const entries = await getCollection('kelas', (entry) => !entry.data.draft);
+const entries = await getCollection('trainings', (entry) => !entry.data.draft);
 // Simpan entry.data karena properti program berada di dalam data.
 const byKey = new Map(entries.map((entry) => [entry.data.key as KelasKey, entry.data]));
 const cls = kelas ? byKey.get(kelas) : undefined;

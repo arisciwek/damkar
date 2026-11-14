@@ -1,4 +1,6 @@
 ---
+trainingId: kelas-b
+slug: damkar-kelas-b
 key: B
 step: 3
 order: 30

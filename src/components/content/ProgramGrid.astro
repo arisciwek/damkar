@@ -13,7 +13,7 @@ const {
   lede = 'Program berjenjang dari Petugas Pemadam hingga Ahli K3 Pemadam Kebakaran.',
 } = Astro.props;
 
-const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+const kelas = (await getCollection('trainings', (entry) => !entry.data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
 /** Label gelombang terdekat dihitung di frontmatter (nextLabel kini async). */

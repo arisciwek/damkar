@@ -35,7 +35,7 @@ const { kelas, bulan, chips = true } = Astro.props;
 /** Halaman bulan: menampilkan semua gelombang (termasuk yang lewat), tanpa toggle. */
 const isMonth = bulan !== undefined;
 
-const entries = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+const entries = (await getCollection('trainings', (entry) => !entry.data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
 const byKey = new Map(entries.map((entry) => [entry.data.key as KelasKey, entry]));

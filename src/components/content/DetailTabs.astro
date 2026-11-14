@@ -19,7 +19,7 @@ const {
   lede = 'Materi yang relevan dengan pekerjaan. Pilih kelas untuk melihat materinya.',
 } = Astro.props;
 
-const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+const kelas = (await getCollection('trainings', (entry) => !entry.data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
 const slugOf = (key: string) => key.toLowerCase();

@@ -3,12 +3,20 @@ import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 /**
- * Collection jenjang pelatihan (kelas D, C, B, A).
- * Data dipindah dari referensi/data/site.json → src/content/kelas/*.md
+ * Collection master training (jenjang D, C, B, A).
+ * Data dipindah dari referensi/data/site.json → src/content/trainings/*.md
+ *
+ * `trainingId` adalah kunci integrasi lintas situs yang stabil (lihat
+ * docs/SCHEDULE-ARCHITECTURE-PLAN.md §4.1). `slug` adalah identitas URL lokal;
+ * nilainya dipertahankan sama dengan id file agar URL /layanan/<slug>/ tidak berubah.
  */
-const kelas = defineCollection({
-  loader: glob({ pattern: '*.md', base: './src/content/kelas' }),
+const trainings = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/trainings' }),
   schema: z.object({
+    /** Kunci integrasi lintas situs, stabil. */
+    trainingId: z.string().min(1),
+    /** Identitas URL lokal (harus sama dengan id file selama belum dipisah). */
+    slug: z.string().min(1),
     /** Huruf jenjang: D | C | B | A */
     key: z.string().length(1),
     /** Urutan jenjang (1 = paling dasar). */
@@ -187,4 +195,4 @@ const articles = defineCollection({
     }
   }),
 });
-export const collections = { kelas, pages, schedule, articles };
+export const collections = { trainings, pages, schedule, articles };

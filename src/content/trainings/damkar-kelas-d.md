@@ -1,4 +1,6 @@
 ---
+trainingId: kelas-d
+slug: damkar-kelas-d
 key: D
 step: 1
 order: 10

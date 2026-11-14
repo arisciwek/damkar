@@ -31,7 +31,7 @@ const title = page.data.title;
 const description = page.data.description ?? ui.meta.defaultDescription;
 const url = new URL('/', Astro.site).toString();
 
-const kelasItems = (await getCollection('kelas', (entry) => !entry.data.draft))
+const kelasItems = (await getCollection('trainings', (entry) => !entry.data.draft))
   .sort((a, b) => a.data.order - b.data.order)
   .map((entry) => ({
     url: new URL(`/layanan/${entry.id}/`, Astro.site).toString(),

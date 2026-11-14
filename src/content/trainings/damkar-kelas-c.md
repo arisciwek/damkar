@@ -1,4 +1,6 @@
 ---
+trainingId: kelas-c
+slug: damkar-kelas-c
 key: C
 step: 2
 order: 20

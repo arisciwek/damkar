@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import { ui } from '../../config/ui';
 
-const kelas = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+const kelas = (await getCollection('trainings', (entry) => !entry.data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
 ---

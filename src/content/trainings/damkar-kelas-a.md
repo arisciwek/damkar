@@ -1,4 +1,6 @@
 ---
+trainingId: kelas-a
+slug: damkar-kelas-a
 key: A
 step: 4
 order: 40

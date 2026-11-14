@@ -11,7 +11,7 @@ interface Props {
 
 const { kelas, limit = 3 } = Astro.props;
 
-const kelasEntries = await getCollection('kelas', (entry) => !entry.data.draft);
+const kelasEntries = await getCollection('trainings', (entry) => !entry.data.draft);
 const byKey = new Map(kelasEntries.map((entry) => [entry.data.key, entry.data]));
 
 const rows = (await upcoming(kelas)).slice(0, limit).map((batch) => {

@@ -20,7 +20,7 @@ import {
 } from '../../utils/schema';
 
 export async function getStaticPaths() {
-  const entries = (await getCollection('kelas', (entry) => !entry.data.draft)).sort(
+  const entries = (await getCollection('trainings', (entry) => !entry.data.draft)).sort(
     (a, b) => a.data.order - b.data.order,
   );
   return entries.map((entry) => ({

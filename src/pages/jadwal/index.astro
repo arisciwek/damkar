@@ -54,7 +54,7 @@ const blocks = sourceBlocks.map((block) => {
 }) as PageBlockConfig[];
 
 // ItemList: 4 halaman jadwal per kelas (anak dari halaman ini).
-const kelasItems = (await getCollection('kelas', (entry) => !entry.data.draft))
+const kelasItems = (await getCollection('trainings', (entry) => !entry.data.draft))
   .sort((a, b) => a.data.order - b.data.order)
   .map((entry) => ({
     url: new URL(`/jadwal/kelas-${entry.data.key.toLowerCase()}/`, Astro.site).toString(),

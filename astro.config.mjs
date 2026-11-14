@@ -18,8 +18,8 @@ const siteUrl =
 // - halaman editorial (punya `updatedDate` valid di frontmatter) ← updatedDate;
 // - beranda & listing selama belum punya metadata editorial ← commit file sumber;
 // - /jadwal/ ← max(updatedDate halaman, updatedDate ?? pubDate seluruh gelombang);
-// - 62 route turunan jadwal ← max(updatedDate template, updatedDate ?? pubDate
-//   file gelombang penyumbang route); tanggal editorial schedule tetap berlaku
+// - Route turunan jadwal (arsip, kelas, detail) ← max(updatedDate template,
+//   updatedDate ?? pubDate file schedule penyumbang route); tanggal editorial tetap berlaku
 //   meskipun tanggal pelaksanaan sudah lewat;
 // - fallback terakhir ← commit HEAD; tanpa git → tanpa lastmod.
 // Format: ISO-8601 UTC tanpa milidetik, mis. "2026-11-12T23:30:00Z".
@@ -62,32 +62,39 @@ const gitLastmodCached = (files) => {
   return gitCache.get(key);
 };
 
-// Indeks file gelombang (57 file) untuk lastmod per-route. pubDate adalah
-// publikasi data; updatedDate mengalahkan pubDate saat data (termasuk galeri)
-// diperbarui, tanpa memedulikan apakah tanggal pelaksanaan sudah lewat.
+// Indeks file schedule baru (rekursif) untuk lastmod per-route.
 const scheduleFiles = (() => {
-  try {
-    const dir = 'src/content/schedule';
-    return readdirSync(dir)
-      .filter((f) => f.endsWith('.md'))
-      .map((f) => {
-        const text = readFileSync(join(dir, f), 'utf8');
-        const cls = text.match(/^class:\s*([A-D])\s*$/m)?.[1];
-        const start = text.match(/^start:\s*"(\d{4}-\d{2}-\d{2})"\s*$/m)?.[1];
-        // Tanggal editorial: updatedDate jika ada, kalau tidak pubDate.
-        const upd = text.match(/^updatedDate:\s*"([0-9]{4}-[0-9:-]+T[0-9:]+Z)"\s*$/m)?.[1];
-        const pub = text.match(/^pubDate:\s*"([0-9]{4}-[0-9:-]+T[0-9:]+Z)"\s*$/m)?.[1];
-        return {
-          path: `${dir}/${f}`,
-          cls,
-          month: start ? start.slice(0, 7) : null,
-          last: upd ?? pub ?? null,
-        };
-      })
-      .filter((e) => e.cls && e.month && e.last);
-  } catch {
-    return [];
-  }
+  const root = 'src/content/schedules';
+  const markdownFiles = [];
+  const walk = (directory) => {
+    try {
+      for (const entry of readdirSync(directory, { withFileTypes: true })) {
+        const path = join(directory, entry.name);
+        if (entry.isDirectory()) walk(path);
+        else if (entry.isFile() && entry.name.endsWith('.md')) markdownFiles.push(path);
+      }
+    } catch {
+      // Folder tidak tersedia pada checkout/build yang belum memiliki collection baru.
+    }
+  };
+
+  walk(root);
+  return markdownFiles.map((path) => {
+    const text = readFileSync(path, 'utf8');
+    const trainingId = text.match(/^trainingId:\s*['"]?([^'"]+)['"]?\s*$/m)?.[1];
+    const cls = trainingId?.match(/^kelas-([a-d])$/)?.[1]?.toUpperCase() ?? null;
+    const start = text.match(/^startDate:\s*['"]?(\d{4}-\d{2}-\d{2})/)?.[1] ?? null;
+    const slug = text.match(/^slug:\s*['"]?([^'"]+)['"]?\s*$/m)?.[1] ?? null;
+    const updated = text.match(/^updatedDate:\s*['"]?([0-9]{4}-[0-9:-]+T[0-9:]+Z)['"]?\s*$/m)?.[1] ?? null;
+    const published = text.match(/^pubDate:\s*['"]?([0-9]{4}-[0-9:-]+T[0-9:]+Z)['"]?\s*$/m)?.[1] ?? null;
+    return {
+      path,
+      cls,
+      month: start ? start.slice(0, 7) : null,
+      slug,
+      last: toUtc(updated ?? published),
+    };
+  }).filter((entry) => entry.month && entry.slug && entry.last);
 })();
 
 const maxDate = (...values) => values.filter(Boolean).sort().at(-1) ?? null;
@@ -108,14 +115,22 @@ const scheduleRouteLastmod = (pathname) => {
   const segs = pathname.slice('/jadwal/'.length).split('/').filter(Boolean);
   let kelas = null;
   let bulan = null;
+  let slug = null;
   for (const seg of segs) {
-    const m = seg.match(/^kelas-([a-d])$/);
-    if (m) kelas = m[1].toUpperCase();
+    const classMatch = seg.match(/^kelas-([a-d])$/);
+    if (classMatch) kelas = classMatch[1].toUpperCase();
     else if (/^\d{4}-\d{2}$/.test(seg)) bulan = seg;
+    else slug = seg;
   }
+
   const dates = scheduleFiles
-    .filter((e) => (!kelas || e.cls === kelas) && (!bulan || e.month === bulan))
-    .map((e) => e.last);
+    .filter((entry) =>
+      (!kelas || entry.cls === kelas) &&
+      (!bulan || entry.month === bulan) &&
+      (!slug || (entry.month === bulan && entry.slug === slug))
+    )
+    .map((entry) => entry.last);
+
   return maxDate(readUpdatedDate('src/content/pages/jadwal-detail.md'), ...dates);
 };
 

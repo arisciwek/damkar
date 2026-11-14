@@ -237,7 +237,7 @@ function gcalUrl(batch: Batch, name: string, mode: string): string {
                     <time datetime={batch.startDate}>{batch.label}</time>
                   </p>
                   <ul class="batch-facts">
-                    <li><a class="batch-service-link" href={`/layanan/${info.id}/">{info.data.name} {info.data.role}</a></li>
+                    <li><a class="batch-service-link" href={`/layanan/${info.id}/`}>{info.data.name} {info.data.role}</a></li>
                     <li>{info.data.mode}</li>
                     <li>Pendidikan min. {info.data.education}</li>
                   </ul>
